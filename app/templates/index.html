@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Trend Radar - Phân Tích Thị Trường Game Mobile & PC</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            dark: {
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 glass-card border-b border-slate-800/80 px-6 py-3.5">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <!-- Logo & Brand -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <i data-lucide="gamepad-2" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+            Game Market Radar
+          </h1>
+          <p class="text-xs text-slate-400 flex items-center gap-1.5">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Phân tích thị trường PC & Mobile Hàng Ngày / Hàng Tuần
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Tools -->
+      <div class="flex items-center gap-3 flex-wrap">
+        <!-- Date Selector -->
+        <div class="flex items-center gap-2 bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 text-xs">
+          <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
+          <span class="text-slate-400">Ngày:</span>
+          <input type="date" id="targetDate" value="{{ latest_date }}" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer">
+        </div>
+
+        <!-- Crawl Now Button -->
+        <button id="btnCrawlNow" onclick="triggerCrawl()" class="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all active:scale-95">
+          <i data-lucide="refresh-cw" id="crawlIcon" class="w-4 h-4"></i>
+          <span>Crawl Dữ Liệu Ngay</span>
+        </button>
+
+        <!-- Export Dropdown -->
+        <div class="relative inline-block text-left">
+          <button onclick="toggleExportMenu()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-medium transition-colors">
+            <i data-lucide="download" class="w-4 h-4 text-slate-300"></i>
+            <span>Xuất Báo Cáo</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+          </button>
+          <div id="exportMenu" class="hidden absolute right-0 mt-2 w-48 rounded-lg glass-card shadow-xl py-1 z-50 border border-slate-700 text-xs">
+            <a href="#" onclick="downloadExcel()" class="flex items-center gap-2 px-4 py-2 text-slate-300 hover:bg-indigo-600 hover:text-white">
+              <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i> Tải File Excel (.xlsx)
+            </a>
+            <a href="#" onclick="downloadCSV()" class="flex items-center gap-2 px-4 py-2 text-slate-300 hover:bg-indigo-600 hover:text-white">
+              <i data-lucide="file-text" class="w-4 h-4 text-blue-400"></i> Tải File CSV (.csv)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-6 py-6 flex-1 w-full space-y-6">
+
+    <!-- KPI Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Card 1: Total Tracked -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between border-l-4 border-indigo-500">
+        <div>
+          <p class="text-xs font-medium text-slate-400">Tổng Game Đang Theo Dõi</p>
+          <h3 id="statTotalTracked" class="text-2xl font-bold text-white mt-1">--</h3>
+          <p id="statPlatformSplit" class="text-xs text-slate-400 mt-0.5">PC: -- | iOS: -- | Android: --</p>
+        </div>
+        <div class="p-3 bg-indigo-500/10 rounded-xl text-indigo-400">
+          <i data-lucide="layers" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Card 2: Peak CCU -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between border-l-4 border-emerald-500">
+        <div>
+          <p class="text-xs font-medium text-slate-400">Game PC Có CCU Cao Nhất</p>
+          <h3 id="statPeakGame" class="text-lg font-bold text-white mt-1 truncate max-w-[160px]">--</h3>
+          <p id="statPeakCCU" class="text-xs text-emerald-400 font-semibold mt-0.5">-- CCU</p>
+        </div>
+        <div class="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
+          <i data-lucide="trending-up" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Card 3: Top Breakout -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between border-l-4 border-pink-500">
+        <div>
+          <p class="text-xs font-medium text-slate-400">Hiện Tượng Bùng Nổ Hôm Nay</p>
+          <h3 id="statBreakoutGame" class="text-lg font-bold text-white mt-1 truncate max-w-[160px]">--</h3>
+          <p id="statBreakoutDelta" class="text-xs text-pink-400 font-semibold mt-0.5">+-- bậc so với hôm qua</p>
+        </div>
+        <div class="p-3 bg-pink-500/10 rounded-xl text-pink-400">
+          <i data-lucide="zap" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <!-- Card 4: Dominant Genre -->
+      <div class="glass-card rounded-2xl p-4 flex items-center justify-between border-l-4 border-amber-500">
+        <div>
+          <p class="text-xs font-medium text-slate-400">Thể Loại Thống Trị</p>
+          <h3 id="statDominantGenre" class="text-lg font-bold text-white mt-1">--</h3>
+          <p id="statGenreShare" class="text-xs text-amber-400 mt-0.5">Thị phần cao nhất</p>
+        </div>
+        <div class="p-3 bg-amber-500/10 rounded-xl text-amber-400">
+          <i data-lucide="pie-chart" class="w-6 h-6"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex items-center border-b border-slate-800 gap-2 overflow-x-auto pb-1 text-sm font-medium">
+      <button onclick="switchTab('overview')" id="tabBtn-overview" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-indigo-500 text-indigo-400 font-semibold">
+        <i data-lucide="layout-grid" class="w-4 h-4"></i> Tổng Quan Thị Trường
+      </button>
+      <button onclick="switchTab('pc')" id="tabBtn-pc" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="monitor" class="w-4 h-4"></i> Thị Trường PC (Steam)
+      </button>
+      <button onclick="switchTab('mobile')" id="tabBtn-mobile" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="smartphone" class="w-4 h-4"></i> Thị Trường Mobile
+      </button>
+      <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
+      </button>
+      <button onclick="switchTab('compare')" id="tabBtn-compare" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="swords" class="w-4 h-4 text-amber-400"></i> So Sánh Đối Thủ
+      </button>
+      <button onclick="switchTab('alerts')" id="tabBtn-alerts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="bell" class="w-4 h-4 text-pink-400"></i> Cảnh Báo & Bot
+      </button>
+      <button onclick="switchTab('report')" id="tabBtn-report" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="file-text" class="w-4 h-4"></i> Báo Cáo Xu Hướng
+      </button>
+      <button onclick="switchTab('logs')" id="tabBtn-logs" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="history" class="w-4 h-4"></i> Lịch Sử Crawl
+      </button>
+    </div>
+
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tabContent-overview" class="space-y-6">
+      <!-- Section: Breakout Cards -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="flame" class="w-5 h-5 text-orange-500"></i>
+            Top Tăng Trưởng Đột Biến Trong Ngày (Rank Surge)
+          </h2>
+          <span class="text-xs text-slate-400">Nhấp vào game để xem biểu đồ chi tiết</span>
+        </div>
+        <div id="overviewRisingContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="glass-card p-4 rounded-xl text-center text-slate-400 text-sm">Đang tải dữ liệu...</div>
+        </div>
+      </div>
+
+      <!-- Section: Charts & Top 5 Side by Side -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Genre Distribution Chart -->
+        <div class="glass-card rounded-2xl p-5 lg:col-span-1 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-400"></i>
+              Thị Phần Thể Loại
+            </h3>
+            <span class="text-xs text-slate-400">Top 10 Genres</span>
+          </div>
+          <div class="relative flex-1 min-h-[260px] flex items-center justify-center">
+            <canvas id="genreChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top 5 PC vs Top 5 Mobile Grossing -->
+        <div class="glass-card rounded-2xl p-5 lg:col-span-2 space-y-5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Top 5 PC -->
+            <div>
+              <h3 class="text-sm font-bold text-indigo-300 flex items-center gap-2 mb-3">
+                <i data-lucide="monitor" class="w-4 h-4"></i> Top 5 PC Games (Steam CCU)
+              </h3>
+              <div id="topPCList" class="space-y-2.5"></div>
+            </div>
+
+            <!-- Top 5 Mobile Grossing -->
+            <div>
+              <h3 class="text-sm font-bold text-emerald-300 flex items-center gap-2 mb-3">
+                <i data-lucide="dollar-sign" class="w-4 h-4"></i> Top 5 Mobile Grossing
+              </h3>
+              <div id="topMobileList" class="space-y-2.5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PC STEAM MARKET -->
+    <div id="tabContent-pc" class="hidden space-y-4">
+      <!-- Filters Bar -->
+      <div class="glass-card p-4 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-3 flex-wrap">
+          <label class="text-slate-400 font-medium">Bảng Xếp Hạng:</label>
+          <select id="pcRankingType" onchange="loadPCRankings()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-1.5 focus:outline-none">
+            <option value="most_played">Top Most Played (CCU - Số người chơi)</option>
+            <option value="top_sellers">Top Sellers (Thịnh hành / Doanh thu)</option>
+          </select>
+
+          <label class="text-slate-400 font-medium ml-2">Thể loại:</label>
+          <select id="pcGenreFilter" onchange="loadPCRankings()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-1.5 focus:outline-none">
+            <option value="all">Tất cả thể loại</option>
+            <option value="Action">Action</option>
+            <option value="RPG">RPG</option>
+            <option value="Strategy">Strategy</option>
+            <option value="Simulation">Simulation</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Shooter">Shooter</option>
+          </select>
+        </div>
+
+        <div class="relative w-64">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2 text-slate-400"></i>
+          <input type="text" id="pcSearchInput" oninput="debounce(loadPCRankings, 300)()" placeholder="Tìm tên game, studio..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-xs">
+        </div>
+      </div>
+
+      <!-- PC Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 font-semibold uppercase tracking-wider">
+              <tr>
+                <th class="py-3 px-4 w-16">Rank</th>
+                <th class="py-3 px-4">Tựa Game (Click để xem xu hướng)</th>
+                <th class="py-3 px-4">Thể Loại</th>
+                <th class="py-3 px-4">Giá</th>
+                <th class="py-3 px-4">Người Chơi (CCU)</th>
+                <th class="py-3 px-4">Biến Động (DoD)</th>
+                <th class="py-3 px-4 text-center">Cửa Hàng</th>
+              </tr>
+            </thead>
+            <tbody id="pcTableBody" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: MOBILE MARKET -->
+    <div id="tabContent-mobile" class="hidden space-y-4">
+      <!-- Mobile Filters Bar -->
+      <div class="glass-card p-4 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-3 flex-wrap">
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-400 font-medium">Quốc Gia:</span>
+            <select id="mobileCountry" onchange="loadMobileRankings()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-1.5 focus:outline-none">
+              <option value="global">🌐 Toàn Cầu (Global)</option>
+              <option value="vn">🇻🇳 Việt Nam (VN)</option>
+              <option value="us">🇺🇸 United States (US)</option>
+              <option value="kr">🇰🇷 Hàn Quốc (KR)</option>
+              <option value="jp">🇯🇵 Nhật Bản (JP)</option>
+              <option value="gb">🇬🇧 Vương Quốc Anh (GB)</option>
+              <option value="de">🇩🇪 Đức (DE)</option>
+              <option value="br">🇧🇷 Brazil (BR)</option>
+              <option value="id">🇮🇩 Indonesia (ID)</option>
+              <option value="th">🇹🇭 Thái Lan (TH)</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-400 font-medium">Kho Ứng Dụng:</span>
+            <select id="mobileStore" onchange="loadMobileRankings()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-1.5 focus:outline-none">
+              <option value="mobile">Tất Cả Mobile (iOS & Android)</option>
+              <option value="mobile_appstore">🍎 Apple App Store</option>
+              <option value="mobile_googleplay">🤖 Google Play Store</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="text-slate-400 font-medium">Xếp Hạng:</span>
+            <select id="mobileRankingType" onchange="loadMobileRankings()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-1.5 focus:outline-none">
+              <option value="top_grossing">Top Doanh Thu (Top Grossing)</option>
+              <option value="top_free">Top Lượt Tải (Top Free)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="relative w-64">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2 text-slate-400"></i>
+          <input type="text" id="mobileSearchInput" oninput="debounce(loadMobileRankings, 300)()" placeholder="Tìm tên game, studio..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 text-xs">
+        </div>
+      </div>
+
+      <!-- Mobile Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 font-semibold uppercase tracking-wider">
+              <tr>
+                <th class="py-3 px-4 w-16">Rank</th>
+                <th class="py-3 px-4">Tựa Game (Click để xem xu hướng)</th>
+                <th class="py-3 px-4">Thể Loại</th>
+                <th class="py-3 px-4">Nền Tảng</th>
+                <th class="py-3 px-4">Điểm / Tải Về</th>
+                <th class="py-3 px-4">Biến Động (DoD)</th>
+                <th class="py-3 px-4 text-center">Cửa Hàng</th>
+              </tr>
+            </thead>
+            <tbody id="mobileTableBody" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: BREAKOUT RADAR -->
+    <div id="tabContent-breakouts" class="hidden space-y-4">
+      <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="zap" class="w-5 h-5 text-pink-500"></i>
+            Radar Phát Hiện Hiện Tượng Bùng Nổ
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Tập hợp các game có thứ hạng tăng vọt hoặc tân binh mới lọt vào Top</p>
+        </div>
+        <button onclick="loadBreakoutRadar()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200">
+          Làm mới Radar
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="breakoutRadarGrid"></div>
+    </div>
+
+    <!-- TAB 5: COMPARE (SO SÁNH ĐỐI THỦ) -->
+    <div id="tabContent-compare" class="hidden space-y-6">
+      <!-- Selector Card -->
+      <div class="glass-card p-5 rounded-2xl border border-amber-500/30 space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="swords" class="w-5 h-5 text-amber-400"></i>
+              So Sánh Đối Thủ Đối Đầu (Head-to-Head Comparison)
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">Đặt 2 tựa game cạnh nhau để phân tích tương quan thứ hạng, điểm số và xu hướng</p>
+          </div>
+          <!-- Quick Presets -->
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-slate-400">Gợi ý nhanh:</span>
+            <button onclick="setComparePreset('730', '570')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">CS2 vs Dota 2</button>
+            <button onclick="setComparePreset('gp_com.dts.freefireth', 'gp_com.garena.game.kgvn')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Free Fire vs Liên Quân</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+          <!-- Game A Selector -->
+          <div class="relative">
+            <label class="text-xs font-semibold text-indigo-400 mb-1 block">Tựa Game A (Màu Tím Indigo):</label>
+            <input type="text" id="compareSearchA" oninput="searchGameAutocomplete('A')" placeholder="Gõ tên để tìm Game A..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+            <div id="compareDropdownA" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 text-xs"></div>
+            <input type="hidden" id="compareGameIdA" value="730">
+            <p id="compareSelectedTitleA" class="text-xs font-bold text-white mt-1.5 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Đã chọn: Counter-Strike 2
+            </p>
+          </div>
+
+          <!-- Game B Selector -->
+          <div class="relative">
+            <label class="text-xs font-semibold text-amber-400 mb-1 block">Tựa Game B (Màu Vàng Amber):</label>
+            <input type="text" id="compareSearchB" oninput="searchGameAutocomplete('B')" placeholder="Gõ tên để tìm Game B..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+            <div id="compareDropdownB" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl max-h-48 overflow-y-auto z-50 text-xs"></div>
+            <input type="hidden" id="compareGameIdB" value="570">
+            <p id="compareSelectedTitleB" class="text-xs font-bold text-white mt-1.5 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span> Đã chọn: Dota 2
+            </p>
+          </div>
+        </div>
+
+        <div class="text-center pt-2">
+          <button onclick="executeComparison()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-6 py-2 rounded-xl text-xs shadow-lg transition-transform active:scale-95 inline-flex items-center gap-2">
+            <i data-lucide="swords" class="w-4 h-4"></i> So Sánh Ngay
+          </button>
+        </div>
+      </div>
+
+      <!-- Comparison Results Container -->
+      <div id="compareResultContainer" class="space-y-6">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 6: ALERTS & WEBHOOKS (CẤU HÌNH CẢNH BÁO) -->
+    <div id="tabContent-alerts" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="bell-ring" class="w-5 h-5 text-pink-400"></i>
+            Cấu Hình Hệ Thống Cảnh Báo & Bot Tự Động
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Kết nối với <b>Discord Webhook</b> hoặc <b>Telegram Bot</b> để nhận bản tin thị trường 8:00 sáng hàng ngày và thông báo khi có game bùng nổ thứ hạng.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Discord Config -->
+          <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+            <div class="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+              <i data-lucide="message-square" class="w-4 h-4"></i> Discord Webhook
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Vào Discord > Cài đặt kênh (Channel Settings) > Integrations > Webhooks > Tạo Webhook mới > Sao chép URL rồi dán vào đây:
+            </p>
+            <div>
+              <label class="text-xs text-slate-300 block mb-1">Discord Webhook URL:</label>
+              <input type="text" id="alertDiscordUrl" placeholder="https://discord.com/api/webhooks/..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono">
+            </div>
+          </div>
+
+          <!-- Telegram Config -->
+          <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+            <div class="flex items-center gap-2 text-sky-400 font-bold text-sm">
+              <i data-lucide="send" class="w-4 h-4"></i> Telegram Bot
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Tạo bot qua <code>@BotFather</code> để lấy Bot Token. Lấy Chat ID bằng cách nhắn tin cho <code>@userinfobot</code>:
+            </p>
+            <div class="space-y-2">
+              <div>
+                <label class="text-xs text-slate-300 block mb-1">Telegram Bot Token:</label>
+                <input type="password" id="alertTgToken" placeholder="123456789:ABCDefgh..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono">
+              </div>
+              <div>
+                <label class="text-xs text-slate-300 block mb-1">Telegram Chat ID:</label>
+                <input type="text" id="alertTgChatId" placeholder="-100123456789 hoặc 987654321" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Automation Triggers -->
+        <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+          <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Tùy Chọn Tự Động Hóa</h3>
+          <div class="space-y-2.5 text-xs">
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="alertEnableDigest" class="rounded bg-slate-950 border-slate-700 text-indigo-600 focus:ring-0">
+              <span class="text-slate-300">Tự động gửi <b>Bản tin tổng kết thị trường</b> vào mỗi 8:00 sáng hàng ngày</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" id="alertEnableBreakout" class="rounded bg-slate-950 border-slate-700 text-indigo-600 focus:ring-0">
+              <span class="text-slate-300">Bắn thông báo khẩn cấp khi có game tăng vọt thứ hạng $\ge$</span>
+              <input type="number" id="alertThreshold" value="15" min="5" max="50" class="w-16 bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-center text-white">
+              <span class="text-slate-400">bậc trong 24 giờ</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex items-center justify-between flex-wrap gap-3 pt-2">
+          <div class="flex items-center gap-2">
+            <button onclick="saveAlertSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2 rounded-xl text-xs transition-colors flex items-center gap-2 shadow-md shadow-indigo-600/20">
+              <i data-lucide="save" class="w-4 h-4"></i> Lưu Cấu Hình
+            </button>
+            <button onclick="testAlertNotification()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-700 flex items-center gap-1.5">
+              <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> Gửi Thử Nghiệm Ngay
+            </button>
+          </div>
+
+          <button onclick="sendManualMorningDigest()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors">
+            <i data-lucide="send" class="w-4 h-4"></i> Bắn Bản Tin Thị Trường Ngay Bây Giờ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: REPORT VIEWER -->
+    <div id="tabContent-report" class="hidden space-y-4">
+      <div class="glass-card p-4 rounded-xl flex items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="file-check" class="w-5 h-5 text-indigo-400"></i>
+            Bản Tin Tóm Tắt & Phân Tích Xu Hướng Thị Trường
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Báo cáo tự động tổng kết biến động thị trường PC & Mobile</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyReportMarkdown()" class="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-medium">
+            <i data-lucide="copy" class="w-4 h-4"></i> Sao chép Markdown
+          </button>
+          <button onclick="downloadExcel()" class="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium">
+            <i data-lucide="download" class="w-4 h-4"></i> Tải Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 prose prose-invert max-w-none text-slate-300 text-sm leading-relaxed" id="reportContent">
+        Đang tạo báo cáo thị trường...
+      </div>
+    </div>
+
+    <!-- TAB 8: LOGS -->
+    <div id="tabContent-logs" class="hidden space-y-4">
+      <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="history" class="w-5 h-5 text-indigo-400"></i>
+          Lịch Sử Crawl & Trạng Thái Hệ Thống
+        </h2>
+        <button onclick="loadCrawlLogs()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200">
+          Làm Mới Log
+        </button>
+      </div>
+
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 font-semibold uppercase tracking-wider">
+            <tr>
+              <th class="py-3 px-4">Thời Gian</th>
+              <th class="py-3 px-4">Nền Tảng</th>
+              <th class="py-3 px-4">Vùng</th>
+              <th class="py-3 px-4">Loại Rank</th>
+              <th class="py-3 px-4">Số Game</th>
+              <th class="py-3 px-4">Trạng Thái</th>
+            </tr>
+          </thead>
+          <tbody id="logsTableBody" class="divide-y divide-slate-800/60"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- GAME DETAIL INTELLIGENCE MODAL -->
+  <div id="gameDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="glass-card bg-slate-900 rounded-2xl border border-slate-700 max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-6 shadow-2xl relative">
+      <!-- Close button -->
+      <button onclick="closeGameModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="flex items-start gap-4">
+        <img id="modalGameIcon" src="" class="w-16 h-16 rounded-xl object-cover bg-slate-800 border border-slate-700 shadow-md">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 id="modalGameTitle" class="text-lg font-bold text-white truncate">--</h3>
+            <span id="modalGamePlatformBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400">PC Steam</span>
+          </div>
+          <p id="modalGameDeveloper" class="text-xs text-slate-400 mt-0.5">Studio: --</p>
+          <div class="flex items-center gap-3 mt-2 text-xs text-slate-300">
+            <span id="modalGameGenre" class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">--</span>
+            <span id="modalGamePrice" class="text-emerald-400 font-semibold">Free</span>
+            <span id="modalGameScore" class="text-amber-400 font-semibold flex items-center gap-1">⭐ --</span>
+          </div>
+        </div>
+        <a id="modalGameStoreLink" href="#" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors">
+          <span>Xem Cửa Hàng</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+
+      <!-- Historical Stats Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Rank Hiện Tại</p>
+          <h4 id="modalStatCurrentRank" class="text-lg font-bold text-indigo-400 mt-0.5">#--</h4>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Kỷ Lục Rank Tốt Nhất</p>
+          <h4 id="modalStatBestRank" class="text-lg font-bold text-emerald-400 mt-0.5">#--</h4>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Rank Trung Bình</p>
+          <h4 id="modalStatAvgRank" class="text-lg font-bold text-amber-400 mt-0.5">#--</h4>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Đỉnh CCU / Tải Về</p>
+          <h4 id="modalStatPeakCCU" class="text-lg font-bold text-pink-400 mt-0.5">--</h4>
+        </div>
+      </div>
+
+      <!-- Trendline Chart -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <i data-lucide="trending-up" class="w-4 h-4 text-indigo-400"></i>
+            Đường Cong Thứ Hạng Lịch Sử (Rank Trendline)
+          </h4>
+          <span class="text-[10px] text-slate-500">*Trục Y đảo ngược (Vị trí #1 ở trên đỉnh)</span>
+        </div>
+        <div class="h-64 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+          <canvas id="gameModalChart"></canvas>
+        </div>
+      </div>
+
+      <!-- History Table Snippet -->
+      <div>
+        <h4 class="text-xs font-bold text-slate-200 mb-2">Nhật Ký Các Ngày Gần Nhất</h4>
+        <div class="max-h-40 overflow-y-auto rounded-lg border border-slate-800 bg-slate-950">
+          <table class="w-full text-left text-[11px]">
+            <thead class="bg-slate-900 text-slate-400 sticky top-0">
+              <tr>
+                <th class="py-2 px-3">Ngày</th>
+                <th class="py-2 px-3">Thứ Hạng</th>
+                <th class="py-2 px-3">Người Chơi (CCU)</th>
+                <th class="py-2 px-3">Biến Động</th>
+              </tr>
+            </thead>
+            <tbody id="modalHistoryTableBody" class="divide-y divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 glass-card px-4 py-3 rounded-xl border border-slate-700 shadow-2xl flex items-center gap-3 text-xs text-white">
+    <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-indigo-400"></i>
+    <span id="toastMsg">Thông báo</span>
+  </div>
+
+  <script>
+    let genreChartInstance = null;
+    let modalChartInstance = null;
+    let compareChartInstance = null;
+    let currentRawReport = "";
+
+    // Debounce helper
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Toast helper
+    function showToast(msg, icon = 'check-circle') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      lucide.createIcons();
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      const tabs = ['overview', 'pc', 'mobile', 'breakouts', 'compare', 'alerts', 'report', 'logs'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tabBtn-${t}`);
+        const content = document.getElementById(`tabContent-${t}`);
+        if (!btn || !content) return;
+        if (t === tabId) {
+          btn.className = "tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-indigo-500 text-indigo-400 font-semibold";
+          content.classList.remove('hidden');
+        } else {
+          btn.className = "tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+          content.classList.add('hidden');
+        }
+      });
+
+      if (tabId === 'pc') loadPCRankings();
+      if (tabId === 'mobile') loadMobileRankings();
+      if (tabId === 'breakouts') loadBreakoutRadar();
+      if (tabId === 'compare') executeComparison();
+      if (tabId === 'alerts') loadAlertSettings();
+      if (tabId === 'report') loadMarketReport();
+      if (tabId === 'logs') loadCrawlLogs();
+    }
+
+    // Toggle Export Menu
+    function toggleExportMenu() {
+      const menu = document.getElementById('exportMenu');
+      menu.classList.toggle('hidden');
+    }
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('#exportMenu') && !e.target.closest('button[onclick="toggleExportMenu()"]')) {
+        document.getElementById('exportMenu')?.classList.add('hidden');
+      }
+    });
+
+    // Load Overview Data
+    async function loadOverview() {
+      const date = document.getElementById('targetDate').value;
+      try {
+        const res = await fetch(`/api/overview?target_date=${date}`);
+        const data = await res.json();
+
+        // 1. Fill KPI Cards
+        document.getElementById('statTotalTracked').innerText = (data.total_tracked || 0).toLocaleString();
+        const pCounts = data.platform_counts || {};
+        document.getElementById('statPlatformSplit').innerText = `PC: ${pCounts.pc_steam || 0} | iOS: ${pCounts.mobile_appstore || 0} | Android: ${pCounts.mobile_googleplay || 0}`;
+
+        if (data.top_steam_ccu && data.top_steam_ccu.length > 0) {
+          const topPC = data.top_steam_ccu[0];
+          document.getElementById('statPeakGame').innerText = topPC.title;
+          document.getElementById('statPeakCCU').innerText = `${(topPC.player_count || 0).toLocaleString()} CCU`;
+        }
+
+        if (data.rising_games && data.rising_games.length > 0) {
+          const topRiser = data.rising_games[0];
+          document.getElementById('statBreakoutGame').innerText = topRiser.title;
+          document.getElementById('statBreakoutDelta').innerText = `+${topRiser.rank_change_day} bậc rank`;
+        } else {
+          document.getElementById('statBreakoutGame').innerText = "Đang tích lũy";
+          document.getElementById('statBreakoutDelta').innerText = "Cần ít nhất 2 ngày dữ liệu để so sánh";
+        }
+
+        // 2. Fill Rising Games Cards
+        const risingContainer = document.getElementById('overviewRisingContainer');
+        if (data.rising_games && data.rising_games.length > 0) {
+          risingContainer.innerHTML = data.rising_games.map(g => {
+            const isPC = (g.platform || '').includes('pc');
+            return `
+              <div onclick="openGameModal('${g.game_id}')" class="glass-card p-4 rounded-xl flex items-center justify-between border border-slate-800 hover:border-indigo-500 cursor-pointer transition-all hover:scale-[1.01]">
+                <div class="flex items-center gap-3">
+                  <img src="${g.icon_url || 'https://placehold.co/80x80/1e293b/white?text=Game'}" class="w-12 h-12 rounded-lg object-cover bg-slate-800" onerror="this.src='https://placehold.co/80x80/1e293b/white?text=Game'">
+                  <div>
+                    <h4 class="font-bold text-white text-sm line-clamp-1 hover:text-indigo-400">${g.title}</h4>
+                    <p class="text-xs text-slate-400 line-clamp-1">${g.developer || g.genre || ''}</p>
+                    <span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full ${isPC ? 'bg-indigo-500/10 text-indigo-400' : 'bg-pink-500/10 text-pink-400'} font-medium">
+                      ${isPC ? 'PC Steam' : 'Mobile'}
+                    </span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center gap-1">
+                    <i data-lucide="arrow-up" class="w-3.5 h-3.5"></i> +${g.rank_change_day}
+                  </span>
+                  <p class="text-[10px] text-slate-500 mt-1">Rank #${g.rank}</p>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          risingContainer.innerHTML = `
+            <div class="glass-card p-4 rounded-xl col-span-3 text-center text-slate-400 text-xs">
+              Chưa phát hiện biến động đột biến hoặc mới thu thập ngày đầu tiên. Hãy nhấn <b>Crawl Dữ Liệu Ngay</b> để làm mới.
+            </div>
+          `;
+        }
+
+        // 3. Top 5 PC side by side
+        const topPCList = document.getElementById('topPCList');
+        if (data.top_steam_ccu && data.top_steam_ccu.length > 0) {
+          topPCList.innerHTML = data.top_steam_ccu.map(g => `
+            <div onclick="openGameModal('${g.game_id}')" class="flex items-center justify-between p-2 rounded-lg bg-slate-900/60 hover:bg-slate-900 cursor-pointer transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xs font-bold text-indigo-400 w-5">#${g.rank}</span>
+                <img src="${g.icon_url}" class="w-8 h-8 rounded object-cover bg-slate-800" onerror="this.src='https://placehold.co/40x40/1e293b/white?text=PC'">
+                <div class="max-w-[160px]">
+                  <p class="font-medium text-white text-xs truncate hover:text-indigo-400">${g.title}</p>
+                  <p class="text-[10px] text-slate-400 truncate">${g.genre || 'PC'}</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-slate-200">${(g.player_count || 0).toLocaleString()} CCU</span>
+            </div>
+          `).join('');
+        } else {
+          topPCList.innerHTML = '<p class="text-xs text-slate-500">Chưa có dữ liệu PC.</p>';
+        }
+
+        // 4. Top 5 Mobile Grossing
+        const topMobileList = document.getElementById('topMobileList');
+        if (data.top_mobile_grossing && data.top_mobile_grossing.length > 0) {
+          topMobileList.innerHTML = data.top_mobile_grossing.map(g => `
+            <div onclick="openGameModal('${g.game_id}')" class="flex items-center justify-between p-2 rounded-lg bg-slate-900/60 hover:bg-slate-900 cursor-pointer transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span class="text-xs font-bold text-emerald-400 w-5">#${g.rank}</span>
+                <img src="${g.icon_url}" class="w-8 h-8 rounded-lg object-cover bg-slate-800" onerror="this.src='https://placehold.co/40x40/1e293b/white?text=App'">
+                <div class="max-w-[160px]">
+                  <p class="font-medium text-white text-xs truncate hover:text-emerald-400">${g.title}</p>
+                  <p class="text-[10px] text-slate-400 truncate">${g.country.toUpperCase()} • ${g.genre || 'Game'}</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-amber-400">⭐ ${g.score || '4.5'}</span>
+            </div>
+          `).join('');
+        } else {
+          topMobileList.innerHTML = '<p class="text-xs text-slate-500">Chưa có dữ liệu Mobile.</p>';
+        }
+
+        // 5. Load Genre Chart
+        loadGenreChart();
+
+      } catch (err) {
+        console.error("Error loading overview:", err);
+      }
+      lucide.createIcons();
+    }
+
+    // Load Genre Distribution Chart
+    async function loadGenreChart() {
+      const date = document.getElementById('targetDate').value;
+      try {
+        const res = await fetch(`/api/genres?target_date=${date}`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          document.getElementById('statDominantGenre').innerText = data[0].genre || '--';
+          document.getElementById('statGenreShare').innerText = `${data[0].count} games trong Top`;
+
+          const labels = data.map(d => d.genre);
+          const counts = data.map(d => d.count);
+
+          const ctx = document.getElementById('genreChart').getContext('2d');
+          if (genreChartInstance) genreChartInstance.destroy();
+
+          genreChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: labels,
+              datasets: [{
+                data: counts,
+                backgroundColor: [
+                  '#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6',
+                  '#06b6d4', '#3b82f6', '#f43f5e', '#14b8a6', '#64748b'
+                ],
+                borderWidth: 0
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 10 }
+                }
+              },
+              cutout: '65%'
+            }
+          });
+        }
+      } catch (err) {
+        console.error("Error loading genres:", err);
+      }
+    }
+
+    // Load PC Rankings Table
+    async function loadPCRankings() {
+      const date = document.getElementById('targetDate').value;
+      const rankingType = document.getElementById('pcRankingType').value;
+      const genre = document.getElementById('pcGenreFilter').value;
+      const search = document.getElementById('pcSearchInput').value;
+
+      const tbody = document.getElementById('pcTableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">Đang tải danh sách PC...</td></tr>';
+
+      try {
+        const url = `/api/rankings?platform=pc_steam&ranking_type=${rankingType}&genre=${genre}&search=${encodeURIComponent(search)}&target_date=${date}&limit=50`;
+        const res = await fetch(url);
+        const games = await res.json();
+
+        if (games.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">Không tìm thấy tựa game nào phù hợp.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = games.map(g => {
+          let deltaBadge = '<span class="text-slate-500">-</span>';
+          if (g.is_new_entry) {
+            deltaBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-400">NEW</span>';
+          } else if (g.rank_change_day > 0) {
+            deltaBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 flex items-center gap-1 w-fit"><i data-lucide="arrow-up" class="w-3 h-3"></i> +${g.rank_change_day}</span>`;
+          } else if (g.rank_change_day < 0) {
+            deltaBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 flex items-center gap-1 w-fit"><i data-lucide="arrow-down" class="w-3 h-3"></i> ${g.rank_change_day}</span>`;
+          }
+
+          return `
+            <tr class="hover:bg-slate-900/60 transition-colors">
+              <td class="py-3 px-4 font-bold text-indigo-400">#${g.rank}</td>
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="openGameModal('${g.game_id}')">
+                  <img src="${g.icon_url}" class="w-14 h-8 rounded object-cover bg-slate-800 group-hover:scale-105 transition-transform" onerror="this.src='https://placehold.co/80x40/1e293b/white?text=PC'">
+                  <div>
+                    <span class="font-semibold text-white group-hover:text-indigo-400 transition-colors">${g.title}</span>
+                    <p class="text-[10px] text-slate-400">${g.developer || ''}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3 px-4 text-slate-300 font-medium">${g.genre || 'Action'}</td>
+              <td class="py-3 px-4 text-slate-300">${g.price || 'Free'}</td>
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-white">${(g.player_count || 0).toLocaleString()}</span>
+                  <span class="text-[10px] text-slate-400">CCU</span>
+                </div>
+              </td>
+              <td class="py-3 px-4">${deltaBadge}</td>
+              <td class="py-3 px-4 text-center">
+                <a href="${g.store_url}" target="_blank" class="inline-flex p-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white transition-colors" title="Xem trên Steam">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Error loading PC rankings:", err);
+      }
+      lucide.createIcons();
+    }
+
+    // Load Mobile Rankings Table
+    async function loadMobileRankings() {
+      const date = document.getElementById('targetDate').value;
+      const country = document.getElementById('mobileCountry').value;
+      const store = document.getElementById('mobileStore').value;
+      const rankingType = document.getElementById('mobileRankingType').value;
+      const search = document.getElementById('mobileSearchInput').value;
+
+      const tbody = document.getElementById('mobileTableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">Đang tải danh sách Mobile...</td></tr>';
+
+      try {
+        const url = `/api/rankings?platform=${store}&country=${country}&ranking_type=${rankingType}&search=${encodeURIComponent(search)}&target_date=${date}&limit=50`;
+        const res = await fetch(url);
+        const games = await res.json();
+
+        if (games.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">Chưa có dữ liệu cho cấu hình này. Bạn có thể nhấn <b>Crawl Dữ Liệu Ngay</b> để kéo dữ liệu về.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = games.map(g => {
+          let deltaBadge = '<span class="text-slate-500">-</span>';
+          if (g.is_new_entry) {
+            deltaBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-400">NEW</span>';
+          } else if (g.rank_change_day > 0) {
+            deltaBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 flex items-center gap-1 w-fit"><i data-lucide="arrow-up" class="w-3 h-3"></i> +${g.rank_change_day}</span>`;
+          } else if (g.rank_change_day < 0) {
+            deltaBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 flex items-center gap-1 w-fit"><i data-lucide="arrow-down" class="w-3 h-3"></i> ${g.rank_change_day}</span>`;
+          }
+
+          const isIOS = (g.platform || '').includes('appstore');
+
+          return `
+            <tr class="hover:bg-slate-900/60 transition-colors">
+              <td class="py-3 px-4 font-bold text-emerald-400">#${g.rank}</td>
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="openGameModal('${g.game_id}')">
+                  <img src="${g.icon_url}" class="w-10 h-10 rounded-xl object-cover bg-slate-800 group-hover:scale-105 transition-transform" onerror="this.src='https://placehold.co/40x40/1e293b/white?text=App'">
+                  <div>
+                    <span class="font-semibold text-white group-hover:text-emerald-400 transition-colors line-clamp-1">${g.title}</span>
+                    <p class="text-[10px] text-slate-400 line-clamp-1">${g.developer || ''}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3 px-4 text-slate-300 font-medium">${g.genre || 'Mobile'}</td>
+              <td class="py-3 px-4">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${isIOS ? 'bg-sky-500/10 text-sky-400' : 'bg-emerald-500/10 text-emerald-400'}">
+                  ${isIOS ? '🍎 iOS' : '🤖 Android'}
+                </span>
+              </td>
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-1 text-amber-400 font-medium">
+                  <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> ${g.score || '4.5'}
+                </div>
+                <p class="text-[10px] text-slate-500">${g.estimated_downloads || ''}</p>
+              </td>
+              <td class="py-3 px-4">${deltaBadge}</td>
+              <td class="py-3 px-4 text-center">
+                <a href="${g.store_url}" target="_blank" class="inline-flex p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white transition-colors" title="Mở trang Store">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Error loading mobile rankings:", err);
+      }
+      lucide.createIcons();
+    }
+
+    // Load Breakout Radar
+    async function loadBreakoutRadar() {
+      const date = document.getElementById('targetDate').value;
+      const grid = document.getElementById('breakoutRadarGrid');
+      grid.innerHTML = '<div class="glass-card p-6 rounded-xl col-span-2 text-center text-slate-400">Đang quét radar...</div>';
+
+      try {
+        const res = await fetch(`/api/overview?target_date=${date}`);
+        const data = await res.json();
+        const risers = data.rising_games || [];
+        const newEntries = data.new_entries || [];
+
+        let html = '';
+        if (risers.length > 0) {
+          html += risers.map(g => `
+            <div onclick="openGameModal('${g.game_id}')" class="glass-card p-4 rounded-xl border border-emerald-500/30 flex items-center justify-between cursor-pointer hover:border-emerald-400 transition-all">
+              <div class="flex items-center gap-3">
+                <img src="${g.icon_url}" class="w-12 h-12 rounded-xl object-cover bg-slate-800" onerror="this.src='https://placehold.co/48x48/1e293b/white?text=Game'">
+                <div>
+                  <span class="inline-block text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold mb-1">🔥 TĂNG VỌT</span>
+                  <h4 class="font-bold text-white text-sm line-clamp-1 hover:text-emerald-300">${g.title}</h4>
+                  <p class="text-xs text-slate-400">${g.genre} • ${g.platform.toUpperCase()}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-base font-extrabold text-emerald-400">+${g.rank_change_day}</span>
+                <p class="text-[10px] text-slate-400">Hiện tại: #${g.rank}</p>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        if (newEntries.length > 0) {
+          html += newEntries.map(g => `
+            <div onclick="openGameModal('${g.game_id}')" class="glass-card p-4 rounded-xl border border-indigo-500/30 flex items-center justify-between cursor-pointer hover:border-indigo-400 transition-all">
+              <div class="flex items-center gap-3">
+                <img src="${g.icon_url}" class="w-12 h-12 rounded-xl object-cover bg-slate-800" onerror="this.src='https://placehold.co/48x48/1e293b/white?text=Game'">
+                <div>
+                  <span class="inline-block text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 font-bold mb-1">✨ TÂN BINH MỚI</span>
+                  <h4 class="font-bold text-white text-sm line-clamp-1 hover:text-indigo-300">${g.title}</h4>
+                  <p class="text-xs text-slate-400">${g.genre} • ${g.platform.toUpperCase()}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-indigo-400">Rank #${g.rank}</span>
+                <p class="text-[10px] text-slate-400">Lần đầu lọt Top</p>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        if (!html) {
+          html = '<div class="glass-card p-6 rounded-xl col-span-2 text-center text-slate-400">Chưa ghi nhận biến động tăng vọt hoặc tân binh mới hôm nay. Hãy chạy thêm lượt crawl.</div>';
+        }
+        grid.innerHTML = html;
+      } catch (err) {
+        console.error("Error loading breakout radar:", err);
+      }
+    }
+
+    // --- FEATURE 1: GAME INTELLIGENCE MODAL ---
+    async function openGameModal(gameId) {
+      const modal = document.getElementById('gameDetailModal');
+      modal.classList.remove('hidden');
+
+      try {
+        const res = await fetch(`/api/game/${encodeURIComponent(gameId)}`);
+        const data = await res.json();
+        if (data.error) {
+          showToast('Không tìm thấy thông tin tựa game này.');
+          closeGameModal();
+          return;
+        }
+
+        const g = data.game;
+        const stats = data.stats || {};
+        const history = data.history || [];
+
+        document.getElementById('modalGameTitle').innerText = g.title;
+        document.getElementById('modalGameDeveloper').innerText = `Studio: ${g.developer || 'N/A'}`;
+        document.getElementById('modalGameIcon').src = g.icon_url || 'https://placehold.co/80x80/1e293b/white?text=Game';
+        document.getElementById('modalGameGenre').innerText = g.genre || 'Game';
+        document.getElementById('modalGamePrice').innerText = g.price || 'Free';
+        document.getElementById('modalGameScore').innerText = `⭐ ${g.score || '4.5'}`;
+        document.getElementById('modalGameStoreLink').href = g.store_url || '#';
+
+        const isPC = (g.platform || '').includes('pc');
+        const badge = document.getElementById('modalGamePlatformBadge');
+        badge.innerText = isPC ? 'PC Steam' : 'Mobile Store';
+        badge.className = isPC 
+          ? 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400'
+          : 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-400';
+
+        document.getElementById('modalStatCurrentRank').innerText = `#${g.rank}`;
+        document.getElementById('modalStatBestRank').innerText = `#${stats.best_rank || g.rank}`;
+        document.getElementById('modalStatAvgRank').innerText = `#${stats.avg_rank || g.rank}`;
+        document.getElementById('modalStatPeakCCU').innerText = isPC 
+          ? `${(stats.peak_ccu || g.player_count || 0).toLocaleString()} CCU`
+          : (g.estimated_downloads || 'Top Tier');
+
+        // Render Trendline Chart
+        renderModalTrendChart(history, isPC);
+
+        // Render History Table
+        const tbody = document.getElementById('modalHistoryTableBody');
+        tbody.innerHTML = history.slice().reverse().map(h => {
+          let delta = '<span class="text-slate-500">-</span>';
+          if (h.rank_change_day > 0) delta = `<span class="text-emerald-400 font-bold">+${h.rank_change_day}</span>`;
+          else if (h.rank_change_day < 0) delta = `<span class="text-rose-400 font-bold">${h.rank_change_day}</span>`;
+
+          return `
+            <tr>
+              <td class="py-2 px-3 text-slate-300 font-medium">${h.snapshot_date}</td>
+              <td class="py-2 px-3 font-bold text-indigo-400">#${h.rank}</td>
+              <td class="py-2 px-3 text-slate-300">${isPC ? (h.player_count || 0).toLocaleString() : '--'}</td>
+              <td class="py-2 px-3">${delta}</td>
+            </tr>
+          `;
+        }).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error opening game modal:", err);
+      }
+    }
+
+    function closeGameModal() {
+      document.getElementById('gameDetailModal').classList.add('hidden');
+    }
+
+    function renderModalTrendChart(history, isPC) {
+      const ctx = document.getElementById('gameModalChart').getContext('2d');
+      if (modalChartInstance) modalChartInstance.destroy();
+
+      const labels = history.map(h => h.snapshot_date);
+      const rankData = history.map(h => h.rank);
+      const ccuData = history.map(h => h.player_count || 0);
+
+      const datasets = [{
+        label: 'Thứ Hạng (Rank)',
+        data: rankData,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+        borderWidth: 2.5,
+        fill: true,
+        tension: 0.35,
+        yAxisID: 'y'
+      }];
+
+      if (isPC && Math.max(...ccuData) > 0) {
+        datasets.push({
+          label: 'Người chơi (CCU)',
+          data: ccuData,
+          borderColor: '#10b981',
+          borderDash: [5, 5],
+          borderWidth: 2,
+          tension: 0.35,
+          yAxisID: 'y1'
+        });
+      }
+
+      modalChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              reverse: true, // Rank #1 is at top!
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#6366f1', font: { size: 10 } }
+            },
+            y1: {
+              type: 'linear',
+              display: isPC && Math.max(...ccuData) > 0,
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#10b981', font: { size: 10 } }
+            }
+          },
+          plugins: {
+            legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+          }
+        }
+      });
+    }
+
+    // --- FEATURE 1 (PART 2): COMPARE OPPONENTS ---
+    async function searchGameAutocomplete(target) {
+      const input = document.getElementById(`compareSearch${target}`);
+      const dropdown = document.getElementById(`compareDropdown${target}`);
+      const q = input.value.trim();
+      if (!q) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/games/search?q=${encodeURIComponent(q)}&limit=10`);
+        const games = await res.json();
+        if (games.length === 0) {
+          dropdown.innerHTML = '<div class="p-2 text-slate-500">Không tìm thấy tựa game nào</div>';
+          dropdown.classList.remove('hidden');
+          return;
+        }
+
+        dropdown.innerHTML = games.map(g => `
+          <div onclick="selectCompareGame('${target}', '${g.game_id}', '${escape(g.title)}')" class="p-2 hover:bg-slate-800 cursor-pointer flex items-center justify-between border-b border-slate-800 last:border-none">
+            <div class="flex items-center gap-2 truncate">
+              <img src="${g.icon_url}" class="w-6 h-6 rounded object-cover bg-slate-700" onerror="this.src='https://placehold.co/24x24/1e293b/white?text=G'">
+              <span class="text-white font-medium truncate">${g.title}</span>
+            </div>
+            <span class="text-[10px] text-slate-400">#${g.rank}</span>
+          </div>
+        `).join('');
+        dropdown.classList.remove('hidden');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function selectCompareGame(target, gameId, encodedTitle) {
+      const title = unescape(encodedTitle);
+      document.getElementById(`compareGameId${target}`).value = gameId;
+      document.getElementById(`compareSearch${target}`).value = title;
+      document.getElementById(`compareSelectedTitle${target}`).innerHTML = `
+        <span class="w-2 h-2 rounded-full ${target === 'A' ? 'bg-indigo-500' : 'bg-amber-400'}"></span> Đã chọn: ${title}
+      `;
+      document.getElementById(`compareDropdown${target}`).classList.add('hidden');
+    }
+
+    function setComparePreset(idA, idB) {
+      document.getElementById('compareGameIdA').value = idA;
+      document.getElementById('compareGameIdB').value = idB;
+      executeComparison();
+    }
+
+    async function executeComparison() {
+      const idA = document.getElementById('compareGameIdA').value;
+      const idB = document.getElementById('compareGameIdB').value;
+      const container = document.getElementById('compareResultContainer');
+      container.innerHTML = '<div class="glass-card p-6 rounded-2xl text-center text-slate-400">Đang nạp dữ liệu so sánh...</div>';
+
+      try {
+        const res = await fetch(`/api/compare?game_a=${encodeURIComponent(idA)}&game_b=${encodeURIComponent(idB)}`);
+        const data = await res.json();
+        if (data.error) {
+          container.innerHTML = `<div class="glass-card p-6 rounded-2xl text-center text-rose-400">${data.error}</div>`;
+          return;
+        }
+
+        const ga = data.game_a;
+        const gb = data.game_b;
+        const sa = data.stats_a || {};
+        const sb = data.stats_b || {};
+        const timeline = data.timeline || [];
+
+        container.innerHTML = `
+          <!-- Comparison Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Game A Card -->
+            <div class="glass-card p-5 rounded-2xl border-l-4 border-indigo-500 space-y-4">
+              <div class="flex items-center gap-3">
+                <img src="${ga.icon_url}" class="w-14 h-14 rounded-xl object-cover bg-slate-800 shadow" onerror="this.src='https://placehold.co/60x60/1e293b/white?text=A'">
+                <div>
+                  <h3 class="font-bold text-white text-base">${ga.title}</h3>
+                  <p class="text-xs text-slate-400">${ga.developer} • ${ga.genre}</p>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 font-semibold mt-1 inline-block">${ga.platform.toUpperCase()}</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 text-[10px] block">Rank Hiện Tại</span>
+                  <span class="font-bold text-indigo-400 text-sm">#${ga.rank}</span>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 text-[10px] block">Kỷ Lục Rank</span>
+                  <span class="font-bold text-emerald-400 text-sm">#${sa.best_rank || ga.rank}</span>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 text-[10px] block">Đánh Giá</span>
+                  <span class="font-bold text-amber-400 text-sm">⭐ ${ga.score || '4.5'}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Game B Card -->
+            <div class="glass-card p-5 rounded-2xl border-l-4 border-amber-400 space-y-4">
+              <div class="flex items-center gap-3">
+                <img src="${gb.icon_url}" class="w-14 h-14 rounded-xl object-cover bg-slate-800 shadow" onerror="this.src='https://placehold.co/60x60/1e293b/white?text=B'">
+                <div>
+                  <h3 class="font-bold text-white text-base">${gb.title}</h3>
+                  <p class="text-xs text-slate-400">${gb.developer} • ${gb.genre}</p>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-400 font-semibold mt-1 inline-block">${gb.platform.toUpperCase()}</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 text-[10px] block">Rank Hiện Tại</span>
+                  <span class="font-bold text-amber-400 text-sm">#${gb.rank}</span>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 text-[10px] block">Kỷ Lục Rank</span>
+                  <span class="font-bold text-emerald-400 text-sm">#${sb.best_rank || gb.rank}</span>
+                </div>
+                <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 text-[10px] block">Đánh Giá</span>
+                  <span class="font-bold text-amber-400 text-sm">⭐ ${gb.score || '4.5'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dual Comparison Line Chart -->
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="line-chart" class="w-4 h-4 text-amber-400"></i>
+                So Sánh Quỹ Đạo Thứ Hạng Theo Dòng Thời Gian
+              </h3>
+              <span class="text-[10px] text-slate-400">*Trục Y đảo ngược (#1 ở trên đỉnh)</span>
+            </div>
+            <div class="h-72 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+              <canvas id="compareLineChart"></canvas>
+            </div>
+          </div>
+        `;
+
+        renderCompareChart(timeline, ga.title, gb.title);
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Comparison error:", err);
+      }
+    }
+
+    function renderCompareChart(timeline, titleA, titleB) {
+      const ctx = document.getElementById('compareLineChart').getContext('2d');
+      if (compareChartInstance) compareChartInstance.destroy();
+
+      const labels = timeline.map(t => t.date);
+      const dataA = timeline.map(t => t.game_a_rank);
+      const dataB = timeline.map(t => t.game_b_rank);
+
+      compareChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: titleA,
+              data: dataA,
+              borderColor: '#6366f1',
+              backgroundColor: 'rgba(99, 102, 241, 0.2)',
+              borderWidth: 2.5,
+              tension: 0.35,
+              fill: false
+            },
+            {
+              label: titleB,
+              data: dataB,
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.2)',
+              borderWidth: 2.5,
+              tension: 0.35,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            },
+            y: {
+              reverse: true,
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#cbd5e1', font: { size: 10 } }
+            }
+          },
+          plugins: {
+            legend: { labels: { color: '#cbd5e1', font: { size: 11 } } }
+          }
+        }
+      });
+    }
+
+    // --- FEATURE 3: ALERTS & BOT CONFIGURATION ---
+    async function loadAlertSettings() {
+      try {
+        const res = await fetch('/api/alerts/config');
+        const data = await res.json();
+        document.getElementById('alertDiscordUrl').value = data.discord_webhook_url || '';
+        document.getElementById('alertTgToken').value = data.telegram_bot_token || '';
+        document.getElementById('alertTgChatId').value = data.telegram_chat_id || '';
+        document.getElementById('alertEnableDigest').checked = data.enable_daily_digest !== false;
+        document.getElementById('alertEnableBreakout').checked = data.enable_breakout_alerts !== false;
+        document.getElementById('alertThreshold').value = data.breakout_threshold || 15;
+      } catch (err) {
+        console.error("Error loading alert settings:", err);
+      }
+    }
+
+    async function saveAlertSettings() {
+      const payload = {
+        discord_webhook_url: document.getElementById('alertDiscordUrl').value.trim(),
+        telegram_bot_token: document.getElementById('alertTgToken').value.trim(),
+        telegram_chat_id: document.getElementById('alertTgChatId').value.trim(),
+        enable_daily_digest: document.getElementById('alertEnableDigest').checked,
+        enable_breakout_alerts: document.getElementById('alertEnableBreakout').checked,
+        breakout_threshold: parseInt(document.getElementById('alertThreshold').value) || 15
+      };
+
+      try {
+        const res = await fetch('/api/alerts/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const saved = await res.json();
+        showToast('Đã lưu cấu hình cảnh báo thành công!');
+      } catch (err) {
+        showToast('Lỗi khi lưu cấu hình.');
+      }
+    }
+
+    async function testAlertNotification() {
+      await saveAlertSettings();
+      showToast('Đang gửi tin nhắn thử nghiệm...', 'refresh-cw');
+      try {
+        const res = await fetch('/api/alerts/test', { method: 'POST' });
+        const result = await res.json();
+        const msg = `Discord: ${result.discord || 'N/A'} | Telegram: ${result.telegram || 'N/A'}`;
+        showToast(msg);
+      } catch (err) {
+        showToast('Lỗi gửi thử nghiệm.');
+      }
+    }
+
+    async function sendManualMorningDigest() {
+      const date = document.getElementById('targetDate').value;
+      showToast('Đang gửi bản tin tổng kết...', 'refresh-cw');
+      try {
+        const res = await fetch(`/api/alerts/digest?target_date=${date}`, { method: 'POST' });
+        const result = await res.json();
+        showToast('Đã phát bản tin thành công!');
+      } catch (err) {
+        showToast('Lỗi khi phát bản tin.');
+      }
+    }
+
+    // --- OTHER DASHBOARD HELPERS ---
+    async function loadMarketReport() {
+      const date = document.getElementById('targetDate').value;
+      const container = document.getElementById('reportContent');
+      container.innerHTML = 'Đang biên soạn báo cáo thị trường...';
+
+      try {
+        const res = await fetch(`/api/report?target_date=${date}`);
+        const data = await res.json();
+        currentRawReport = data.markdown || '';
+
+        let html = currentRawReport
+          .replace(/^# (.*$)/gim, '<h1 class="text-xl font-bold text-white mt-4 mb-2">$1</h1>')
+          .replace(/^## (.*$)/gim, '<h2 class="text-base font-bold text-indigo-300 mt-5 mb-2">$1</h2>')
+          .replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-indigo-500 pl-3 py-1 bg-slate-900/60 rounded text-slate-300 my-2">$1</blockquote>')
+          .replace(/\*\*(.*?)\*\*/gim, '<strong class="text-white font-semibold">$1</strong>')
+          .replace(/\*(.*?)\*/gim, '<em class="text-slate-300">$1</em>')
+          .replace(/`([^`]+)`/gim, '<code class="bg-slate-800 text-indigo-300 px-1 py-0.5 rounded text-xs">$1</code>')
+          .replace(/\n\n/gim, '<br>');
+
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = 'Lỗi khi tạo báo cáo.';
+      }
+    }
+
+    function copyReportMarkdown() {
+      if (currentRawReport) {
+        navigator.clipboard.writeText(currentRawReport);
+        showToast('Đã sao chép nội dung Markdown vào Clipboard!');
+      }
+    }
+
+    async function loadCrawlLogs() {
+      const tbody = document.getElementById('logsTableBody');
+      tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-400">Đang tải nhật ký...</td></tr>';
+      try {
+        const res = await fetch('/api/crawl/status');
+        const data = await res.json();
+        const logs = data.recent_logs || [];
+        if (logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-400">Chưa có lịch sử crawl.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = logs.map(l => `
+          <tr class="hover:bg-slate-900/40">
+            <td class="py-2.5 px-4 text-slate-400">${l.crawled_at}</td>
+            <td class="py-2.5 px-4 font-medium text-white">${l.platform}</td>
+            <td class="py-2.5 px-4 uppercase text-slate-300">${l.country}</td>
+            <td class="py-2.5 px-4 text-slate-300">${l.ranking_type}</td>
+            <td class="py-2.5 px-4 font-bold text-indigo-400">${l.items_count}</td>
+            <td class="py-2.5 px-4">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${l.status === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
+                ${l.status.toUpperCase()}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error("Error loading logs:", err);
+      }
+    }
+
+    async function triggerCrawl() {
+      const btn = document.getElementById('btnCrawlNow');
+      const icon = document.getElementById('crawlIcon');
+      btn.disabled = true;
+      icon.classList.add('animate-spin');
+
+      showToast('Đang kích hoạt Crawl ngầm cho Steam & Mobile Stores...', 'refresh-cw');
+
+      try {
+        const res = await fetch('/api/crawl?countries=us,vn,kr,jp,global', { method: 'POST' });
+        const result = await res.json();
+        showToast(result.message);
+
+        setTimeout(() => {
+          loadOverview();
+          loadPCRankings();
+          loadMobileRankings();
+          btn.disabled = false;
+          icon.classList.remove('animate-spin');
+        }, 5000);
+      } catch (err) {
+        btn.disabled = false;
+        icon.classList.remove('animate-spin');
+      }
+    }
+
+    function downloadExcel() {
+      const date = document.getElementById('targetDate').value;
+      window.location.href = `/api/export/excel?target_date=${date}`;
+      showToast('Đang tải file Excel về máy...');
+    }
+
+    function downloadCSV() {
+      const date = document.getElementById('targetDate').value;
+      window.location.href = `/api/export/csv?target_date=${date}`;
+      showToast('Đang tải file CSV về máy...');
+    }
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadOverview();
+      document.getElementById('targetDate').addEventListener('change', () => {
+        loadOverview();
+        loadPCRankings();
+        loadMobileRankings();
+      });
+    });
+  </script>
+</body>
+</html>

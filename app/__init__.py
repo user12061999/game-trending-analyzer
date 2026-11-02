@@ -1,0 +1,1 @@
+# Game Trending Analyzer App
