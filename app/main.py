@@ -16,7 +16,11 @@ from app.database.db import (
     get_db_connection,
     add_to_watchlist,
     remove_from_watchlist,
-    is_game_in_watchlist
+    is_game_in_watchlist,
+    get_upcoming_mobile_games,
+    get_upcoming_game_by_id,
+    toggle_track_upcoming_game,
+    get_radar_threat_stats
 )
 from app.crawlers.orchestrator import CrawlerOrchestrator
 from app.analytics.trend_analyzer import TrendAnalyzer
@@ -70,6 +74,19 @@ async def lifespan(app: FastAPI):
             orchestrator.run_full_crawl(countries=["us", "vn", "kr", "jp", "global"])
         except Exception as e:
             print(f"[Startup] Initial crawl warning: {e}")
+
+    # Ensure Mobile Radar has initial upcoming games
+    try:
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) as count FROM upcoming_mobile_games")
+        radar_cnt = c.fetchone()["count"]
+        conn.close()
+        if radar_cnt == 0:
+            print("[Startup] Populating Mobile Upcoming Radar intelligence...")
+            orchestrator.mobile_radar_crawler.run_radar_update()
+    except Exception as e:
+        print(f"[Startup] Mobile radar init warning: {e}")
 
     # Schedule daily crawl every 24 hours
     scheduler.add_job(scheduled_crawl_job, "interval", hours=24, id="daily_crawl_job", replace_existing=True)
@@ -302,6 +319,46 @@ async def remove_watchlist_api(game_id: str):
 @app.get("/api/watchlist/check/{game_id}")
 async def check_watchlist_api(game_id: str):
     return {"game_id": game_id, "in_watchlist": is_game_in_watchlist(game_id)}
+
+# --- Mobile Upcoming & Pre-registration Radar Endpoints ---
+@app.get("/api/radar/upcoming")
+async def get_upcoming_radar(
+    region: Optional[str] = Query(None),
+    genre: Optional[str] = Query(None),
+    threat_level: Optional[str] = Query(None),
+    search: Optional[str] = Query(None)
+):
+    games = get_upcoming_mobile_games(region=region, genre=genre, threat_level=threat_level, search=search)
+    return {"games": games, "total": len(games)}
+
+@app.get("/api/radar/stats")
+async def get_radar_stats():
+    return get_radar_threat_stats()
+
+@app.get("/api/radar/game/{game_id}")
+async def get_radar_game(game_id: int):
+    game = get_upcoming_game_by_id(game_id)
+    if not game:
+        return {"error": "Không tìm thấy game trong radar"}
+    return game
+
+@app.post("/api/radar/track/{game_id}")
+async def track_radar_game(game_id: int):
+    is_tracked = toggle_track_upcoming_game(game_id)
+    return {"status": "success", "game_id": game_id, "is_tracked": is_tracked}
+
+@app.post("/api/radar/refresh")
+async def refresh_radar_data():
+    res = orchestrator.mobile_radar_crawler.run_radar_update()
+    return {"status": "success", "result": res}
+
+@app.post("/api/radar/alert-test/{game_id}")
+async def send_radar_alert_test(game_id: int):
+    game = get_upcoming_game_by_id(game_id)
+    if not game:
+        return {"error": "Không tìm thấy game"}
+    sent = notifier.dispatch_radar_threat_alert(game)
+    return {"status": "success", "alert_dispatched": sent}
 
 @app.get("/api/meta")
 async def get_metadata():

@@ -100,6 +100,34 @@ def init_db():
     );
     """)
 
+    # Upcoming Mobile Games Radar
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS upcoming_mobile_games (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        developer TEXT,
+        publisher TEXT,
+        platform TEXT DEFAULT 'iOS / Android',
+        regions TEXT DEFAULT 'Global',
+        genre TEXT,
+        expected_release_date TEXT,
+        countdown_days INTEGER DEFAULT 0,
+        hype_score INTEGER DEFAULT 80,
+        pre_reg_count TEXT,
+        threat_level TEXT DEFAULT 'MEDIUM',
+        target_audience TEXT,
+        threat_analysis TEXT,
+        tactical_advice TEXT,
+        icon_url TEXT,
+        banner_url TEXT,
+        store_url TEXT,
+        is_tracked INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'PRE_REGISTRATION',
+        updated_at TEXT,
+        UNIQUE(title, platform)
+    );
+    """)
+
     conn.commit()
     conn.close()
 
@@ -192,3 +220,187 @@ def is_game_in_watchlist(game_id: str) -> bool:
     row = cursor.fetchone()
     conn.close()
     return bool(row)
+
+# --- Upcoming Mobile Games Radar DB Helpers ---
+
+def save_upcoming_games(games: List[Dict[str, Any]]):
+    """Saves or updates upcoming mobile games."""
+    if not games:
+        return
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    query = """
+    INSERT INTO upcoming_mobile_games (
+        title, developer, publisher, platform, regions, genre,
+        expected_release_date, countdown_days, hype_score, pre_reg_count,
+        threat_level, target_audience, threat_analysis, tactical_advice,
+        icon_url, banner_url, store_url, is_tracked, status, updated_at
+    ) VALUES (
+        :title, :developer, :publisher, :platform, :regions, :genre,
+        :expected_release_date, :countdown_days, :hype_score, :pre_reg_count,
+        :threat_level, :target_audience, :threat_analysis, :tactical_advice,
+        :icon_url, :banner_url, :store_url, :is_tracked, :status, :updated_at
+    )
+    ON CONFLICT(title, platform) DO UPDATE SET
+        developer = excluded.developer,
+        publisher = excluded.publisher,
+        regions = excluded.regions,
+        genre = excluded.genre,
+        expected_release_date = excluded.expected_release_date,
+        countdown_days = excluded.countdown_days,
+        hype_score = excluded.hype_score,
+        pre_reg_count = excluded.pre_reg_count,
+        threat_level = excluded.threat_level,
+        target_audience = excluded.target_audience,
+        threat_analysis = excluded.threat_analysis,
+        tactical_advice = excluded.tactical_advice,
+        icon_url = excluded.icon_url,
+        banner_url = excluded.banner_url,
+        store_url = excluded.store_url,
+        status = excluded.status,
+        updated_at = excluded.updated_at;
+    """
+
+    records = []
+    for g in games:
+        rec = dict(g)
+        rec.setdefault("developer", "")
+        rec.setdefault("publisher", "")
+        rec.setdefault("platform", "iOS / Android")
+        rec.setdefault("regions", "Global")
+        rec.setdefault("genre", "Game")
+        rec.setdefault("expected_release_date", "")
+        rec.setdefault("countdown_days", 0)
+        rec.setdefault("hype_score", 80)
+        rec.setdefault("pre_reg_count", "")
+        rec.setdefault("threat_level", "MEDIUM")
+        rec.setdefault("target_audience", "")
+        rec.setdefault("threat_analysis", "")
+        rec.setdefault("tactical_advice", "")
+        rec.setdefault("icon_url", "")
+        rec.setdefault("banner_url", "")
+        rec.setdefault("store_url", "")
+        rec.setdefault("is_tracked", 0)
+        rec.setdefault("status", "PRE_REGISTRATION")
+        rec["updated_at"] = now_str
+        records.append(rec)
+
+    cursor.executemany(query, records)
+    conn.commit()
+    conn.close()
+
+def get_upcoming_mobile_games(
+    region: Optional[str] = None,
+    genre: Optional[str] = None,
+    threat_level: Optional[str] = None,
+    search: Optional[str] = None,
+    limit: int = 100
+) -> List[Dict[str, Any]]:
+    """Retrieves filtered list of upcoming mobile games sorted by threat level and countdown days."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    conditions = []
+    params = []
+
+    if region and region.lower() != "all":
+        conditions.append("regions LIKE ?")
+        params.append(f"%{region}%")
+
+    if genre and genre.lower() != "all":
+        conditions.append("genre LIKE ?")
+        params.append(f"%{genre}%")
+
+    if threat_level and threat_level.lower() != "all":
+        conditions.append("threat_level = ?")
+        params.append(threat_level.upper())
+
+    if search:
+        conditions.append("(title LIKE ? OR developer LIKE ? OR publisher LIKE ?)")
+        search_pattern = f"%{search}%"
+        params.extend([search_pattern, search_pattern, search_pattern])
+
+    where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+
+    # Sort order: CRITICAL > HIGH > MEDIUM > LOW, then by countdown_days ascending
+    query = f"""
+    SELECT *,
+        CASE threat_level
+            WHEN 'CRITICAL' THEN 1
+            WHEN 'HIGH' THEN 2
+            WHEN 'MEDIUM' THEN 3
+            ELSE 4
+        END as threat_rank
+    FROM upcoming_mobile_games
+    {where_clause}
+    ORDER BY threat_rank ASC, countdown_days ASC
+    LIMIT ?
+    """
+    params.append(limit)
+
+    cursor.execute(query, params)
+    items = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return items
+
+def get_upcoming_game_by_id(item_id: int) -> Optional[Dict[str, Any]]:
+    """Fetches full details of a specific upcoming mobile game."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM upcoming_mobile_games WHERE id = ?", (item_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def toggle_track_upcoming_game(item_id: int) -> bool:
+    """Toggles tracked status for an upcoming game."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    UPDATE upcoming_mobile_games 
+    SET is_tracked = CASE WHEN is_tracked = 1 THEN 0 ELSE 1 END 
+    WHERE id = ?
+    """, (item_id,))
+    cursor.execute("SELECT is_tracked FROM upcoming_mobile_games WHERE id = ?", (item_id,))
+    row = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    return bool(row["is_tracked"]) if row else False
+
+def get_radar_threat_stats() -> Dict[str, Any]:
+    """Computes summary KPI statistics for Mobile Radar."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) as total FROM upcoming_mobile_games")
+    total = cursor.fetchone()["total"]
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE threat_level = 'CRITICAL'")
+    critical = cursor.fetchone()["cnt"]
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE threat_level = 'HIGH'")
+    high = cursor.fetchone()["cnt"]
+
+    cursor.execute("SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE countdown_days <= 30 AND countdown_days > 0")
+    imminent_30d = cursor.fetchone()["cnt"]
+
+    cursor.execute("""
+    SELECT genre, COUNT(*) as count 
+    FROM upcoming_mobile_games 
+    GROUP BY genre 
+    ORDER BY count DESC 
+    LIMIT 3
+    """)
+    top_threatened_genres = [dict(row) for row in cursor.fetchall()]
+
+    conn.close()
+    return {
+        "total_tracked": total,
+        "critical_threats": critical,
+        "high_threats": high,
+        "imminent_30d": imminent_30d,
+        "top_threatened_genres": top_threatened_genres
+    }

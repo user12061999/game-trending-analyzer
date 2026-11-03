@@ -166,6 +166,10 @@
       <button onclick="switchTab('mobile')" id="tabBtn-mobile" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="smartphone" class="w-4 h-4"></i> Mobile
       </button>
+      <button onclick="switchTab('radar')" id="tabBtn-radar" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="crosshair" class="w-4 h-4 text-rose-400"></i> Radar Mobile Sắp Ra Mắt
+        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 animate-pulse">MỚI</span>
+      </button>
       <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
       </button>
@@ -375,6 +379,114 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="breakoutRadarGrid"></div>
+    </div>
+
+    <!-- TAB: RADAR MOBILE UPCOMING & PRE-REGISTRATION -->
+    <div id="tabContent-radar" class="hidden space-y-6">
+      <!-- Radar Banner & KPI Stats -->
+      <div class="glass-card p-6 rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+              TRINH SÁT THỊ TRƯỜNG MOBILE
+            </span>
+            <span class="text-xs text-slate-400">iOS App Store & Google Play & TapTap</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            🎯 Radar Game Mobile Sắp Ra Mắt & Đăng Ký Trước (Pre-Registration)
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Hệ thống cảnh báo sớm các siêu phẩm di động sắp đổ bộ. Giúp studio dự báo nguy cơ va chạm lịch phát hành, đánh giá mức độ đe dọa (Threat Matrix), và chủ động lên kịch bản LiveOps / ASO phòng thủ trước khi đối thủ thâu tóm người chơi.
+          </p>
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <button onclick="refreshRadarData()" id="radarRefreshBtn" class="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold shadow-lg shadow-rose-900/30 transition-all cursor-pointer">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Cập Nhật Radar
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary 4 Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="radarKpiCards">
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span>Tổng Game Đang Mở Pre-Reg</span>
+            <i data-lucide="target" class="w-4 h-4 text-indigo-400"></i>
+          </div>
+          <div class="text-2xl font-black text-white" id="radarStatTotal">--</div>
+          <p class="text-[11px] text-slate-500 mt-0.5">Được trinh sát trên iOS & Android</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-rose-500/30 bg-rose-950/10">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span class="text-rose-300 font-semibold">Đe Dọa Cực Nguy Hiểm</span>
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i>
+          </div>
+          <div class="text-2xl font-black text-rose-400" id="radarStatCritical">--</div>
+          <p class="text-[11px] text-rose-300/60 mt-0.5">Bom tấn AAA từ NPH Top 1 (Garena, Tencent...)</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span class="text-amber-300 font-semibold">Đổ Bộ Trong 30 Ngày Tới</span>
+            <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div class="text-2xl font-black text-amber-400" id="radarStatImminent">--</div>
+          <p class="text-[11px] text-amber-300/60 mt-0.5">Cần né tránh lịch UA / Chạy liveops giữ người</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-1">
+            <span>Điểm Nóng Thể Loại</span>
+            <i data-lucide="flame" class="w-4 h-4 text-orange-400"></i>
+          </div>
+          <div class="text-sm font-bold text-slate-200 truncate mt-1" id="radarStatTopGenre">Đang tải...</div>
+          <p class="text-[11px] text-slate-500 mt-0.5">Thể loại có nhiều đối thủ ra mắt nhất</p>
+        </div>
+      </div>
+
+      <!-- Filter & Search Toolbar -->
+      <div class="glass-card p-4 rounded-xl flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-2 flex-wrap text-xs">
+          <!-- Region Filter -->
+          <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-700/80 rounded-lg px-2.5 py-1.5">
+            <i data-lucide="globe" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span class="text-slate-400 font-medium">Thị trường:</span>
+            <select id="radarFilterRegion" onchange="loadRadarUpcoming()" class="bg-transparent text-white focus:outline-none cursor-pointer">
+              <option value="all" class="bg-slate-900">🌐 Tất Cả Khu Vực</option>
+              <option value="vn" class="bg-slate-900">🇻🇳 Việt Nam (VN)</option>
+              <option value="global" class="bg-slate-900">🌐 Toàn Cầu (Global)</option>
+              <option value="us" class="bg-slate-900">🇺🇸 Mỹ (US)</option>
+              <option value="jp" class="bg-slate-900">🇯🇵 Nhật Bản (JP)</option>
+              <option value="kr" class="bg-slate-900">🇰🇷 Hàn Quốc (KR)</option>
+            </select>
+          </div>
+
+          <!-- Threat Filter -->
+          <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-700/80 rounded-lg px-2.5 py-1.5">
+            <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span class="text-slate-400 font-medium">Mức đe dọa:</span>
+            <select id="radarFilterThreat" onchange="loadRadarUpcoming()" class="bg-transparent text-white focus:outline-none cursor-pointer">
+              <option value="all" class="bg-slate-900">Tất Cả Mức Độ</option>
+              <option value="CRITICAL" class="bg-slate-900">🔴 Cực Nguy Hiểm (Critical)</option>
+              <option value="HIGH" class="bg-slate-900">🟠 Nguy Hiểm Cao (High)</option>
+              <option value="MEDIUM" class="bg-slate-900">🟡 Trung Bình (Medium)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Search Input -->
+        <div class="relative flex-1 md:w-64 max-w-sm">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="radarSearchInput" oninput="debounceRadarSearch()" placeholder="Tìm tên game, NPH (Garena, VNG...)..." class="w-full bg-slate-900 border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500">
+        </div>
+      </div>
+
+      <!-- Radar Game Cards Grid -->
+      <div id="radarGamesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JavaScript -->
+      </div>
     </div>
 
     <!-- TAB 5: WATCHLIST & RIVALS (GAME QUAN SÁT) -->
@@ -769,6 +881,96 @@
     </div>
   </div>
 
+  <!-- RADAR DETAIL TACTICAL INTELLIGENCE MODAL -->
+  <div id="radarDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="glass-card bg-slate-900 rounded-2xl border border-rose-500/40 max-w-2xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-6 shadow-2xl relative">
+      <button onclick="closeRadarModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="flex items-start gap-4">
+        <img id="radarModalIcon" src="" class="w-16 h-16 rounded-2xl object-cover bg-slate-800 border border-slate-700 shadow-lg">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 id="radarModalTitle" class="text-lg font-bold text-white truncate">--</h3>
+            <span id="radarModalThreatBadge" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">CỰC KỲ NGUY HIỂM</span>
+          </div>
+          <p id="radarModalDevPub" class="text-xs text-slate-400 mt-1">NPH: -- | Studio: --</p>
+          <div class="flex items-center gap-2 mt-2 text-xs flex-wrap">
+            <span id="radarModalGenre" class="bg-slate-800 px-2.5 py-0.5 rounded text-slate-300 border border-slate-700">--</span>
+            <span id="radarModalPlatform" class="bg-slate-800 px-2 py-0.5 rounded text-indigo-400 font-medium">iOS / Android</span>
+            <span id="radarModalRegions" class="bg-slate-800 px-2 py-0.5 rounded text-slate-300">Global, VN</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="grid grid-cols-3 gap-3 p-4 rounded-xl bg-gradient-to-r from-rose-950/30 via-slate-950 to-slate-900 border border-rose-500/20">
+        <div>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Ngày Phát Hành Dự Kiến</span>
+          <h4 id="radarModalDate" class="text-sm font-bold text-white mt-1">--</h4>
+          <span id="radarModalDaysLeft" class="text-[11px] font-bold text-rose-400">Còn -- ngày</span>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Đăng Ký Trước (Pre-Reg)</span>
+          <h4 id="radarModalPreReg" class="text-sm font-bold text-emerald-400 mt-1">--</h4>
+          <span class="text-[10px] text-slate-500">Mốc phần thưởng</span>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Chỉ Số Hype Nhiệt Độ</span>
+          <h4 id="radarModalHype" class="text-sm font-bold text-amber-400 mt-1">-- / 100</h4>
+          <span class="text-[10px] text-slate-500">Độ viral mạng xã hội</span>
+        </div>
+      </div>
+
+      <!-- Target Audience Overlap -->
+      <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+        <h4 class="text-xs font-bold text-indigo-400 flex items-center gap-1.5">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          Phân Tích Tệp Người Chơi Bị Ảnh Hưởng (Audience Overlap)
+        </h4>
+        <p id="radarModalAudience" class="text-xs text-slate-300 leading-relaxed">--</p>
+      </div>
+
+      <!-- Threat Analysis -->
+      <div class="p-4 rounded-xl bg-slate-950 border border-rose-500/20 space-y-1.5">
+        <h4 class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          Đánh Giá Sức Ép Cạnh Tranh & Nguy Cơ Va Chạm (Market Threat)
+        </h4>
+        <p id="radarModalThreatAnalysis" class="text-xs text-slate-300 leading-relaxed">--</p>
+      </div>
+
+      <!-- Tactical Studio Defense Playbook -->
+      <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-1.5">
+        <h4 class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          Khuyến Nghị Chiến Thuật Thực Chiến Cho Studio (Actionable Defense Playbook)
+        </h4>
+        <p id="radarModalTacticalAdvice" class="text-xs text-emerald-200/90 leading-relaxed">--</p>
+      </div>
+
+      <!-- Actions Footer -->
+      <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+        <div class="flex items-center gap-2">
+          <button id="radarModalTrackBtn" onclick="toggleRadarModalTrack()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+            <i data-lucide="star" id="radarModalTrackIcon" class="w-3.5 h-3.5"></i>
+            <span id="radarModalTrackLabel">Ghim Theo Dõi</span>
+          </button>
+          <button id="radarModalAlertBtn" onclick="triggerRadarModalAlertTest()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-pink-300 border border-pink-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer">
+            <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+            <span>Bắn Alert Thử</span>
+          </button>
+        </div>
+        <a id="radarModalStoreLink" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-lg shadow-rose-900/30">
+          <span>Xem Trang Game</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 glass-card px-4 py-3 rounded-xl border border-slate-700 shadow-2xl flex items-center gap-3 text-xs text-white">
     <i data-lucide="info" id="toastIcon" class="w-5 h-5 text-indigo-400"></i>
@@ -810,7 +1012,7 @@
 
     // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
+      const tabs = ['overview', 'pc', 'mobile', 'radar', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
@@ -826,6 +1028,7 @@
 
       if (tabId === 'pc') loadPCRankings();
       if (tabId === 'mobile') loadMobileRankings();
+      if (tabId === 'radar') loadRadarUpcoming();
       if (tabId === 'breakouts') loadBreakoutRadar();
       if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
@@ -1210,6 +1413,329 @@
         grid.innerHTML = html;
       } catch (err) {
         console.error("Error loading breakout radar:", err);
+      }
+    }
+
+    // --- FEATURE: MOBILE RADAR (UPCOMING & PRE-REGISTRATION) ---
+    let currentActiveRadarGame = null;
+    const debounceRadarSearch = debounce(() => loadRadarUpcoming(), 350);
+
+    async function loadRadarUpcoming() {
+      const grid = document.getElementById('radarGamesGrid');
+      grid.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400">Đang trinh sát các tựa game Mobile sắp ra mắt...</div>';
+
+      try {
+        // 1. Fetch Stats
+        fetch('/api/radar/stats')
+          .then(res => res.json())
+          .then(stats => {
+            document.getElementById('radarStatTotal').innerText = stats.total_tracked || 0;
+            document.getElementById('radarStatCritical').innerText = stats.critical_threats || 0;
+            document.getElementById('radarStatImminent').innerText = stats.imminent_30d || 0;
+            if (stats.top_threatened_genres && stats.top_threatened_genres.length > 0) {
+              document.getElementById('radarStatTopGenre').innerText = stats.top_threatened_genres[0].genre;
+            } else {
+              document.getElementById('radarStatTopGenre').innerText = 'Chưa xác định';
+            }
+          })
+          .catch(err => console.error("Error loading radar stats:", err));
+
+        // 2. Fetch Games
+        const region = document.getElementById('radarFilterRegion').value;
+        const threat = document.getElementById('radarFilterThreat').value;
+        const search = document.getElementById('radarSearchInput').value.trim();
+
+        const params = new URLSearchParams();
+        if (region && region !== 'all') params.append('region', region);
+        if (threat && threat !== 'all') params.append('threat_level', threat);
+        if (search) params.append('search', search);
+
+        const res = await fetch(`/api/radar/upcoming?${params.toString()}`);
+        const data = await res.json();
+        const games = data.games || [];
+
+        if (games.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full py-12 text-center glass-card rounded-2xl border border-slate-800 space-y-3">
+              <i data-lucide="crosshair" class="w-10 h-10 text-slate-500 mx-auto"></i>
+              <p class="text-slate-300 font-semibold">Không tìm thấy tựa game nào phù hợp với bộ lọc.</p>
+              <p class="text-xs text-slate-500">Hãy thử đổi quốc gia hoặc tìm kiếm bằng từ khóa khác.</p>
+            </div>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        grid.innerHTML = games.map(g => {
+          let threatBadgeClass = 'bg-slate-700/30 text-slate-300 border-slate-600/30';
+          let threatText = '🟡 Trung Bình';
+          let cardBorderClass = 'border-slate-800';
+
+          if (g.threat_level === 'CRITICAL') {
+            threatBadgeClass = 'bg-rose-500/20 text-rose-400 border-rose-500/40 font-bold';
+            threatText = '🔴 CỰC KỲ NGUY HIỂM';
+            cardBorderClass = 'border-rose-500/30 hover:border-rose-500/60 shadow-rose-950/20';
+          } else if (g.threat_level === 'HIGH') {
+            threatBadgeClass = 'bg-amber-500/20 text-amber-400 border-amber-500/40 font-bold';
+            threatText = '🟠 NGUY HIỂM CAO';
+            cardBorderClass = 'border-amber-500/30 hover:border-amber-500/60';
+          }
+
+          let countdownClass = 'bg-slate-800 text-slate-300 border-slate-700';
+          if (g.countdown_days <= 30 && g.countdown_days > 0) {
+            countdownClass = 'bg-rose-500/20 text-rose-400 border-rose-500/30 font-bold animate-pulse';
+          } else if (g.countdown_days <= 60 && g.countdown_days > 0) {
+            countdownClass = 'bg-amber-500/20 text-amber-400 border-amber-500/30 font-bold';
+          }
+
+          const countdownLabel = g.countdown_days > 0 ? `Còn ${g.countdown_days} ngày` : 'Sắp ra mắt';
+          const isTracked = g.is_tracked === 1;
+          const starClass = isTracked ? 'text-amber-400 fill-amber-400' : 'text-slate-400 hover:text-amber-400';
+
+          return `
+            <div class="glass-card rounded-2xl border ${cardBorderClass} overflow-hidden flex flex-col justify-between transition-all hover:scale-[1.01] hover:shadow-xl group">
+              <div>
+                <!-- Card Header Banner & Overlays -->
+                <div class="relative h-32 bg-slate-800 overflow-hidden">
+                  <img src="${g.banner_url || g.icon_url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80'">
+                  <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                  
+                  <!-- Badges on Banner -->
+                  <div class="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] border ${threatBadgeClass}">
+                      ${threatText}
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] border ${countdownClass}">
+                      ⏳ ${countdownLabel}
+                    </span>
+                  </div>
+
+                  <div class="absolute top-3 right-3 flex items-center gap-1.5">
+                    <button onclick="toggleRadarTrack(${g.id}, this)" class="p-1.5 rounded-xl bg-slate-900/80 backdrop-blur-sm border border-slate-700/80 transition-colors cursor-pointer" title="Ghim theo dõi">
+                      <i data-lucide="star" class="w-4 h-4 ${starClass}"></i>
+                    </button>
+                    <button onclick="triggerRadarAlertTest(${g.id})" class="p-1.5 rounded-xl bg-slate-900/80 backdrop-blur-sm border border-slate-700/80 text-slate-400 hover:text-pink-400 transition-colors cursor-pointer" title="Bắn alert thử về Discord/Telegram">
+                      <i data-lucide="bell" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Card Content -->
+                <div class="p-4 space-y-3">
+                  <div class="flex items-start gap-3">
+                    <img src="${g.icon_url}" class="w-12 h-12 rounded-xl object-cover bg-slate-800 border border-slate-700 shadow shrink-0 -mt-7 relative z-10" onerror="this.src='https://placehold.co/48x48/1e293b/white?text=Game'">
+                    <div class="min-w-0 flex-1">
+                      <h3 class="text-sm font-bold text-white group-hover:text-rose-400 transition-colors truncate" title="${g.title}">
+                        ${g.title}
+                      </h3>
+                      <p class="text-[11px] text-slate-400 truncate">
+                        ${g.publisher || g.developer || 'NPH Chưa công bố'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Genre & Regions -->
+                  <div class="flex items-center gap-2 text-[10px] text-slate-300 flex-wrap">
+                    <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/80">${g.genre || 'Game'}</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-800 text-indigo-400 border border-slate-700/80">${g.platform || 'iOS / Android'}</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/80">Khu vực: ${g.regions || 'Global'}</span>
+                  </div>
+
+                  <!-- Metrics: Pre-reg & Hype -->
+                  <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 text-xs">
+                    <div>
+                      <span class="text-[10px] text-slate-400 uppercase font-semibold block">Đăng ký trước:</span>
+                      <span class="font-bold text-emerald-400">${g.pre_reg_count || 'Đang mở'}</span>
+                    </div>
+                    <div>
+                      <div class="flex items-center justify-between text-[10px] text-slate-400 uppercase font-semibold">
+                        <span>Hype Nhiệt:</span>
+                        <span class="text-amber-400 font-bold">${g.hype_score}/100</span>
+                      </div>
+                      <div class="w-full bg-slate-800 h-1.5 rounded-full mt-1 overflow-hidden">
+                        <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-full rounded-full" style="width: ${g.hype_score}%"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tactical Advice Snippet -->
+                  <div class="text-[11px] text-slate-300/90 bg-rose-950/10 border border-rose-500/20 p-2.5 rounded-xl leading-relaxed line-clamp-2">
+                    <span class="text-rose-400 font-bold">⚠️ Khuyến nghị:</span> ${g.tactical_advice || g.threat_analysis || ''}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Footer -->
+              <div class="p-4 pt-0">
+                <button onclick="openRadarModal(${g.id})" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-200 hover:text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                  <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                  <span>Xem Phân Tích Đe Dọa & Chiến Thuật</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error loading radar games:", err);
+        grid.innerHTML = '<div class="col-span-full py-8 text-center text-rose-400">Lỗi tải dữ liệu Radar Mobile. Vui lòng thử lại.</div>';
+      }
+    }
+
+    async function openRadarModal(gameId) {
+      try {
+        const res = await fetch(`/api/radar/game/${gameId}`);
+        const game = await res.json();
+        if (game.error) {
+          showToast(game.error);
+          return;
+        }
+
+        currentActiveRadarGame = game;
+
+        document.getElementById('radarModalIcon').src = game.icon_url || 'https://placehold.co/64x64/1e293b/white?text=Game';
+        document.getElementById('radarModalTitle').innerText = game.title;
+        document.getElementById('radarModalDevPub').innerText = `NPH: ${game.publisher || '--'} | Studio phát triển: ${game.developer || '--'}`;
+        document.getElementById('radarModalGenre').innerText = game.genre || '--';
+        document.getElementById('radarModalPlatform').innerText = game.platform || 'iOS / Android';
+        document.getElementById('radarModalRegions').innerText = `Khu vực: ${game.regions || 'Global'}`;
+
+        const threatBadge = document.getElementById('radarModalThreatBadge');
+        if (game.threat_level === 'CRITICAL') {
+          threatBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30';
+          threatBadge.innerText = '🔴 CỰC KỲ NGUY HIỂM (CRITICAL)';
+        } else if (game.threat_level === 'HIGH') {
+          threatBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30';
+          threatBadge.innerText = '🟠 NGUY HIỂM CAO (HIGH)';
+        } else {
+          threatBadge.className = 'text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-700/30 text-slate-300 border border-slate-600/30';
+          threatBadge.innerText = '🟡 TRUNG BÌNH (MEDIUM)';
+        }
+
+        document.getElementById('radarModalDate').innerText = game.expected_release_date || 'Chưa công bố';
+        document.getElementById('radarModalDaysLeft').innerText = game.countdown_days > 0 ? `Còn ${game.countdown_days} ngày` : 'Sắp diễn ra';
+        document.getElementById('radarModalPreReg').innerText = game.pre_reg_count || 'Đang mở';
+        document.getElementById('radarModalHype').innerText = `${game.hype_score} / 100`;
+
+        document.getElementById('radarModalAudience').innerText = game.target_audience || 'Game thủ dòng game di động.';
+        document.getElementById('radarModalThreatAnalysis').innerText = game.threat_analysis || 'Chưa có phân tích chi tiết.';
+        document.getElementById('radarModalTacticalAdvice').innerText = game.tactical_advice || 'Theo dõi thêm diễn biến đăng ký trước.';
+
+        const storeLink = document.getElementById('radarModalStoreLink');
+        if (game.store_url) {
+          storeLink.href = game.store_url;
+          storeLink.classList.remove('hidden');
+        } else {
+          storeLink.classList.add('hidden');
+        }
+
+        updateRadarModalTrackBtn(game.is_tracked === 1);
+
+        document.getElementById('radarDetailModal').classList.remove('hidden');
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error opening radar modal:", err);
+      }
+    }
+
+    function updateRadarModalTrackBtn(isTracked) {
+      const btn = document.getElementById('radarModalTrackBtn');
+      const icon = document.getElementById('radarModalTrackIcon');
+      const label = document.getElementById('radarModalTrackLabel');
+
+      if (isTracked) {
+        btn.className = 'px-3.5 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
+        icon.classList.add('fill-amber-300');
+        label.innerText = 'Đang Theo Dõi ⭐';
+      } else {
+        btn.className = 'px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer';
+        icon.classList.remove('fill-amber-300');
+        label.innerText = 'Ghim Theo Dõi';
+      }
+      lucide.createIcons();
+    }
+
+    function closeRadarModal() {
+      document.getElementById('radarDetailModal').classList.add('hidden');
+    }
+
+    async function toggleRadarTrack(gameId, btnElement) {
+      try {
+        const res = await fetch(`/api/radar/track/${gameId}`, { method: 'POST' });
+        const data = await res.json();
+        const isTracked = data.is_tracked;
+
+        if (btnElement) {
+          const icon = btnElement.querySelector('i');
+          if (icon) {
+            if (isTracked) {
+              icon.classList.add('text-amber-400', 'fill-amber-400');
+              icon.classList.remove('text-slate-400');
+            } else {
+              icon.classList.remove('text-amber-400', 'fill-amber-400');
+              icon.classList.add('text-slate-400');
+            }
+          }
+        }
+
+        showToast(isTracked ? 'Đã ghim game vào danh sách theo dõi Radar!' : 'Đã hủy theo dõi game này.');
+      } catch (err) {
+        console.error("Error toggling radar track:", err);
+      }
+    }
+
+    async function toggleRadarModalTrack() {
+      if (!currentActiveRadarGame) return;
+      try {
+        const res = await fetch(`/api/radar/track/${currentActiveRadarGame.id}`, { method: 'POST' });
+        const data = await res.json();
+        currentActiveRadarGame.is_tracked = data.is_tracked ? 1 : 0;
+        updateRadarModalTrackBtn(data.is_tracked);
+        showToast(data.is_tracked ? 'Đã ghim game vào danh sách theo dõi Radar!' : 'Đã hủy theo dõi game này.');
+        loadRadarUpcoming();
+      } catch (err) {
+        console.error("Error toggling modal track:", err);
+      }
+    }
+
+    async function triggerRadarAlertTest(gameId) {
+      try {
+        showToast('Đang gửi cảnh báo trinh sát Mobile về Discord & Telegram...');
+        const res = await fetch(`/api/radar/alert-test/${gameId}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.alert_dispatched) {
+          showToast('Đã bắn cảnh báo thành công qua Webhook / Bot!', 'bell');
+        } else {
+          showToast('Chưa gửi được: Hãy kiểm tra cấu hình Discord Webhook hoặc Telegram Bot trong tab Cài Đặt.', 'alert-triangle');
+        }
+      } catch (err) {
+        showToast('Lỗi khi gửi cảnh báo.');
+      }
+    }
+
+    async function triggerRadarModalAlertTest() {
+      if (!currentActiveRadarGame) return;
+      await triggerRadarAlertTest(currentActiveRadarGame.id);
+    }
+
+    async function refreshRadarData() {
+      const btn = document.getElementById('radarRefreshBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i> Đang trinh sát...';
+      lucide.createIcons();
+
+      try {
+        const res = await fetch('/api/radar/refresh', { method: 'POST' });
+        const data = await res.json();
+        showToast(`Đã đồng bộ ${data.result.total_games || 0} tựa game mobile sắp ra mắt!`, 'check-circle');
+        await loadRadarUpcoming();
+      } catch (err) {
+        showToast('Lỗi khi làm mới dữ liệu Radar.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4"></i> Cập Nhật Radar';
+        lucide.createIcons();
       }
     }
 
@@ -1961,6 +2487,7 @@
           loadOverview();
           loadPCRankings();
           loadMobileRankings();
+          loadRadarUpcoming();
           loadWatchlist();
           btn.disabled = false;
           icon.classList.remove('animate-spin');

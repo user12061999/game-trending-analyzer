@@ -264,3 +264,54 @@ class AlertNotifier:
             )
 
         return discord_ok or telegram_ok
+
+    def dispatch_radar_threat_alert(self, game: Dict[str, Any]) -> bool:
+        """Sends an immediate alert when a high-threat mobile game is entering pre-registration / launch window."""
+        config = self.get_config()
+        threat = game.get("threat_level", "MEDIUM")
+        if threat not in ["CRITICAL", "HIGH"]:
+            return False
+
+        color = 0xEF4444 if threat == "CRITICAL" else 0xF59E0B
+        threat_emoji = "🔴 CỰC KỲ NGUY HIỂM" if threat == "CRITICAL" else "🟠 NGUY HIỂM CAO"
+
+        title = f"🎯 RADAR MOBILE: {game.get('title')} [{threat_emoji}]"
+        desc = (
+            f"**Cảnh báo đối thủ Mobile sắp ra mắt:**\n"
+            f"• Tựa game: **{game.get('title')}**\n"
+            f"• NPH / Studio: **{game.get('publisher', game.get('developer', 'N/A'))}**\n"
+            f"• Thể loại: **{game.get('genre', 'N/A')}**\n"
+            f"• Dự kiến phát hành: **{game.get('expected_release_date')}** (Còn {game.get('countdown_days')} ngày)\n"
+            f"• Đăng ký trước: **{game.get('pre_reg_count')}**\n\n"
+            f"⚠️ **Khuyến nghị cho Studio:** {game.get('tactical_advice')}"
+        )
+
+        discord_ok = False
+        if config.get("discord_webhook_url"):
+            discord_ok = self.send_discord_message(
+                webhook_url=config["discord_webhook_url"],
+                title=title,
+                description=desc,
+                color=color,
+                thumbnail_url=game.get("icon_url")
+            )
+
+        telegram_ok = False
+        if config.get("telegram_bot_token") and config.get("telegram_chat_id"):
+            tg_text = (
+                f"🎯 <b>RADAR MOBILE: CẢNH BÁO BOM TẤN SẮP RA MẮT</b>\n\n"
+                f"Tựa game: <b>{game.get('title')}</b> [{threat_emoji}]\n"
+                f"• NPH / Studio: <b>{game.get('publisher', game.get('developer', 'N/A'))}</b>\n"
+                f"• Thể loại: <code>{game.get('genre', 'N/A')}</code>\n"
+                f"• Ngày ra mắt: <b>{game.get('expected_release_date')}</b> (Còn {game.get('countdown_days')} ngày)\n"
+                f"• Lượng Đăng Ký Trước: <b>{game.get('pre_reg_count')}</b>\n\n"
+                f"💡 <i>Khuyến nghị: {game.get('tactical_advice')}</i>\n\n"
+                f"👉 <a href='http://127.0.0.1:8000'>Xem chi tiết trên Radar Dashboard</a>"
+            )
+            telegram_ok = self.send_telegram_message(
+                bot_token=config["telegram_bot_token"],
+                chat_id=config["telegram_chat_id"],
+                text=tg_text
+            )
+
+        return discord_ok or telegram_ok

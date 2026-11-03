@@ -7,6 +7,7 @@ from app.database.db import get_db_connection, save_snapshot_batch, log_crawl
 from app.crawlers.steam_crawler import SteamCrawler
 from app.crawlers.app_store_crawler import AppStoreCrawler
 from app.crawlers.google_play_crawler import GooglePlayCrawler
+from app.crawlers.mobile_radar_crawler import MobileRadarCrawler
 from app.config import SUPPORTED_COUNTRIES
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ class CrawlerOrchestrator:
         self.steam_crawler = SteamCrawler()
         self.app_store_crawler = AppStoreCrawler()
         self.google_play_crawler = GooglePlayCrawler()
+        self.mobile_radar_crawler = MobileRadarCrawler()
 
     def calculate_deltas(self, records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -138,13 +140,21 @@ class CrawlerOrchestrator:
         return total
 
     def run_full_crawl(self, countries: Optional[List[str]] = None) -> Dict[str, Any]:
-        """Triggers a full crawl for all platforms and saves to DB."""
+        """Triggers a full crawl for all platforms, updates mobile radar and saves to DB."""
         steam_count = self.crawl_steam()
         mobile_count = self.crawl_mobile(countries=countries)
+        
+        radar_result = {}
+        try:
+            radar_result = self.mobile_radar_crawler.run_radar_update()
+        except Exception as e:
+            logger.error(f"Error running mobile radar crawl: {e}")
+
         return {
             "status": "success",
             "timestamp": datetime.now().isoformat(),
             "steam_items_crawled": steam_count,
             "mobile_items_crawled": mobile_count,
+            "upcoming_mobile_radar": radar_result,
             "total_items": steam_count + mobile_count
         }
