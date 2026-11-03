@@ -4,10 +4,44 @@ import sqlite3
 from typing import List, Dict, Any, Optional
 from datetime import datetime, date, timedelta
 from app.database.db import get_db_connection
+from app.analytics.revenue_estimator import RevenueEstimator
 
 class TrendAnalyzer:
     def __init__(self):
         pass
+
+    @staticmethod
+    def enrich_record_with_estimates(rec: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculates estimated revenue and downloads for a game record."""
+        platform = (rec.get("platform") or "").lower()
+        rank = rec.get("rank") or 1
+        country = rec.get("country") or "us"
+        ranking_type = rec.get("ranking_type") or "top_grossing"
+
+        if "pc" in platform:
+            rev_info = RevenueEstimator.estimate_pc_revenue(
+                price_str=rec.get("price", "Free"),
+                estimated_downloads_str=rec.get("estimated_downloads", ""),
+                player_count=rec.get("player_count", 0),
+                rank=rank
+            )
+            rec["estimated_revenue_daily"] = rev_info["daily_revenue"]
+            rec["estimated_revenue_daily_formatted"] = rev_info["daily_revenue_formatted"]
+            rec["estimated_revenue_monthly"] = rev_info["monthly_revenue"]
+            rec["estimated_revenue_monthly_formatted"] = rev_info["monthly_revenue_formatted"]
+            rec["estimated_lifetime_gross"] = rev_info["lifetime_gross"]
+            rec["estimated_lifetime_formatted"] = rev_info["lifetime_formatted"]
+            rec["estimated_downloads_formatted"] = f"{rec.get('player_count', 0):,} CCU"
+        else:
+            rev_info = RevenueEstimator.estimate_mobile_revenue(rank=rank, country=country, ranking_type=ranking_type)
+            dl_info = RevenueEstimator.estimate_mobile_downloads(rank=rank, country=country, ranking_type=ranking_type)
+            rec["estimated_revenue_daily"] = rev_info["daily_revenue"]
+            rec["estimated_revenue_daily_formatted"] = rev_info["daily_revenue_formatted"]
+            rec["estimated_revenue_monthly"] = rev_info["monthly_revenue"]
+            rec["estimated_revenue_monthly_formatted"] = rev_info["monthly_revenue_formatted"]
+            rec["estimated_downloads_daily"] = dl_info["daily_downloads"]
+            rec["estimated_downloads_formatted"] = dl_info["daily_downloads_formatted"]
+        return rec
 
     def get_latest_snapshot_date(self) -> Optional[str]:
         """Gets the most recent date recorded in snapshots."""
@@ -61,23 +95,23 @@ class TrendAnalyzer:
 
         # Top Steam CCU (Current Concurrent Users)
         cursor.execute("""
-        SELECT title, developer, rank, player_count, estimated_downloads, icon_url, genre, store_url
+        SELECT title, developer, rank, player_count, estimated_downloads, icon_url, genre, store_url, platform, price, country
         FROM snapshots
         WHERE snapshot_date = ? AND platform = 'pc_steam' AND ranking_type = 'most_played'
         ORDER BY player_count DESC
         LIMIT 5
         """, (target_date,))
-        top_steam_ccu = [dict(row) for row in cursor.fetchall()]
+        top_steam_ccu = [self.enrich_record_with_estimates(dict(row)) for row in cursor.fetchall()]
 
         # Top Mobile Grossing Global/US
         cursor.execute("""
-        SELECT title, developer, platform, country, rank, score, icon_url, genre, store_url
+        SELECT title, developer, platform, country, rank, score, icon_url, genre, store_url, price, ranking_type
         FROM snapshots
         WHERE snapshot_date = ? AND ranking_type = 'top_grossing'
         ORDER BY rank ASC
         LIMIT 5
         """, (target_date,))
-        top_mobile_grossing = [dict(row) for row in cursor.fetchall()]
+        top_mobile_grossing = [self.enrich_record_with_estimates(dict(row)) for row in cursor.fetchall()]
 
         conn.close()
 
@@ -147,7 +181,7 @@ class TrendAnalyzer:
         params.extend([limit, offset])
 
         cursor.execute(query, params)
-        records = [dict(row) for row in cursor.fetchall()]
+        records = [self.enrich_record_with_estimates(dict(row)) for row in cursor.fetchall()]
         conn.close()
         return records
 
@@ -246,7 +280,7 @@ class TrendAnalyzer:
             conn.close()
             return None
 
-        latest_dict = dict(latest)
+        latest_dict = self.enrich_record_with_estimates(dict(latest))
 
         # Get historical stats
         cursor.execute("""

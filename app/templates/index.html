@@ -173,7 +173,7 @@
         <i data-lucide="swords" class="w-4 h-4 text-amber-400"></i> So Sánh Đối Thủ
       </button>
       <button onclick="switchTab('alerts')" id="tabBtn-alerts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="bell" class="w-4 h-4 text-pink-400"></i> Cảnh Báo & Bot
+        <i data-lucide="settings" class="w-4 h-4 text-pink-400"></i> Cài Đặt, Bot & AI
       </button>
       <button onclick="switchTab('report')" id="tabBtn-report" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="file-text" class="w-4 h-4"></i> Báo Cáo Xu Hướng
@@ -192,7 +192,7 @@
             <i data-lucide="flame" class="w-5 h-5 text-orange-500"></i>
             Top Tăng Trưởng Đột Biến Trong Ngày (Rank Surge)
           </h2>
-          <span class="text-xs text-slate-400">Nhấp vào game để xem biểu đồ chi tiết</span>
+          <span class="text-xs text-slate-400">Nhấp vào game để mở Trợ lý AI & Doanh thu ước tính</span>
         </div>
         <div id="overviewRisingContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div class="glass-card p-4 rounded-xl text-center text-slate-400 text-sm">Đang tải dữ liệu...</div>
@@ -273,11 +273,12 @@
           <table class="w-full text-left text-xs">
             <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 font-semibold uppercase tracking-wider">
               <tr>
-                <th class="py-3 px-4 w-16">Rank</th>
-                <th class="py-3 px-4">Tựa Game (Click để xem xu hướng)</th>
+                <th class="py-3 px-4 w-14">Rank</th>
+                <th class="py-3 px-4">Tựa Game</th>
                 <th class="py-3 px-4">Thể Loại</th>
                 <th class="py-3 px-4">Giá</th>
                 <th class="py-3 px-4">Người Chơi (CCU)</th>
+                <th class="py-3 px-4 text-emerald-400">Doanh Thu Ước Tính ($)</th>
                 <th class="py-3 px-4">Biến Động (DoD)</th>
                 <th class="py-3 px-4 text-center">Cửa Hàng</th>
               </tr>
@@ -339,11 +340,12 @@
           <table class="w-full text-left text-xs">
             <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 font-semibold uppercase tracking-wider">
               <tr>
-                <th class="py-3 px-4 w-16">Rank</th>
-                <th class="py-3 px-4">Tựa Game (Click để xem xu hướng)</th>
+                <th class="py-3 px-4 w-14">Rank</th>
+                <th class="py-3 px-4">Tựa Game</th>
                 <th class="py-3 px-4">Thể Loại</th>
                 <th class="py-3 px-4">Nền Tảng</th>
-                <th class="py-3 px-4">Điểm / Tải Về</th>
+                <th class="py-3 px-4">Đánh Giá</th>
+                <th class="py-3 px-4 text-emerald-400">Doanh Thu Ước Tính ($)</th>
                 <th class="py-3 px-4">Biến Động (DoD)</th>
                 <th class="py-3 px-4 text-center">Cửa Hàng</th>
               </tr>
@@ -382,7 +384,7 @@
               <i data-lucide="swords" class="w-5 h-5 text-amber-400"></i>
               So Sánh Đối Thủ Đối Đầu (Head-to-Head Comparison)
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Đặt 2 tựa game cạnh nhau để phân tích tương quan thứ hạng, điểm số và xu hướng</p>
+            <p class="text-xs text-slate-400 mt-0.5">Đặt 2 tựa game cạnh nhau để phân tích tương quan thứ hạng, doanh thu ước tính và quỹ đạo tăng trưởng</p>
           </div>
           <!-- Quick Presets -->
           <div class="flex items-center gap-2 text-xs">
@@ -424,32 +426,50 @@
       </div>
 
       <!-- Comparison Results Container -->
-      <div id="compareResultContainer" class="space-y-6">
-        <!-- Injected via JS -->
-      </div>
+      <div id="compareResultContainer" class="space-y-6"></div>
     </div>
 
-    <!-- TAB 6: ALERTS & WEBHOOKS (CẤU HÌNH CẢNH BÁO) -->
+    <!-- TAB 6: SETTINGS, BOT & AI CONFIG -->
     <div id="tabContent-alerts" class="hidden space-y-6">
       <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
         <div>
           <h2 class="text-base font-bold text-white flex items-center gap-2">
-            <i data-lucide="bell-ring" class="w-5 h-5 text-pink-400"></i>
-            Cấu Hình Hệ Thống Cảnh Báo & Bot Tự Động
+            <i data-lucide="settings" class="w-5 h-5 text-indigo-400"></i>
+            Cài Đặt Hệ Thống, Bot Tự Động & Trợ Lý AI
           </h2>
           <p class="text-xs text-slate-400 mt-1">
-            Kết nối với <b>Discord Webhook</b> hoặc <b>Telegram Bot</b> để nhận bản tin thị trường 8:00 sáng hàng ngày và thông báo khi có game bùng nổ thứ hạng.
+            Quản lý kết nối <b>Discord Webhook</b>, <b>Telegram Bot</b> và cấu hình <b>Google Gemini API</b> để mở khóa siêu năng lực phân tích game.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Gemini AI Config -->
+          <div class="p-5 rounded-xl bg-slate-900/60 border border-purple-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i> Google Gemini AI
+              </div>
+              <span id="geminiKeyBadge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-medium">Tự động Heuristic</span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Nhập Gemini API Key (miễn phí từ <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-purple-400 underline">Google AI Studio</a>) để kích hoạt LLM phân tích chuyên sâu:
+            </p>
+            <div>
+              <label class="text-xs text-slate-300 block mb-1">Gemini API Key:</label>
+              <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500 font-mono">
+            </div>
+            <button onclick="saveGeminiKey()" class="w-full py-1.5 px-3 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-500/40 text-xs font-semibold transition-colors">
+              Lưu Gemini API Key
+            </button>
+          </div>
+
           <!-- Discord Config -->
           <div class="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
             <div class="flex items-center gap-2 text-indigo-400 font-bold text-sm">
               <i data-lucide="message-square" class="w-4 h-4"></i> Discord Webhook
             </div>
             <p class="text-[11px] text-slate-400 leading-relaxed">
-              Vào Discord > Cài đặt kênh (Channel Settings) > Integrations > Webhooks > Tạo Webhook mới > Sao chép URL rồi dán vào đây:
+              Vào Discord > Channel Settings > Integrations > Webhooks > Tạo Webhook mới > Dán URL vào đây:
             </p>
             <div>
               <label class="text-xs text-slate-300 block mb-1">Discord Webhook URL:</label>
@@ -463,16 +483,16 @@
               <i data-lucide="send" class="w-4 h-4"></i> Telegram Bot
             </div>
             <p class="text-[11px] text-slate-400 leading-relaxed">
-              Tạo bot qua <code>@BotFather</code> để lấy Bot Token. Lấy Chat ID bằng cách nhắn tin cho <code>@userinfobot</code>:
+              Tạo bot qua <code>@BotFather</code> để lấy Token. Lấy Chat ID bằng cách nhắn tin cho <code>@userinfobot</code>:
             </p>
             <div class="space-y-2">
               <div>
-                <label class="text-xs text-slate-300 block mb-1">Telegram Bot Token:</label>
+                <label class="text-xs text-slate-300 block mb-1">Bot Token:</label>
                 <input type="password" id="alertTgToken" placeholder="123456789:ABCDefgh..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono">
               </div>
               <div>
-                <label class="text-xs text-slate-300 block mb-1">Telegram Chat ID:</label>
-                <input type="text" id="alertTgChatId" placeholder="-100123456789 hoặc 987654321" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono">
+                <label class="text-xs text-slate-300 block mb-1">Chat ID:</label>
+                <input type="text" id="alertTgChatId" placeholder="123456789" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500 font-mono">
               </div>
             </div>
           </div>
@@ -499,7 +519,7 @@
         <div class="flex items-center justify-between flex-wrap gap-3 pt-2">
           <div class="flex items-center gap-2">
             <button onclick="saveAlertSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2 rounded-xl text-xs transition-colors flex items-center gap-2 shadow-md shadow-indigo-600/20">
-              <i data-lucide="save" class="w-4 h-4"></i> Lưu Cấu Hình
+              <i data-lucide="save" class="w-4 h-4"></i> Lưu Cấu Hình Bot
             </button>
             <button onclick="testAlertNotification()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium px-4 py-2 rounded-xl text-xs transition-colors border border-slate-700 flex items-center gap-1.5">
               <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> Gửi Thử Nghiệm Ngay
@@ -569,9 +589,9 @@
 
   </main>
 
-  <!-- GAME DETAIL INTELLIGENCE MODAL -->
+  <!-- GAME DETAIL INTELLIGENCE MODAL WITH REVENUE & AI DECONSTRUCTION -->
   <div id="gameDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-    <div class="glass-card bg-slate-900 rounded-2xl border border-slate-700 max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-6 shadow-2xl relative">
+    <div class="glass-card bg-slate-900 rounded-2xl border border-slate-700 max-w-3xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-6 shadow-2xl relative">
       <!-- Close button -->
       <button onclick="closeGameModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
         <i data-lucide="x" class="w-5 h-5"></i>
@@ -596,6 +616,59 @@
           <span>Xem Cửa Hàng</span>
           <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
         </a>
+      </div>
+
+      <!-- Financial & Audience Estimates Row (Feature 1) -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/30">
+        <div>
+          <span class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+            <i data-lucide="dollar-sign" class="w-3 h-3"></i> Doanh Thu Ngày Ước Tính
+          </span>
+          <h4 id="modalStatRevDaily" class="text-base font-bold text-emerald-300 mt-1">--</h4>
+          <span class="text-[10px] text-slate-400">Dựa theo Power Law Pareto</span>
+        </div>
+        <div>
+          <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+            <i data-lucide="calendar" class="w-3 h-3"></i> Doanh Thu Tháng Ước Tính
+          </span>
+          <h4 id="modalStatRevMonthly" class="text-base font-bold text-indigo-300 mt-1">--</h4>
+          <span class="text-[10px] text-slate-400">Chu kỳ 30 ngày liên tục</span>
+        </div>
+        <div>
+          <span class="text-[10px] text-sky-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+            <i data-lucide="download" class="w-3 h-3"></i> Lượt Tải / CCU Ước Tính
+          </span>
+          <h4 id="modalStatDownloads" class="text-base font-bold text-sky-300 mt-1">--</h4>
+          <span class="text-[10px] text-slate-400">Quy mô người chơi mới</span>
+        </div>
+      </div>
+
+      <!-- AI Game Deconstruction Action Button (Feature 2) -->
+      <div>
+        <button id="btnAiDeconstruct" onclick="requestAiDeconstruct()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-500 hover:via-indigo-500 hover:to-pink-500 text-white font-bold text-xs shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 transition-all active:scale-[0.99]">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
+          <span>🤖 Bóc Tách & Phân Tích Chuyên Sâu Bằng AI (AI Game Deconstruct)</span>
+        </button>
+      </div>
+
+      <!-- AI Analysis Result Card Container -->
+      <div id="modalAiResultCard" class="hidden p-5 rounded-2xl bg-slate-950/90 border border-purple-500/40 space-y-4">
+        <div class="flex items-center justify-between border-b border-purple-500/20 pb-2">
+          <div class="flex items-center gap-2">
+            <div class="p-1.5 rounded-lg bg-purple-500/20 text-purple-300">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Báo Cáo Bóc Tách Trí Tuệ Nhân Tạo (AI Teardown)</h4>
+              <p id="modalAiSourceBadge" class="text-[10px] text-purple-400">Nguồn: Gemini 1.5 Flash</p>
+            </div>
+          </div>
+          <button onclick="toggleAiCard()" class="text-slate-400 hover:text-white text-xs">Ẩn</button>
+        </div>
+
+        <div id="modalAiContent" class="space-y-4 text-xs leading-relaxed text-slate-300">
+          <!-- Injected via JS -->
+        </div>
       </div>
 
       <!-- Historical Stats Row -->
@@ -663,6 +736,7 @@
     let modalChartInstance = null;
     let compareChartInstance = null;
     let currentRawReport = "";
+    let currentActiveModalGameId = null;
 
     // Debounce helper
     function debounce(func, wait) {
@@ -794,9 +868,9 @@
               <div class="flex items-center gap-2.5">
                 <span class="text-xs font-bold text-indigo-400 w-5">#${g.rank}</span>
                 <img src="${g.icon_url}" class="w-8 h-8 rounded object-cover bg-slate-800" onerror="this.src='https://placehold.co/40x40/1e293b/white?text=PC'">
-                <div class="max-w-[160px]">
+                <div class="max-w-[150px]">
                   <p class="font-medium text-white text-xs truncate hover:text-indigo-400">${g.title}</p>
-                  <p class="text-[10px] text-slate-400 truncate">${g.genre || 'PC'}</p>
+                  <p class="text-[10px] text-emerald-400 truncate font-semibold">${g.estimated_revenue_daily_formatted || 'N/A'}/ngày</p>
                 </div>
               </div>
               <span class="text-xs font-bold text-slate-200">${(g.player_count || 0).toLocaleString()} CCU</span>
@@ -814,9 +888,9 @@
               <div class="flex items-center gap-2.5">
                 <span class="text-xs font-bold text-emerald-400 w-5">#${g.rank}</span>
                 <img src="${g.icon_url}" class="w-8 h-8 rounded-lg object-cover bg-slate-800" onerror="this.src='https://placehold.co/40x40/1e293b/white?text=App'">
-                <div class="max-w-[160px]">
+                <div class="max-w-[150px]">
                   <p class="font-medium text-white text-xs truncate hover:text-emerald-400">${g.title}</p>
-                  <p class="text-[10px] text-slate-400 truncate">${g.country.toUpperCase()} • ${g.genre || 'Game'}</p>
+                  <p class="text-[10px] text-emerald-400 truncate font-semibold">${g.estimated_revenue_daily_formatted || 'N/A'}/ngày</p>
                 </div>
               </div>
               <span class="text-xs font-bold text-amber-400">⭐ ${g.score || '4.5'}</span>
@@ -882,7 +956,7 @@
       }
     }
 
-    // Load PC Rankings Table
+    // Load PC Rankings Table (With Estimated Revenue!)
     async function loadPCRankings() {
       const date = document.getElementById('targetDate').value;
       const rankingType = document.getElementById('pcRankingType').value;
@@ -890,7 +964,7 @@
       const search = document.getElementById('pcSearchInput').value;
 
       const tbody = document.getElementById('pcTableBody');
-      tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">Đang tải danh sách PC...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-slate-400">Đang tải danh sách PC...</td></tr>';
 
       try {
         const url = `/api/rankings?platform=pc_steam&ranking_type=${rankingType}&genre=${genre}&search=${encodeURIComponent(search)}&target_date=${date}&limit=50`;
@@ -898,7 +972,7 @@
         const games = await res.json();
 
         if (games.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">Không tìm thấy tựa game nào phù hợp.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-slate-400">Không tìm thấy tựa game nào phù hợp.</td></tr>';
           return;
         }
 
@@ -932,6 +1006,11 @@
                   <span class="text-[10px] text-slate-400">CCU</span>
                 </div>
               </td>
+              <td class="py-3 px-4">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  ${g.estimated_revenue_daily_formatted || 'N/A'}/ngày
+                </span>
+              </td>
               <td class="py-3 px-4">${deltaBadge}</td>
               <td class="py-3 px-4 text-center">
                 <a href="${g.store_url}" target="_blank" class="inline-flex p-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white transition-colors" title="Xem trên Steam">
@@ -947,7 +1026,7 @@
       lucide.createIcons();
     }
 
-    // Load Mobile Rankings Table
+    // Load Mobile Rankings Table (With Estimated Revenue!)
     async function loadMobileRankings() {
       const date = document.getElementById('targetDate').value;
       const country = document.getElementById('mobileCountry').value;
@@ -956,7 +1035,7 @@
       const search = document.getElementById('mobileSearchInput').value;
 
       const tbody = document.getElementById('mobileTableBody');
-      tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">Đang tải danh sách Mobile...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-slate-400">Đang tải danh sách Mobile...</td></tr>';
 
       try {
         const url = `/api/rankings?platform=${store}&country=${country}&ranking_type=${rankingType}&search=${encodeURIComponent(search)}&target_date=${date}&limit=50`;
@@ -964,7 +1043,7 @@
         const games = await res.json();
 
         if (games.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">Chưa có dữ liệu cho cấu hình này. Bạn có thể nhấn <b>Crawl Dữ Liệu Ngay</b> để kéo dữ liệu về.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-slate-400">Chưa có dữ liệu cho cấu hình này. Bạn có thể nhấn <b>Crawl Dữ Liệu Ngay</b> để kéo dữ liệu về.</td></tr>';
           return;
         }
 
@@ -1002,7 +1081,12 @@
                 <div class="flex items-center gap-1 text-amber-400 font-medium">
                   <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> ${g.score || '4.5'}
                 </div>
-                <p class="text-[10px] text-slate-500">${g.estimated_downloads || ''}</p>
+                <p class="text-[10px] text-slate-500">${g.estimated_downloads_formatted || g.estimated_downloads || ''}</p>
+              </td>
+              <td class="py-3 px-4">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  ${g.estimated_revenue_daily_formatted || 'N/A'}/ngày
+                </span>
               </td>
               <td class="py-3 px-4">${deltaBadge}</td>
               <td class="py-3 px-4 text-center">
@@ -1079,10 +1163,14 @@
       }
     }
 
-    // --- FEATURE 1: GAME INTELLIGENCE MODAL ---
+    // --- FEATURE 1 & 2: GAME INTELLIGENCE MODAL & AI DECONSTRUCTOR ---
     async function openGameModal(gameId) {
+      currentActiveModalGameId = gameId;
       const modal = document.getElementById('gameDetailModal');
       modal.classList.remove('hidden');
+
+      // Hide previous AI analysis card by default
+      document.getElementById('modalAiResultCard').classList.add('hidden');
 
       try {
         const res = await fetch(`/api/game/${encodeURIComponent(gameId)}`);
@@ -1112,12 +1200,18 @@
           ? 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400'
           : 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-400';
 
+        // Historical Stats
         document.getElementById('modalStatCurrentRank').innerText = `#${g.rank}`;
         document.getElementById('modalStatBestRank').innerText = `#${stats.best_rank || g.rank}`;
         document.getElementById('modalStatAvgRank').innerText = `#${stats.avg_rank || g.rank}`;
         document.getElementById('modalStatPeakCCU').innerText = isPC 
           ? `${(stats.peak_ccu || g.player_count || 0).toLocaleString()} CCU`
           : (g.estimated_downloads || 'Top Tier');
+
+        // Revenue & Audience Estimates (Feature 1)
+        document.getElementById('modalStatRevDaily').innerText = g.estimated_revenue_daily_formatted || 'N/A';
+        document.getElementById('modalStatRevMonthly').innerText = g.estimated_revenue_monthly_formatted || 'N/A';
+        document.getElementById('modalStatDownloads').innerText = g.estimated_downloads_formatted || g.estimated_downloads || 'N/A';
 
         // Render Trendline Chart
         renderModalTrendChart(history, isPC);
@@ -1147,6 +1241,98 @@
 
     function closeGameModal() {
       document.getElementById('gameDetailModal').classList.add('hidden');
+    }
+
+    function toggleAiCard() {
+      document.getElementById('modalAiResultCard').classList.toggle('hidden');
+    }
+
+    // Request AI Deconstruction (Feature 2)
+    async function requestAiDeconstruct() {
+      if (!currentActiveModalGameId) return;
+
+      const btn = document.getElementById('btnAiDeconstruct');
+      const card = document.getElementById('modalAiResultCard');
+      const content = document.getElementById('modalAiContent');
+      const badge = document.getElementById('modalAiSourceBadge');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-amber-300"></i><span>AI Đang Phân Tích & Bóc Tách Gameplay...</span>';
+      lucide.createIcons();
+
+      card.classList.remove('hidden');
+      content.innerHTML = `
+        <div class="py-8 text-center space-y-3">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+          <p class="text-xs text-purple-300">Đang quét cơ chế cốt lõi, mô hình kiếm tiền và chân dung người chơi...</p>
+        </div>
+      `;
+
+      try {
+        const res = await fetch('/api/ai/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ game_id: currentActiveModalGameId })
+        });
+        const data = await res.json();
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i><span>🤖 Bóc Tách & Phân Tích Chuyên Sâu Bằng AI (AI Game Deconstruct)</span>';
+
+        if (data.error) {
+          content.innerHTML = `<p class="text-rose-400">${data.error}</p>`;
+          return;
+        }
+
+        badge.innerText = data.source === 'gemini-1.5-flash' ? '✨ Nguồn: Google Gemini 1.5 Flash' : '⚡ Nguồn: Game Market Radar Heuristic Knowledge';
+        const a = data.analysis;
+
+        content.innerHTML = `
+          <!-- 1. Core Loop -->
+          <div class="p-3.5 rounded-xl bg-purple-950/30 border border-purple-500/20">
+            <h5 class="font-bold text-purple-300 flex items-center gap-1.5 mb-1">
+              <i data-lucide="repeat" class="w-3.5 h-3.5"></i> 1. Vòng Lặp Trải Nghiệm Cốt Lõi (Core Gameplay Loop & Retention)
+            </h5>
+            <p class="text-slate-300 leading-relaxed">${a.core_loop || 'N/A'}</p>
+          </div>
+
+          <!-- 2. Monetization -->
+          <div class="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/20">
+            <h5 class="font-bold text-emerald-300 flex items-center gap-1.5 mb-1">
+              <i data-lucide="credit-card" class="w-3.5 h-3.5"></i> 2. Kiến Trúc Kiếm Tiền (Monetization Architecture)
+            </h5>
+            <p class="text-slate-300 leading-relaxed">${a.monetization || 'N/A'}</p>
+          </div>
+
+          <!-- 3. Target Persona & Competitive Edge -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="p-3.5 rounded-xl bg-sky-950/30 border border-sky-500/20">
+              <h5 class="font-bold text-sky-300 flex items-center gap-1.5 mb-1">
+                <i data-lucide="users" class="w-3.5 h-3.5"></i> 3. Chân Dung Người Chơi (Target Audience)
+              </h5>
+              <p class="text-slate-300 leading-relaxed">${a.player_persona || 'N/A'}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/20">
+              <h5 class="font-bold text-amber-300 flex items-center gap-1.5 mb-1">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i> 4. Lợi Thế Cạnh Tranh (Competitive Edge)
+              </h5>
+              <p class="text-slate-300 leading-relaxed">${a.competitive_edge || 'N/A'}</p>
+            </div>
+          </div>
+
+          <!-- 4. Actionable Takeaways -->
+          <div class="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/20">
+            <h5 class="font-bold text-indigo-300 flex items-center gap-1.5 mb-1">
+              <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> 5. Bài Học Đắt Giá Cho Game Dev / Studio Việt Nam
+            </h5>
+            <div class="text-slate-300 whitespace-pre-line leading-relaxed font-mono text-[11px]">${a.actionable_takeaways || 'N/A'}</div>
+          </div>
+        `;
+        lucide.createIcons();
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i><span>🤖 Phân Tích Chuyên Sâu Bằng AI (AI Game Deconstruct)</span>';
+        content.innerHTML = '<p class="text-rose-400">Lỗi khi gọi phân tích AI.</p>';
+      }
     }
 
     function renderModalTrendChart(history, isPC) {
@@ -1215,7 +1401,7 @@
       });
     }
 
-    // --- FEATURE 1 (PART 2): COMPARE OPPONENTS ---
+    // --- FEATURE: COMPARE OPPONENTS ---
     async function searchGameAutocomplete(target) {
       const input = document.getElementById(`compareSearch${target}`);
       const dropdown = document.getElementById(`compareDropdown${target}`);
@@ -1304,8 +1490,8 @@
                   <span class="font-bold text-indigo-400 text-sm">#${ga.rank}</span>
                 </div>
                 <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
-                  <span class="text-slate-400 text-[10px] block">Kỷ Lục Rank</span>
-                  <span class="font-bold text-emerald-400 text-sm">#${sa.best_rank || ga.rank}</span>
+                  <span class="text-slate-400 text-[10px] block">Doanh Thu/Ngày</span>
+                  <span class="font-bold text-emerald-400 text-xs">${ga.estimated_revenue_daily_formatted || 'N/A'}</span>
                 </div>
                 <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
                   <span class="text-slate-400 text-[10px] block">Đánh Giá</span>
@@ -1330,8 +1516,8 @@
                   <span class="font-bold text-amber-400 text-sm">#${gb.rank}</span>
                 </div>
                 <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
-                  <span class="text-slate-400 text-[10px] block">Kỷ Lục Rank</span>
-                  <span class="font-bold text-emerald-400 text-sm">#${sb.best_rank || gb.rank}</span>
+                  <span class="text-slate-400 text-[10px] block">Doanh Thu/Ngày</span>
+                  <span class="font-bold text-emerald-400 text-xs">${gb.estimated_revenue_daily_formatted || 'N/A'}</span>
                 </div>
                 <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
                   <span class="text-slate-400 text-[10px] block">Đánh Giá</span>
@@ -1418,7 +1604,7 @@
       });
     }
 
-    // --- FEATURE 3: ALERTS & BOT CONFIGURATION ---
+    // --- SETTINGS, BOT & GEMINI AI CONFIG ---
     async function loadAlertSettings() {
       try {
         const res = await fetch('/api/alerts/config');
@@ -1429,6 +1615,19 @@
         document.getElementById('alertEnableDigest').checked = data.enable_daily_digest !== false;
         document.getElementById('alertEnableBreakout').checked = data.enable_breakout_alerts !== false;
         document.getElementById('alertThreshold').value = data.breakout_threshold || 15;
+
+        // Check Gemini AI Key status
+        const aiRes = await fetch('/api/ai/config');
+        const aiData = await aiRes.json();
+        const badge = document.getElementById('geminiKeyBadge');
+        if (aiData.has_gemini_key) {
+          badge.innerText = '🟢 Đã kết nối Gemini';
+          badge.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold';
+          document.getElementById('geminiApiKeyInput').placeholder = 'Đã lưu: ' + aiData.masked_key;
+        } else {
+          badge.innerText = 'Tự động Heuristic';
+          badge.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-medium';
+        }
       } catch (err) {
         console.error("Error loading alert settings:", err);
       }
@@ -1450,10 +1649,30 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        const saved = await res.json();
-        showToast('Đã lưu cấu hình cảnh báo thành công!');
+        showToast('Đã lưu cấu hình Bot & Cảnh báo thành công!');
       } catch (err) {
         showToast('Lỗi khi lưu cấu hình.');
+      }
+    }
+
+    async function saveGeminiKey() {
+      const key = document.getElementById('geminiApiKeyInput').value.trim();
+      if (!key) {
+        showToast('Vui lòng nhập API Key.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/ai/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gemini_api_key: key })
+        });
+        const data = await res.json();
+        showToast('Đã lưu Gemini API Key thành công!');
+        loadAlertSettings();
+      } catch (err) {
+        showToast('Lỗi khi lưu API Key.');
       }
     }
 
@@ -1475,7 +1694,6 @@
       showToast('Đang gửi bản tin tổng kết...', 'refresh-cw');
       try {
         const res = await fetch(`/api/alerts/digest?target_date=${date}`, { method: 'POST' });
-        const result = await res.json();
         showToast('Đã phát bản tin thành công!');
       } catch (err) {
         showToast('Lỗi khi phát bản tin.');

@@ -9,23 +9,36 @@ Hệ thống phân tích xu hướng thị trường game **Mobile (iOS & Androi
 1. **Đa nền tảng toàn diện:**
    - **PC (Steam):** Theo dõi Top Most Played (CCU - Số người chơi cùng lúc thời gian thực), Top Sellers (Thịnh hành & Doanh thu), Tags thể loại, giá và studio phát triển.
    - **Mobile (Apple App Store & Google Play):** Theo dõi Top Grossing (Doanh thu), Top Free (Lượt tải về), Điểm đánh giá (Rating), Hãng phát hành.
-2. **Biểu Đồ Lịch Sử & Modal Phân Tích Game (Feature 1):**
+2. **Mô Hình Ước Tính Doanh Thu & Lượt Tải ($) (Mới):**
+   - Ứng dụng phân bổ Pareto / Power Law Curve: Ước tính khoảng doanh thu theo ngày và theo tháng cho từng game Mobile & PC.
+   - Ước tính lượt tải về (Downloads) hàng ngày cho game Mobile Top Free.
+   - Ước tính tổng doanh thu trọn đời (Lifetime Gross) cho game PC Steam.
+3. **Trợ Lý AI Phân Tích Chuyên Sâu Game (AI Game Deconstructor) (Mới):**
+   - Nút **"🤖 Phân Tích Chuyên Sâu Bằng AI"** trên từng tựa game.
+   - Bóc tách toàn diện 5 trụ cột:
+     1. Vòng lặp trải nghiệm cốt lõi (Core Gameplay Loop & Retention)
+     2. Kiến trúc kiếm tiền (Monetization Architecture: Gacha, Battle Pass, IAP, Ads)
+     3. Chân dung người chơi mục tiêu (Target Audience & Persona)
+     4. Lợi thế cạnh tranh (Competitive Edge)
+     5. Bài học đắt giá cho Game Dev / Studio Việt Nam
+   - Tích hợp **Google Gemini 1.5 Flash** (hoặc tự động dùng Hệ tri thức Heuristic khi chưa có API key).
+4. **Biểu Đồ Lịch Sử & Modal Phân Tích Game:**
    - Nhấp vào bất kỳ tựa game nào để mở **Game Intelligence Modal**.
    - Biểu đồ đường **Rank Trendline** (trục Y đảo ngược với vị trí #1 ở đỉnh) và đường cong **CCU** theo thời gian.
    - Bảng thống kê lịch sử: Kỷ lục rank tốt nhất, rank trung bình, ngày theo dõi.
-3. **So Sánh Đối Thủ Đối Đầu (Head-to-Head Comparison - Feature 1):**
+5. **So Sánh Đối Thủ Đối Đầu (Head-to-Head Comparison):**
    - Đặt 2 tựa game cạnh nhau (ví dụ: *CS2* vs *Dota 2*, hoặc *Free Fire* vs *Liên Quân Mobile*).
    - Biểu đồ đường kép (Dual Line Chart) so sánh trực quan quỹ đạo thứ hạng trên cùng trục thời gian.
-4. **Hệ Thống Cảnh Báo & Bot Tự Động (Feature 3):**
+6. **Hệ Thống Cảnh Báo & Bot Tự Động:**
    - **Discord Webhook:** Gửi thẻ tin nhắn Rich Embed cực đẹp vào kênh Discord của studio.
    - **Telegram Bot:** Gửi tin nhắn định dạng HTML vào nhóm Telegram.
    - **Bản tin 08:00 sáng:** Tự động tổng kết Top bứt phá, PC đỉnh CCU, Mobile đỉnh doanh thu mỗi ngày.
    - **Cảnh báo Breakout khẩn cấp:** Bắn tin nhắn ngay khi có game nhảy vọt $\ge 15$ bậc trong 24 giờ.
-5. **Theo dõi tất cả thị trường & Quốc gia:**
+7. **Theo dõi tất cả thị trường & Quốc gia:**
    - Hỗ trợ chọn nhanh các thị trường trọng điểm: 🌐 **Toàn cầu (Global)**, 🇻🇳 **Việt Nam**, 🇺🇸 **United States**, 🇰🇷 **Hàn Quốc**, 🇯🇵 **Nhật Bản**, 🇬🇧 **Anh**, 🇩🇪 **Đức**, 🇧🇷 **Brazil**, v.v.
-6. **Phân tích Thị phần Thể loại (Genre Analytics):**
+8. **Phân tích Thị phần Thể loại (Genre Analytics):**
    - Biểu đồ tròn (Doughnut Chart) trực quan hóa các dòng game đang chiếm ưu thế.
-7. **Báo cáo Thị trường Tự động & Xuất Dữ liệu:**
+9. **Báo cáo Thị trường Tự động & Xuất Dữ liệu:**
    - Tự động biên soạn bản tóm tắt thị trường (Executive Summary) theo định dạng Markdown.
    - Xuất dữ liệu ra file **Excel (.xlsx)** hoặc **CSV** chỉ với 1 click.
 

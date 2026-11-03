@@ -15,6 +15,7 @@ from app.database.db import init_db, get_db_connection
 from app.crawlers.orchestrator import CrawlerOrchestrator
 from app.analytics.trend_analyzer import TrendAnalyzer
 from app.analytics.report_generator import ReportGenerator
+from app.analytics.ai_analyst import AIAnalyst
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -23,6 +24,7 @@ orchestrator = CrawlerOrchestrator()
 analyzer = TrendAnalyzer()
 report_generator = ReportGenerator()
 notifier = AlertNotifier()
+ai_analyst = AIAnalyst()
 
 is_crawling = False
 
@@ -223,6 +225,34 @@ async def test_alert():
 @app.post("/api/alerts/digest")
 async def send_manual_digest(target_date: Optional[str] = None):
     return notifier.dispatch_daily_digest(target_date=target_date)
+
+# --- AI Game Deconstruction Endpoints ---
+@app.post("/api/ai/analyze")
+async def analyze_game_ai(request: Request):
+    payload = await request.json()
+    game_id = payload.get("game_id")
+    custom_key = payload.get("api_key")
+    if not game_id:
+        return {"error": "Thiếu game_id"}
+    details = analyzer.get_game_details(game_id)
+    if not details or not details.get("game"):
+        return {"error": "Không tìm thấy dữ liệu tựa game"}
+    return ai_analyst.analyze_game(game_data=details["game"], custom_api_key=custom_key)
+
+@app.get("/api/ai/config")
+async def get_ai_config():
+    key = ai_analyst.get_api_key()
+    return {
+        "has_gemini_key": bool(key),
+        "masked_key": f"{key[:6]}...{key[-4:]}" if len(key) > 10 else ("Configured" if key else "")
+    }
+
+@app.post("/api/ai/config")
+async def save_ai_config(request: Request):
+    payload = await request.json()
+    key = payload.get("gemini_api_key", "").strip()
+    ai_analyst.save_api_key(key)
+    return {"status": "success", "has_gemini_key": bool(key)}
 
 @app.get("/api/meta")
 async def get_metadata():
