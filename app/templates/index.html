@@ -158,16 +158,19 @@
     <!-- Navigation Tabs -->
     <div class="flex items-center border-b border-slate-800 gap-2 overflow-x-auto pb-1 text-sm font-medium">
       <button onclick="switchTab('overview')" id="tabBtn-overview" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-indigo-500 text-indigo-400 font-semibold">
-        <i data-lucide="layout-grid" class="w-4 h-4"></i> Tổng Quan Thị Trường
+        <i data-lucide="layout-grid" class="w-4 h-4"></i> Tổng Quan
       </button>
       <button onclick="switchTab('pc')" id="tabBtn-pc" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="monitor" class="w-4 h-4"></i> Thị Trường PC (Steam)
+        <i data-lucide="monitor" class="w-4 h-4"></i> PC (Steam)
       </button>
       <button onclick="switchTab('mobile')" id="tabBtn-mobile" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="smartphone" class="w-4 h-4"></i> Thị Trường Mobile
+        <i data-lucide="smartphone" class="w-4 h-4"></i> Mobile
       </button>
       <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
+      </button>
+      <button onclick="switchTab('watchlist')" id="tabBtn-watchlist" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="star" class="w-4 h-4 text-amber-400"></i> Game Quan Sát (Watchlist)
       </button>
       <button onclick="switchTab('compare')" id="tabBtn-compare" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="swords" class="w-4 h-4 text-amber-400"></i> So Sánh Đối Thủ
@@ -176,10 +179,10 @@
         <i data-lucide="settings" class="w-4 h-4 text-pink-400"></i> Cài Đặt, Bot & AI
       </button>
       <button onclick="switchTab('report')" id="tabBtn-report" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="file-text" class="w-4 h-4"></i> Báo Cáo Xu Hướng
+        <i data-lucide="file-text" class="w-4 h-4"></i> Báo Cáo
       </button>
       <button onclick="switchTab('logs')" id="tabBtn-logs" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="history" class="w-4 h-4"></i> Lịch Sử Crawl
+        <i data-lucide="history" class="w-4 h-4"></i> Lịch Sử
       </button>
     </div>
 
@@ -280,7 +283,7 @@
                 <th class="py-3 px-4">Người Chơi (CCU)</th>
                 <th class="py-3 px-4 text-emerald-400">Doanh Thu Ước Tính ($)</th>
                 <th class="py-3 px-4">Biến Động (DoD)</th>
-                <th class="py-3 px-4 text-center">Cửa Hàng</th>
+                <th class="py-3 px-4 text-center">Thao Tác</th>
               </tr>
             </thead>
             <tbody id="pcTableBody" class="divide-y divide-slate-800/60"></tbody>
@@ -347,7 +350,7 @@
                 <th class="py-3 px-4">Đánh Giá</th>
                 <th class="py-3 px-4 text-emerald-400">Doanh Thu Ước Tính ($)</th>
                 <th class="py-3 px-4">Biến Động (DoD)</th>
-                <th class="py-3 px-4 text-center">Cửa Hàng</th>
+                <th class="py-3 px-4 text-center">Thao Tác</th>
               </tr>
             </thead>
             <tbody id="mobileTableBody" class="divide-y divide-slate-800/60"></tbody>
@@ -374,9 +377,51 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="breakoutRadarGrid"></div>
     </div>
 
-    <!-- TAB 5: COMPARE (SO SÁNH ĐỐI THỦ) -->
+    <!-- TAB 5: WATCHLIST & RIVALS (GAME QUAN SÁT) -->
+    <div id="tabContent-watchlist" class="hidden space-y-6">
+      <div class="glass-card p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="star" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+            Danh Sách Game Quan Sát & Đối Thủ Cạnh Tranh (Watchlist)
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Theo dõi sát sao game của studio bạn và đối thủ trực tiếp. Nhận thông báo khi đối thủ vượt mặt.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <button onclick="loadWatchlist()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Làm mới danh sách
+          </button>
+        </div>
+      </div>
+
+      <!-- Watchlist Grid / Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 font-semibold uppercase tracking-wider">
+              <tr>
+                <th class="py-3 px-4">Tựa Game</th>
+                <th class="py-3 px-4">Phân Loại</th>
+                <th class="py-3 px-4">Nền Tảng</th>
+                <th class="py-3 px-4">Thứ Hạng</th>
+                <th class="py-3 px-4">Biến Động</th>
+                <th class="py-3 px-4 text-emerald-400">Doanh Thu Ước Tính</th>
+                <th class="py-3 px-4">Ghi Chú</th>
+                <th class="py-3 px-4 text-center">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody id="watchlistTableBody" class="divide-y divide-slate-800/60">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: COMPARE (SO SÁNH ĐỐI THỦ) -->
     <div id="tabContent-compare" class="hidden space-y-6">
-      <!-- Selector Card -->
       <div class="glass-card p-5 rounded-2xl border border-amber-500/30 space-y-4">
         <div class="flex items-center justify-between flex-wrap gap-3">
           <div>
@@ -386,7 +431,6 @@
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">Đặt 2 tựa game cạnh nhau để phân tích tương quan thứ hạng, doanh thu ước tính và quỹ đạo tăng trưởng</p>
           </div>
-          <!-- Quick Presets -->
           <div class="flex items-center gap-2 text-xs">
             <span class="text-slate-400">Gợi ý nhanh:</span>
             <button onclick="setComparePreset('730', '570')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">CS2 vs Dota 2</button>
@@ -395,7 +439,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-          <!-- Game A Selector -->
           <div class="relative">
             <label class="text-xs font-semibold text-indigo-400 mb-1 block">Tựa Game A (Màu Tím Indigo):</label>
             <input type="text" id="compareSearchA" oninput="searchGameAutocomplete('A')" placeholder="Gõ tên để tìm Game A..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
@@ -406,7 +449,6 @@
             </p>
           </div>
 
-          <!-- Game B Selector -->
           <div class="relative">
             <label class="text-xs font-semibold text-amber-400 mb-1 block">Tựa Game B (Màu Vàng Amber):</label>
             <input type="text" id="compareSearchB" oninput="searchGameAutocomplete('B')" placeholder="Gõ tên để tìm Game B..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
@@ -425,11 +467,10 @@
         </div>
       </div>
 
-      <!-- Comparison Results Container -->
       <div id="compareResultContainer" class="space-y-6"></div>
     </div>
 
-    <!-- TAB 6: SETTINGS, BOT & AI CONFIG -->
+    <!-- TAB 7: SETTINGS, BOT & AI CONFIG -->
     <div id="tabContent-alerts" class="hidden space-y-6">
       <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
         <div>
@@ -452,7 +493,7 @@
               <span id="geminiKeyBadge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-medium">Tự động Heuristic</span>
             </div>
             <p class="text-[11px] text-slate-400 leading-relaxed">
-              Nhập Gemini API Key (miễn phí từ <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-purple-400 underline">Google AI Studio</a>) để kích hoạt LLM phân tích chuyên sâu:
+              Nhập Gemini API Key (miễn phí từ <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-purple-400 underline">Google AI Studio</a>) để kích hoạt LLM phân tích sâu hơn:
             </p>
             <div>
               <label class="text-xs text-slate-300 block mb-1">Gemini API Key:</label>
@@ -533,7 +574,7 @@
       </div>
     </div>
 
-    <!-- TAB 7: REPORT VIEWER -->
+    <!-- TAB 8: REPORT VIEWER -->
     <div id="tabContent-report" class="hidden space-y-4">
       <div class="glass-card p-4 rounded-xl flex items-center justify-between gap-4">
         <div>
@@ -558,7 +599,7 @@
       </div>
     </div>
 
-    <!-- TAB 8: LOGS -->
+    <!-- TAB 9: LOGS -->
     <div id="tabContent-logs" class="hidden space-y-4">
       <div class="glass-card p-4 rounded-xl flex items-center justify-between">
         <h2 class="text-base font-bold text-white flex items-center gap-2">
@@ -589,10 +630,9 @@
 
   </main>
 
-  <!-- GAME DETAIL INTELLIGENCE MODAL WITH REVENUE & AI DECONSTRUCTION -->
+  <!-- GAME DETAIL INTELLIGENCE MODAL -->
   <div id="gameDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
     <div class="glass-card bg-slate-900 rounded-2xl border border-slate-700 max-w-3xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-6 shadow-2xl relative">
-      <!-- Close button -->
       <button onclick="closeGameModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
@@ -612,13 +652,19 @@
             <span id="modalGameScore" class="text-amber-400 font-semibold flex items-center gap-1">⭐ --</span>
           </div>
         </div>
-        <a id="modalGameStoreLink" href="#" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors">
-          <span>Xem Cửa Hàng</span>
-          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-        </a>
+        <div class="flex items-center gap-2">
+          <button id="modalWatchlistBtn" onclick="toggleModalWatchlist()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors">
+            <i data-lucide="star" id="modalWatchlistIcon" class="w-3.5 h-3.5"></i>
+            <span id="modalWatchlistLabel">Theo Dõi</span>
+          </button>
+          <a id="modalGameStoreLink" href="#" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors">
+            <span>Cửa Hàng</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
       </div>
 
-      <!-- Financial & Audience Estimates Row (Feature 1) -->
+      <!-- Financial & Audience Estimates Row -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/30">
         <div>
           <span class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider flex items-center gap-1">
@@ -643,7 +689,7 @@
         </div>
       </div>
 
-      <!-- AI Game Deconstruction Action Button (Feature 2) -->
+      <!-- AI Game Deconstruction Action Button -->
       <div>
         <button id="btnAiDeconstruct" onclick="requestAiDeconstruct()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-500 hover:via-indigo-500 hover:to-pink-500 text-white font-bold text-xs shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 transition-all active:scale-[0.99]">
           <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
@@ -666,9 +712,7 @@
           <button onclick="toggleAiCard()" class="text-slate-400 hover:text-white text-xs">Ẩn</button>
         </div>
 
-        <div id="modalAiContent" class="space-y-4 text-xs leading-relaxed text-slate-300">
-          <!-- Injected via JS -->
-        </div>
+        <div id="modalAiContent" class="space-y-4 text-xs leading-relaxed text-slate-300"></div>
       </div>
 
       <!-- Historical Stats Row -->
@@ -737,6 +781,7 @@
     let compareChartInstance = null;
     let currentRawReport = "";
     let currentActiveModalGameId = null;
+    let isCurrentModalInWatchlist = false;
 
     // Debounce helper
     function debounce(func, wait) {
@@ -765,7 +810,7 @@
 
     // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'breakouts', 'compare', 'alerts', 'report', 'logs'];
+      const tabs = ['overview', 'pc', 'mobile', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
@@ -782,6 +827,7 @@
       if (tabId === 'pc') loadPCRankings();
       if (tabId === 'mobile') loadMobileRankings();
       if (tabId === 'breakouts') loadBreakoutRadar();
+      if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
       if (tabId === 'alerts') loadAlertSettings();
       if (tabId === 'report') loadMarketReport();
@@ -806,7 +852,6 @@
         const res = await fetch(`/api/overview?target_date=${date}`);
         const data = await res.json();
 
-        // 1. Fill KPI Cards
         document.getElementById('statTotalTracked').innerText = (data.total_tracked || 0).toLocaleString();
         const pCounts = data.platform_counts || {};
         document.getElementById('statPlatformSplit').innerText = `PC: ${pCounts.pc_steam || 0} | iOS: ${pCounts.mobile_appstore || 0} | Android: ${pCounts.mobile_googleplay || 0}`;
@@ -826,7 +871,6 @@
           document.getElementById('statBreakoutDelta').innerText = "Cần ít nhất 2 ngày dữ liệu để so sánh";
         }
 
-        // 2. Fill Rising Games Cards
         const risingContainer = document.getElementById('overviewRisingContainer');
         if (data.rising_games && data.rising_games.length > 0) {
           risingContainer.innerHTML = data.rising_games.map(g => {
@@ -860,7 +904,6 @@
           `;
         }
 
-        // 3. Top 5 PC side by side
         const topPCList = document.getElementById('topPCList');
         if (data.top_steam_ccu && data.top_steam_ccu.length > 0) {
           topPCList.innerHTML = data.top_steam_ccu.map(g => `
@@ -880,7 +923,6 @@
           topPCList.innerHTML = '<p class="text-xs text-slate-500">Chưa có dữ liệu PC.</p>';
         }
 
-        // 4. Top 5 Mobile Grossing
         const topMobileList = document.getElementById('topMobileList');
         if (data.top_mobile_grossing && data.top_mobile_grossing.length > 0) {
           topMobileList.innerHTML = data.top_mobile_grossing.map(g => `
@@ -900,9 +942,7 @@
           topMobileList.innerHTML = '<p class="text-xs text-slate-500">Chưa có dữ liệu Mobile.</p>';
         }
 
-        // 5. Load Genre Chart
         loadGenreChart();
-
       } catch (err) {
         console.error("Error loading overview:", err);
       }
@@ -956,7 +996,7 @@
       }
     }
 
-    // Load PC Rankings Table (With Estimated Revenue!)
+    // Load PC Rankings Table
     async function loadPCRankings() {
       const date = document.getElementById('targetDate').value;
       const rankingType = document.getElementById('pcRankingType').value;
@@ -1013,9 +1053,14 @@
               </td>
               <td class="py-3 px-4">${deltaBadge}</td>
               <td class="py-3 px-4 text-center">
-                <a href="${g.store_url}" target="_blank" class="inline-flex p-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white transition-colors" title="Xem trên Steam">
-                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                </a>
+                <div class="flex items-center justify-center gap-1.5">
+                  <button onclick="quickToggleWatchlist('${g.game_id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-amber-600/30 text-amber-300 transition-colors" title="Thêm vào Watchlist">
+                    <i data-lucide="star" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <a href="${g.store_url}" target="_blank" class="p-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white transition-colors" title="Xem trên Steam">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                  </a>
+                </div>
               </td>
             </tr>
           `;
@@ -1026,7 +1071,7 @@
       lucide.createIcons();
     }
 
-    // Load Mobile Rankings Table (With Estimated Revenue!)
+    // Load Mobile Rankings Table
     async function loadMobileRankings() {
       const date = document.getElementById('targetDate').value;
       const country = document.getElementById('mobileCountry').value;
@@ -1090,9 +1135,14 @@
               </td>
               <td class="py-3 px-4">${deltaBadge}</td>
               <td class="py-3 px-4 text-center">
-                <a href="${g.store_url}" target="_blank" class="inline-flex p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white transition-colors" title="Mở trang Store">
-                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                </a>
+                <div class="flex items-center justify-center gap-1.5">
+                  <button onclick="quickToggleWatchlist('${g.game_id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-amber-600/30 text-amber-300 transition-colors" title="Thêm vào Watchlist">
+                    <i data-lucide="star" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <a href="${g.store_url}" target="_blank" class="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white transition-colors" title="Mở trang Store">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                  </a>
+                </div>
               </td>
             </tr>
           `;
@@ -1163,13 +1213,153 @@
       }
     }
 
-    // --- FEATURE 1 & 2: GAME INTELLIGENCE MODAL & AI DECONSTRUCTOR ---
+    // --- FEATURE: WATCHLIST & RIVALS ---
+    async function loadWatchlist() {
+      const tbody = document.getElementById('watchlistTableBody');
+      tbody.innerHTML = '<tr><td colspan="8" class="py-6 text-center text-slate-400">Đang tải danh sách quan sát...</td></tr>';
+
+      try {
+        const res = await fetch('/api/watchlist');
+        const items = await res.json();
+
+        if (items.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" class="py-12 text-center space-y-3">
+                <i data-lucide="star" class="w-8 h-8 text-amber-400/40 mx-auto"></i>
+                <p class="text-slate-300 font-medium">Danh sách theo dõi đang trống.</p>
+                <p class="text-xs text-slate-500 max-w-md mx-auto">Hãy nhấp vào biểu tượng ⭐ trên bất kỳ tựa game nào trong bảng PC, Mobile hoặc Popup để ghim vào danh sách theo dõi riêng.</p>
+              </td>
+            </tr>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        tbody.innerHTML = items.map(g => {
+          const isRival = g.is_rival === 1;
+          const badgeClass = isRival ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30';
+          const badgeText = isRival ? '⚔️ Đối Thủ Cạnh Tranh' : '🎮 Game Của Tôi';
+
+          let deltaBadge = '<span class="text-slate-500">-</span>';
+          if (g.rank_change_day > 0) {
+            deltaBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 flex items-center gap-1 w-fit"><i data-lucide="arrow-up" class="w-3 h-3"></i> +${g.rank_change_day}</span>`;
+          } else if (g.rank_change_day < 0) {
+            deltaBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 flex items-center gap-1 w-fit"><i data-lucide="arrow-down" class="w-3 h-3"></i> ${g.rank_change_day}</span>`;
+          }
+
+          return `
+            <tr class="hover:bg-slate-900/60 transition-colors">
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="openGameModal('${g.game_id}')">
+                  <img src="${g.icon_url}" class="w-10 h-10 rounded-xl object-cover bg-slate-800 group-hover:scale-105 transition-transform" onerror="this.src='https://placehold.co/40x40/1e293b/white?text=Game'">
+                  <div>
+                    <span class="font-semibold text-white group-hover:text-indigo-400 transition-colors">${g.title}</span>
+                    <p class="text-[10px] text-slate-400">${g.developer || ''}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3 px-4">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeClass}">
+                  ${badgeText}
+                </span>
+              </td>
+              <td class="py-3 px-4 text-slate-300 font-medium">${(g.platform || '').toUpperCase()}</td>
+              <td class="py-3 px-4 font-bold text-indigo-400">#${g.rank}</td>
+              <td class="py-3 px-4">${deltaBadge}</td>
+              <td class="py-3 px-4 text-emerald-400 font-semibold">${g.estimated_revenue_daily_formatted || 'N/A'}/ngày</td>
+              <td class="py-3 px-4 text-slate-400 max-w-[150px] truncate">${g.notes || '--'}</td>
+              <td class="py-3 px-4 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <button onclick="setComparePreset('${g.game_id}', '730')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 text-[10px] font-semibold border border-slate-700" title="So sánh với game khác">
+                    ⚔️ So Sánh
+                  </button>
+                  <button onclick="removeFromWatchlist('${g.game_id}')" class="p-1 rounded bg-slate-800 hover:bg-rose-600/30 text-rose-400 text-xs" title="Xóa khỏi Watchlist">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error("Error loading watchlist:", err);
+      }
+      lucide.createIcons();
+    }
+
+    async function quickToggleWatchlist(gameId) {
+      try {
+        const res = await fetch('/api/watchlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ game_id: gameId, is_rival: 1, notes: 'Đã thêm từ bảng xếp hạng' })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Đã thêm vào danh sách quan sát!');
+      } catch (err) {
+        showToast('Lỗi khi thêm vào Watchlist.');
+      }
+    }
+
+    async function toggleModalWatchlist() {
+      if (!currentActiveModalGameId) return;
+
+      if (isCurrentModalInWatchlist) {
+        await removeFromWatchlist(currentActiveModalGameId);
+        isCurrentModalInWatchlist = false;
+        updateModalWatchlistButton(false);
+      } else {
+        try {
+          const res = await fetch('/api/watchlist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ game_id: currentActiveModalGameId, is_rival: 0, notes: 'Theo dõi từ Modal' })
+          });
+          const data = await res.json();
+          showToast(data.message);
+          isCurrentModalInWatchlist = true;
+          updateModalWatchlistButton(true);
+        } catch (err) {
+          showToast('Lỗi khi thêm vào Watchlist.');
+        }
+      }
+    }
+
+    async function removeFromWatchlist(gameId) {
+      try {
+        const res = await fetch(`/api/watchlist/${encodeURIComponent(gameId)}`, { method: 'DELETE' });
+        const data = await res.json();
+        showToast(data.message);
+        loadWatchlist();
+      } catch (err) {
+        showToast('Lỗi khi xóa khỏi Watchlist.');
+      }
+    }
+
+    function updateModalWatchlistButton(inWatchlist) {
+      const btn = document.getElementById('modalWatchlistBtn');
+      const label = document.getElementById('modalWatchlistLabel');
+      const icon = document.getElementById('modalWatchlistIcon');
+
+      if (inWatchlist) {
+        btn.className = "bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors";
+        label.innerText = "Đang Theo Dõi";
+        icon.classList.add("fill-current");
+      } else {
+        btn.className = "bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors";
+        label.innerText = "Theo Dõi";
+        icon.classList.remove("fill-current");
+      }
+      lucide.createIcons();
+    }
+
+    // --- GAME INTELLIGENCE MODAL ---
     async function openGameModal(gameId) {
       currentActiveModalGameId = gameId;
       const modal = document.getElementById('gameDetailModal');
       modal.classList.remove('hidden');
 
-      // Hide previous AI analysis card by default
       document.getElementById('modalAiResultCard').classList.add('hidden');
 
       try {
@@ -1193,6 +1383,9 @@
         document.getElementById('modalGameScore').innerText = `⭐ ${g.score || '4.5'}`;
         document.getElementById('modalGameStoreLink').href = g.store_url || '#';
 
+        isCurrentModalInWatchlist = !!g.is_in_watchlist;
+        updateModalWatchlistButton(isCurrentModalInWatchlist);
+
         const isPC = (g.platform || '').includes('pc');
         const badge = document.getElementById('modalGamePlatformBadge');
         badge.innerText = isPC ? 'PC Steam' : 'Mobile Store';
@@ -1200,7 +1393,6 @@
           ? 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400'
           : 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-400';
 
-        // Historical Stats
         document.getElementById('modalStatCurrentRank').innerText = `#${g.rank}`;
         document.getElementById('modalStatBestRank').innerText = `#${stats.best_rank || g.rank}`;
         document.getElementById('modalStatAvgRank').innerText = `#${stats.avg_rank || g.rank}`;
@@ -1208,15 +1400,12 @@
           ? `${(stats.peak_ccu || g.player_count || 0).toLocaleString()} CCU`
           : (g.estimated_downloads || 'Top Tier');
 
-        // Revenue & Audience Estimates (Feature 1)
         document.getElementById('modalStatRevDaily').innerText = g.estimated_revenue_daily_formatted || 'N/A';
         document.getElementById('modalStatRevMonthly').innerText = g.estimated_revenue_monthly_formatted || 'N/A';
         document.getElementById('modalStatDownloads').innerText = g.estimated_downloads_formatted || g.estimated_downloads || 'N/A';
 
-        // Render Trendline Chart
         renderModalTrendChart(history, isPC);
 
-        // Render History Table
         const tbody = document.getElementById('modalHistoryTableBody');
         tbody.innerHTML = history.slice().reverse().map(h => {
           let delta = '<span class="text-slate-500">-</span>';
@@ -1247,7 +1436,7 @@
       document.getElementById('modalAiResultCard').classList.toggle('hidden');
     }
 
-    // Request AI Deconstruction (Feature 2)
+    // Request AI Deconstruction
     async function requestAiDeconstruct() {
       if (!currentActiveModalGameId) return;
 
@@ -1287,7 +1476,6 @@
         const a = data.analysis;
 
         content.innerHTML = `
-          <!-- 1. Core Loop -->
           <div class="p-3.5 rounded-xl bg-purple-950/30 border border-purple-500/20">
             <h5 class="font-bold text-purple-300 flex items-center gap-1.5 mb-1">
               <i data-lucide="repeat" class="w-3.5 h-3.5"></i> 1. Vòng Lặp Trải Nghiệm Cốt Lõi (Core Gameplay Loop & Retention)
@@ -1295,7 +1483,6 @@
             <p class="text-slate-300 leading-relaxed">${a.core_loop || 'N/A'}</p>
           </div>
 
-          <!-- 2. Monetization -->
           <div class="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/20">
             <h5 class="font-bold text-emerald-300 flex items-center gap-1.5 mb-1">
               <i data-lucide="credit-card" class="w-3.5 h-3.5"></i> 2. Kiến Trúc Kiếm Tiền (Monetization Architecture)
@@ -1303,7 +1490,6 @@
             <p class="text-slate-300 leading-relaxed">${a.monetization || 'N/A'}</p>
           </div>
 
-          <!-- 3. Target Persona & Competitive Edge -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div class="p-3.5 rounded-xl bg-sky-950/30 border border-sky-500/20">
               <h5 class="font-bold text-sky-300 flex items-center gap-1.5 mb-1">
@@ -1319,7 +1505,6 @@
             </div>
           </div>
 
-          <!-- 4. Actionable Takeaways -->
           <div class="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/20">
             <h5 class="font-bold text-indigo-300 flex items-center gap-1.5 mb-1">
               <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> 5. Bài Học Đắt Giá Cho Game Dev / Studio Việt Nam
@@ -1382,7 +1567,7 @@
               type: 'linear',
               display: true,
               position: 'left',
-              reverse: true, // Rank #1 is at top!
+              reverse: true,
               grid: { color: 'rgba(255, 255, 255, 0.05)' },
               ticks: { color: '#6366f1', font: { size: 10 } }
             },
@@ -1401,7 +1586,7 @@
       });
     }
 
-    // --- FEATURE: COMPARE OPPONENTS ---
+    // --- COMPARE OPPONENTS ---
     async function searchGameAutocomplete(target) {
       const input = document.getElementById(`compareSearch${target}`);
       const dropdown = document.getElementById(`compareDropdown${target}`);
@@ -1446,6 +1631,7 @@
     }
 
     function setComparePreset(idA, idB) {
+      switchTab('compare');
       document.getElementById('compareGameIdA').value = idA;
       document.getElementById('compareGameIdB').value = idB;
       executeComparison();
@@ -1472,9 +1658,7 @@
         const timeline = data.timeline || [];
 
         container.innerHTML = `
-          <!-- Comparison Cards Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Game A Card -->
             <div class="glass-card p-5 rounded-2xl border-l-4 border-indigo-500 space-y-4">
               <div class="flex items-center gap-3">
                 <img src="${ga.icon_url}" class="w-14 h-14 rounded-xl object-cover bg-slate-800 shadow" onerror="this.src='https://placehold.co/60x60/1e293b/white?text=A'">
@@ -1500,7 +1684,6 @@
               </div>
             </div>
 
-            <!-- Game B Card -->
             <div class="glass-card p-5 rounded-2xl border-l-4 border-amber-400 space-y-4">
               <div class="flex items-center gap-3">
                 <img src="${gb.icon_url}" class="w-14 h-14 rounded-xl object-cover bg-slate-800 shadow" onerror="this.src='https://placehold.co/60x60/1e293b/white?text=B'">
@@ -1527,7 +1710,6 @@
             </div>
           </div>
 
-          <!-- Dual Comparison Line Chart -->
           <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-bold text-white flex items-center gap-2">
@@ -1604,7 +1786,7 @@
       });
     }
 
-    // --- SETTINGS, BOT & GEMINI AI CONFIG ---
+    // --- SETTINGS & BOT ---
     async function loadAlertSettings() {
       try {
         const res = await fetch('/api/alerts/config');
@@ -1616,7 +1798,6 @@
         document.getElementById('alertEnableBreakout').checked = data.enable_breakout_alerts !== false;
         document.getElementById('alertThreshold').value = data.breakout_threshold || 15;
 
-        // Check Gemini AI Key status
         const aiRes = await fetch('/api/ai/config');
         const aiData = await aiRes.json();
         const badge = document.getElementById('geminiKeyBadge');
@@ -1668,7 +1849,6 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ gemini_api_key: key })
         });
-        const data = await res.json();
         showToast('Đã lưu Gemini API Key thành công!');
         loadAlertSettings();
       } catch (err) {
@@ -1781,6 +1961,7 @@
           loadOverview();
           loadPCRankings();
           loadMobileRankings();
+          loadWatchlist();
           btn.disabled = false;
           icon.classList.remove('animate-spin');
         }, 5000);

@@ -3,7 +3,7 @@
 import sqlite3
 from typing import List, Dict, Any, Optional
 from datetime import datetime, date, timedelta
-from app.database.db import get_db_connection
+from app.database.db import get_db_connection, is_game_in_watchlist
 from app.analytics.revenue_estimator import RevenueEstimator
 
 class TrendAnalyzer:
@@ -281,6 +281,7 @@ class TrendAnalyzer:
             return None
 
         latest_dict = self.enrich_record_with_estimates(dict(latest))
+        latest_dict["is_in_watchlist"] = is_game_in_watchlist(game_id)
 
         # Get historical stats
         cursor.execute("""
@@ -353,3 +354,31 @@ class TrendAnalyzer:
             "stats_b": detail_b["stats"],
             "timeline": aligned
         }
+
+    def get_watchlist_dashboard_data(self) -> List[Dict[str, Any]]:
+        """Returns all watchlisted games enriched with latest rank, estimates, and trends."""
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM watchlist ORDER BY is_rival ASC, added_at DESC")
+        items = [dict(row) for row in cursor.fetchall()]
+
+        enriched = []
+        for item in items:
+            gid = item["game_id"]
+            cursor.execute("""
+            SELECT * FROM snapshots 
+            WHERE game_id = ? 
+            ORDER BY snapshot_date DESC, id DESC 
+            LIMIT 1
+            """, (gid,))
+            snap = cursor.fetchone()
+            if snap:
+                snap_dict = self.enrich_record_with_estimates(dict(snap))
+                # Preserve watchlist specific fields (notes, is_rival, added_at)
+                merged = {**snap_dict, "notes": item.get("notes"), "is_rival": item.get("is_rival"), "added_at": item.get("added_at")}
+            else:
+                merged = {**item, "rank": "--", "rank_change_day": 0, "estimated_revenue_daily_formatted": "Chưa có snapshot"}
+            enriched.append(merged)
+
+        conn.close()
+        return enriched

@@ -11,7 +11,13 @@ from contextlib import asynccontextmanager
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.config import SUPPORTED_COUNTRIES, PLATFORMS, RANKING_TYPES, BASE_DIR
-from app.database.db import init_db, get_db_connection
+from app.database.db import (
+    init_db,
+    get_db_connection,
+    add_to_watchlist,
+    remove_from_watchlist,
+    is_game_in_watchlist
+)
 from app.crawlers.orchestrator import CrawlerOrchestrator
 from app.analytics.trend_analyzer import TrendAnalyzer
 from app.analytics.report_generator import ReportGenerator
@@ -253,6 +259,49 @@ async def save_ai_config(request: Request):
     key = payload.get("gemini_api_key", "").strip()
     ai_analyst.save_api_key(key)
     return {"status": "success", "has_gemini_key": bool(key)}
+
+# --- Watchlist & Rival Tracker Endpoints ---
+@app.get("/api/watchlist")
+async def get_watchlist_api():
+    return analyzer.get_watchlist_dashboard_data()
+
+@app.post("/api/watchlist")
+async def add_watchlist_api(request: Request):
+    payload = await request.json()
+    game_id = payload.get("game_id")
+    notes = payload.get("notes", "")
+    is_rival = int(payload.get("is_rival", 0))
+
+    if not game_id:
+        return {"error": "Thiếu game_id"}
+
+    details = analyzer.get_game_details(game_id)
+    if not details or not details.get("game"):
+        return {"error": "Không tìm thấy tựa game này"}
+
+    g = details["game"]
+    add_to_watchlist(
+        game_id=game_id,
+        title=g.get("title", ""),
+        developer=g.get("developer", ""),
+        platform=g.get("platform", ""),
+        country=g.get("country", ""),
+        genre=g.get("genre", ""),
+        icon_url=g.get("icon_url", ""),
+        store_url=g.get("store_url", ""),
+        notes=notes,
+        is_rival=is_rival
+    )
+    return {"status": "success", "message": f"Đã thêm {g.get('title')} vào danh sách theo dõi", "is_in_watchlist": True}
+
+@app.delete("/api/watchlist/{game_id}")
+async def remove_watchlist_api(game_id: str):
+    remove_from_watchlist(game_id)
+    return {"status": "success", "message": "Đã xóa khỏi danh sách theo dõi", "is_in_watchlist": False}
+
+@app.get("/api/watchlist/check/{game_id}")
+async def check_watchlist_api(game_id: str):
+    return {"game_id": game_id, "in_watchlist": is_game_in_watchlist(game_id)}
 
 @app.get("/api/meta")
 async def get_metadata():

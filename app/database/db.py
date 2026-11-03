@@ -82,6 +82,24 @@ def init_db():
     );
     """)
 
+    # Watchlist table for user tracked games & rivals
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS watchlist (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        game_id TEXT UNIQUE NOT NULL,
+        title TEXT NOT NULL,
+        developer TEXT,
+        platform TEXT,
+        country TEXT,
+        genre TEXT,
+        icon_url TEXT,
+        store_url TEXT,
+        added_at TEXT NOT NULL,
+        notes TEXT,
+        is_rival INTEGER DEFAULT 0
+    );
+    """)
+
     conn.commit()
     conn.close()
 
@@ -136,3 +154,41 @@ def log_crawl(platform: str, country: str, ranking_type: str, items_count: int, 
     """, (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), platform, country, ranking_type, items_count, status, error_message))
     conn.commit()
     conn.close()
+
+def add_to_watchlist(game_id: str, title: str, developer: str = "", platform: str = "", country: str = "", genre: str = "", icon_url: str = "", store_url: str = "", notes: str = "", is_rival: int = 0) -> bool:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    INSERT INTO watchlist (game_id, title, developer, platform, country, genre, icon_url, store_url, added_at, notes, is_rival)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(game_id) DO UPDATE SET
+        notes = excluded.notes,
+        is_rival = excluded.is_rival
+    """, (game_id, title, developer, platform, country, genre, icon_url, store_url, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), notes, is_rival))
+    conn.commit()
+    conn.close()
+    return True
+
+def remove_from_watchlist(game_id: str) -> bool:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM watchlist WHERE game_id = ?", (game_id,))
+    conn.commit()
+    conn.close()
+    return True
+
+def get_watchlist_items() -> List[Dict[str, Any]]:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM watchlist ORDER BY is_rival ASC, added_at DESC")
+    items = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return items
+
+def is_game_in_watchlist(game_id: str) -> bool:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT 1 FROM watchlist WHERE game_id = ? LIMIT 1", (game_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return bool(row)
