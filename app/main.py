@@ -32,6 +32,9 @@ from app.analytics.liveops_tracker import LiveOpsTracker
 from app.analytics.creative_spy import CreativeSpy
 from app.analytics.cpi_ltv_simulator import CPILTVForecaster
 from app.analytics.blue_ocean_finder import BlueOceanFinder
+from app.analytics.aso_visual_optimizer import ASOVisualOptimizer
+from app.analytics.iap_monetization import IAPMonetizationAnalyzer
+from app.analytics.liveops_scheduler import LiveOpsScheduler
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -47,6 +50,9 @@ liveops_tracker = LiveOpsTracker()
 creative_spy = CreativeSpy()
 cpi_simulator = CPILTVForecaster()
 blue_ocean_finder = BlueOceanFinder()
+aso_visual_optimizer = ASOVisualOptimizer()
+iap_analyzer = IAPMonetizationAnalyzer()
+liveops_scheduler = LiveOpsScheduler()
 
 is_crawling = False
 
@@ -436,6 +442,82 @@ async def get_blue_ocean_api(classification: Optional[str] = Query(None)):
         "niches": niches,
         "aging_monopolies": aging
     }
+
+# --- ASO Visual Lab & Metadata Audit Endpoints ---
+@app.get("/api/mobile/aso/visual-archetypes")
+async def get_aso_visual_archetypes_api():
+    """Returns benchmark visual archetypes for mobile icons and screenshots."""
+    return {"archetypes": aso_visual_optimizer.get_visual_archetypes()}
+
+@app.post("/api/mobile/aso/audit")
+async def audit_aso_metadata_api(request: Request):
+    """Audits game title, subtitle, keywords and icon archetype for CVR prediction."""
+    payload = await request.json()
+    title = payload.get("title", "")
+    subtitle = payload.get("subtitle", "")
+    keywords = payload.get("keywords", "")
+    genre = payload.get("genre", "RPG")
+    icon_style = payload.get("icon_archetype_id", "screaming_hero")
+    target_store = payload.get("target_store", "google_play")
+    return aso_visual_optimizer.audit_metadata(
+        title=title,
+        subtitle=subtitle,
+        keywords=keywords,
+        genre=genre,
+        icon_archetype_id=icon_style,
+        target_store=target_store
+    )
+
+# --- IAP Monetization & Battle Pass Pricing Endpoints ---
+@app.get("/api/mobile/iap/benchmarks")
+async def get_iap_benchmarks_api(genre: Optional[str] = Query(None)):
+    """Returns standard monetization ladders and PPP benchmarks."""
+    return iap_analyzer.get_benchmarks(genre_key=genre)
+
+@app.post("/api/mobile/iap/simulate-economy")
+async def simulate_iap_economy_api(request: Request):
+    """Simulates 30-day player spender distribution, revenue breakdown, and ARPPU."""
+    payload = await request.json()
+    dau = int(payload.get("dau", 50000))
+    genre_key = payload.get("genre_key", "midcore_rpg")
+    region_tier = payload.get("region_tier", "global")
+    bp_price = float(payload.get("battle_pass_price", 9.99))
+    card_price = float(payload.get("monthly_card_price", 4.99))
+    return iap_analyzer.simulate_economy(
+        dau=dau,
+        genre_key=genre_key,
+        region_tier=region_tier,
+        battle_pass_price=bp_price,
+        monthly_card_price=card_price
+    )
+
+# --- LiveOps Calendar & Competitor Clash Radar Endpoints ---
+@app.get("/api/mobile/liveops/clash-radar")
+async def get_liveops_clash_radar_api():
+    """Returns competitor update cadence, high-risk auction windows, and LiveOps templates."""
+    radar = liveops_scheduler.get_competitor_radar()
+    templates = liveops_scheduler.get_event_templates()
+    return {
+        "radar": radar,
+        "templates": templates
+    }
+
+@app.post("/api/mobile/liveops/plan")
+async def plan_liveops_event_api(request: Request):
+    """Plans a LiveOps event and forecasts daily revenue surge and clash advisory."""
+    payload = await request.json()
+    event_type = payload.get("event_type_id", "battle_pass_season")
+    start_date = payload.get("start_date", "")
+    duration_days = int(payload.get("duration_days", 14))
+    base_dau = int(payload.get("base_dau", 25000))
+    base_arpdau = float(payload.get("base_arpdau", 0.08))
+    return liveops_scheduler.plan_liveops_event(
+        event_type_id=event_type,
+        start_date=start_date,
+        duration_days=duration_days,
+        base_dau=base_dau,
+        base_arpdau=base_arpdau
+    )
 
 @app.get("/api/meta")
 async def get_metadata():

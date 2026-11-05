@@ -179,6 +179,15 @@
       <button onclick="switchTab('blueocean')" id="tabBtn-blueocean" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="compass" class="w-4 h-4 text-sky-400"></i> Đại Dương Xanh
       </button>
+      <button onclick="switchTab('asolab')" id="tabBtn-asolab" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="palette" class="w-4 h-4 text-pink-400"></i> ASO Visual Lab
+      </button>
+      <button onclick="switchTab('iapmatrix')" id="tabBtn-iapmatrix" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i> IAP & Giá Nạp
+      </button>
+      <button onclick="switchTab('liveopsradar')" id="tabBtn-liveopsradar" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="calendar-clock" class="w-4 h-4 text-cyan-400"></i> LiveOps & Radar Tránh Đụng Độ
+      </button>
       <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
       </button>
@@ -794,6 +803,470 @@
           </div>
         </div>
         <div id="agingMonopoliesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      </div>
+    </div>
+
+    <!-- TAB: ASO VISUAL OPTIMIZER & CVR LAB -->
+    <div id="tabContent-asolab" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-pink-500/30 bg-gradient-to-br from-pink-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-500/20 text-pink-400 border border-pink-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+              CONVERSION RATE OPTIMIZATION (CVR)
+            </span>
+            <span class="text-xs text-slate-400">Icon Psychology & Keyword Synergy</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            🎨 ASO Visual Optimizer & Metadata CVR Predictor
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Phân tích tâm lý thị giác Icon & Screenshot theo các trường phái tối ưu CVR của top game toàn cầu. Công cụ thẩm định Metadata (Title, Subtitle, Keywords) và dự báo tỷ lệ chuyển đổi người dùng từ lượt xem thành lượt cài đặt.
+          </p>
+        </div>
+      </div>
+
+      <!-- Icon Visual Archetypes Gallery -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="layout-template" class="w-4 h-4 text-pink-400"></i>
+            Thư Viện 5 Trường Phái Thiết Kế Icon Đạt CVR Cao Nhất (Icon Archetypes)
+          </h3>
+          <span class="text-xs text-slate-400">Chuẩn hóa cho Store A/B Testing</span>
+        </div>
+        <div id="asoArchetypesGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+      </div>
+
+      <!-- Interactive Metadata & CVR Audit Tool -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="check-check" class="w-5 h-5 text-emerald-400"></i>
+              Công Cụ Thẩm Định Metadata & Dự Báo CVR Trực Quan
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Nhập thông tin listing của game để hệ thống AI đánh giá độ tối ưu ký tự, mật độ từ khóa và ước tính CVR</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Inputs Column (7 cols) -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Cửa Hàng Mục Tiêu</label>
+                <select id="asoAuditStore" onchange="updateAsoCharLimits()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500 cursor-pointer">
+                  <option value="google_play">Google Play Store (30 ký tự Title, 80 ký tự Short Desc)</option>
+                  <option value="app_store">Apple App Store (30 ký tự Title, 30 ký tự Subtitle)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Thể Loại Game</label>
+                <select id="asoAuditGenre" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500 cursor-pointer">
+                  <option value="RPG">Action RPG / Idle RPG</option>
+                  <option value="4X Strategy">4X Strategy & War</option>
+                  <option value="Action">Action & Battle Royale</option>
+                  <option value="Match-3">Casual Match-3 / Puzzle</option>
+                  <option value="Anime RPG">Anime Waifu Gacha</option>
+                  <option value="Hyper-casual">Hyper-casual / Runner</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-semibold text-slate-300">Tiêu Đề Game (App Title)</label>
+                <span class="text-[11px] font-mono text-slate-400" id="asoTitleCount">0 / 30</span>
+              </div>
+              <input type="text" id="asoAuditTitle" oninput="onAsoInputChanged()" value="Stickman Shadow: 3D Action RPG" placeholder="VD: Stickman Shadow: 3D Action RPG" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500">
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-semibold text-slate-300" id="asoSubtitleLabel">Mô Tả Ngắn (Short Description / Subtitle)</label>
+                <span class="text-[11px] font-mono text-slate-400" id="asoSubtitleCount">0 / 80</span>
+              </div>
+              <input type="text" id="asoAuditSubtitle" oninput="onAsoInputChanged()" value="Chiến trường PvP khốc liệt, thức tỉnh sức mạnh bóng tối" placeholder="VD: Khẩu hiệu USP hấp dẫn hoặc tính năng cốt lõi" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Trường Phái Icon Được Chọn</label>
+                <select id="asoAuditIconStyle" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500 cursor-pointer">
+                  <option value="screaming_hero">Screaming Character Hero (Mouth Open)</option>
+                  <option value="glossy_tactile_object">3D Glossy / Hyper-Tactile Object</option>
+                  <option value="anime_waifu_portrait">Anime Waifu / Bishoujo Close-Up</option>
+                  <option value="level_progression_split">Level 1 vs Level 100 Progression Split</option>
+                  <option value="minimalist_emblem">Minimalist Bold Emblem & Logo</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Từ Khóa Trọng Tâm (Cách nhau bằng dấu phẩy)</label>
+                <input type="text" id="asoAuditKeywords" value="rpg, action, pvp, 3d, idle" placeholder="VD: rpg, action, pvp, idle" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500">
+              </div>
+            </div>
+
+            <button onclick="runAsoAudit()" class="w-full py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-pink-900/30">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>Thẩm Định Metadata & Ước Tính CVR</span>
+            </button>
+          </div>
+
+          <!-- Output Column (5 cols) -->
+          <div class="lg:col-span-5 bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span class="text-xs font-bold text-slate-300">KẾT QUẢ ĐÁNH GIÁ CVR</span>
+              <span id="asoHealthGradeBadge" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                A+ (Excellent)
+              </span>
+            </div>
+
+            <!-- CVR & Score Meter -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                <div class="text-[11px] text-slate-400">CVR Dự Báo (Store Conversion)</div>
+                <div class="text-2xl font-black text-pink-400 mt-1" id="asoEstimatedCvr">32.5%</div>
+                <div class="text-[10px] text-pink-300/70 mt-0.5">Top 15% ngành game</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                <div class="text-[11px] text-slate-400">Điểm Sức Khỏe ASO</div>
+                <div class="text-2xl font-black text-emerald-400 mt-1" id="asoHealthScore">88 / 100</div>
+                <div class="text-[10px] text-emerald-300/70 mt-0.5">Độ ăn khớp từ khóa cao</div>
+              </div>
+            </div>
+
+            <!-- Matched High-Intent Keywords -->
+            <div>
+              <div class="text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
+                <span>Từ Khóa Khối Lượng Cao Tìm Thấy</span>
+                <span class="text-[11px] text-slate-500" id="asoKwCount">0 từ khóa</span>
+              </div>
+              <div id="asoMatchedKeywordsList" class="space-y-1.5 max-h-36 overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Actionable Recommendations -->
+            <div>
+              <div class="text-xs font-bold text-slate-300 mb-2">Đề Xuất Tối Ưu Cụ Thể</div>
+              <div id="asoRecommendationsList" class="space-y-1.5 text-[11px] text-slate-300 max-h-40 overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: IAP MONETIZATION & BATTLE PASS MATRIX -->
+    <div id="tabContent-iapmatrix" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              REVENUE & MONETIZATION STRATEGY
+            </span>
+            <span class="text-xs text-slate-400">Price Ladder & PPP Purchasing Power</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            💎 IAP Monetization & Battle Pass Pricing Matrix
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Chuẩn hóa thang giá nạp (Price Ladder) cho từng dòng game mobile, công thức định giá nội địa hóa theo sức mua (PPP) tại các thị trường Tier 1 & Tier 3, và mô phỏng cơ cấu doanh thu từ nhóm Whales (Cá voi) so với Minnows (Cá con).
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 1: Standard Price Ladders by Genre -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-5">
+        <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="layers" class="w-5 h-5 text-amber-400"></i>
+              Thang Giá Nạp Chuẩn Hóa Theo Thể Loại (Price Ladder Benchmarks)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Tham khảo cơ cấu gói nạp tối ưu tỷ lệ chuyển đổi từ các tựa game top grossing thế giới</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap text-xs">
+            <button onclick="selectIapGenre('midcore_rpg')" id="iapGenreBtn-midcore_rpg" class="px-3 py-1.5 rounded-lg bg-amber-600 text-white font-semibold cursor-pointer">Mid-Core Action/RPG</button>
+            <button onclick="selectIapGenre('hybrid_casual')" id="iapGenreBtn-hybrid_casual" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">Hybrid-Casual</button>
+            <button onclick="selectIapGenre('strategy_4x')" id="iapGenreBtn-strategy_4x" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">4X Strategy & War</button>
+            <button onclick="selectIapGenre('gacha_anime')" id="iapGenreBtn-gacha_anime" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">Gacha Anime</button>
+            <button onclick="selectIapGenre('casual_match3')" id="iapGenreBtn-casual_match3" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">Match-3 Casual</button>
+          </div>
+        </div>
+
+        <!-- Selected Genre Ladder Display -->
+        <div id="iapLadderDisplay" class="space-y-4"></div>
+      </div>
+
+      <!-- Section 2: Global PPP Localization Table -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="globe" class="w-5 h-5 text-sky-400"></i>
+              Bảng Định Giá Theo Sức Mua Địa Phương (Purchasing Power Parity - PPP)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Định giá nội địa hóa thông minh tại thị trường SEA/LATAM giúp tăng tới +65% số lượng người chơi chấp nhận trả tiền</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="px-4 py-3">Quốc Gia / Khu Vực</th>
+                <th class="px-4 py-3">Tier Thị Trường</th>
+                <th class="px-4 py-3">Gói Mồi ($0.99) Bản Địa</th>
+                <th class="px-4 py-3">Battle Pass ($9.99) Bản Địa</th>
+                <th class="px-4 py-3">Gói Whale ($99.99) Bản Địa</th>
+                <th class="px-4 py-3">Hiệu Ứng Chuyển Đổi (CVR Lift)</th>
+              </tr>
+            </thead>
+            <tbody id="iapPppTableBody" class="divide-y divide-slate-800/60 font-mono"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 3: Interactive Player Spender Economy Simulator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="calculator" class="w-5 h-5 text-emerald-400"></i>
+              Mô Phỏng Cơ Cấu Người Trả Tiền (Whales vs Dolphins vs Minnows Simulator)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Dự báo dòng tiền 30 ngày dựa trên quy mô DAU, giá vé mùa và tỷ lệ phân hóa chi tiêu</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">DAU Dự Kiến (Daily Active)</label>
+            <input type="number" id="iapSimDau" value="50000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Thể Loại Phân Tích</label>
+            <select id="iapSimGenre" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer">
+              <option value="midcore_rpg">Mid-Core Action/RPG</option>
+              <option value="hybrid_casual">Hybrid-Casual</option>
+              <option value="strategy_4x">4X Strategy & War</option>
+              <option value="gacha_anime">Gacha Anime</option>
+              <option value="casual_match3">Casual Match-3</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Vùng Thị Trường</label>
+            <select id="iapSimRegion" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer">
+              <option value="global">Global Blended</option>
+              <option value="tier1_us">Tier 1 US / Canada</option>
+              <option value="tier1_east_asia">Tier 1 JP / KR / TW</option>
+              <option value="tier3_sea">Tier 3 VN / SEA / Brazil</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Giá Battle Pass ($)</label>
+            <input type="number" id="iapSimBpPrice" value="9.99" step="1.0" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Giá Thẻ Tháng ($)</label>
+            <input type="number" id="iapSimCardPrice" value="4.99" step="1.0" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <button onclick="runIapSimulation()" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-amber-900/30">
+          <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+          <span>Tính Toán Doanh Số Dự Phóng (Run Financial Forecast)</span>
+        </button>
+
+        <!-- Simulation Financial Output -->
+        <div id="iapSimulationResults" class="space-y-4 pt-2">
+          <!-- Financial KPI Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
+              <div class="text-xs text-slate-400">Doanh Thu Tháng (Gross)</div>
+              <div class="text-xl font-black text-amber-400 mt-1" id="iapResTotalGross">--</div>
+              <div class="text-[10px] text-amber-300/70 mt-0.5" id="iapResGrossSplit">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+              <div class="text-xs text-slate-400">Doanh Thu IAP Trực Tiếp</div>
+              <div class="text-xl font-black text-emerald-400 mt-1" id="iapResIap">--</div>
+              <div class="text-[10px] text-emerald-300/70 mt-0.5">In-app purchases</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-sky-500/30 bg-sky-950/10">
+              <div class="text-xs text-slate-400">Doanh Thu Ads (Quảng Cáo)</div>
+              <div class="text-xl font-black text-sky-400 mt-1" id="iapResAds">--</div>
+              <div class="text-[10px] text-sky-300/70 mt-0.5">Rewarded & Interstitial</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-purple-500/30 bg-purple-950/10">
+              <div class="text-xs text-slate-400">Monthly ARPPU / ARPDAU</div>
+              <div class="text-xl font-black text-purple-400 mt-1" id="iapResArppu">--</div>
+              <div class="text-[10px] text-purple-300/70 mt-0.5" id="iapResArpdau">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-pink-500/30 bg-pink-950/10">
+              <div class="text-xs text-slate-400">Tỷ Lệ Trả Tiền (Payer Rate)</div>
+              <div class="text-xl font-black text-pink-400 mt-1" id="iapResConversion">--</div>
+              <div class="text-[10px] text-pink-300/70 mt-0.5">% tổng lượng DAU</div>
+            </div>
+          </div>
+
+          <!-- Spender Segmentation 4 Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="iapSpenderCardsContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: LIVEOPS CALENDAR & COMPETITOR CLASH RADAR -->
+    <div id="tabContent-liveopsradar" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-500 animate-ping"></span>
+              LIVEOPS LIFECYCLE & AUCTION ARBITRAGE
+            </span>
+            <span class="text-xs text-slate-400">Event Calendars & Competitor Clash Avoidance</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            📅 LiveOps Lifecycle Planner & Competitor Clash Radar
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Thiết kế chu kỳ sự kiện ingame (Battle Pass 28 ngày, Gacha Collab, Boss cuối tuần) dự phóng mức tăng trưởng doanh thu. Đồng thời theo dõi chu kỳ update của các ông lớn mobile để tránh thời điểm đấu thầu quảng cáo (Auction Bidding) bị đẩy giá CPI lên đỉnh điểm.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 1: Competitor Update Clash Radar -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="shield-alert" class="w-5 h-5 text-rose-400"></i>
+              Radar Cảnh Báo Tránh Đụng Độ Các Ông Lớn Mobile (Clash Avoidance)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Tránh tung game hoặc chạy chiến dịch UA lớn vào các khung giờ các tựa game tỷ đô ra bản cập nhật lớn</p>
+          </div>
+        </div>
+
+        <div id="liveopsClashTimeline" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+        <!-- Best Practices Alert -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-cyan-500/30 flex items-start gap-3">
+          <div class="p-2 rounded-lg bg-cyan-500/20 text-cyan-400 mt-0.5">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i>
+          </div>
+          <div class="text-xs space-y-1 text-slate-300">
+            <span class="font-bold text-cyan-300">Quy Tắc Vàng Khi Lập Lịch LiveOps Mobile:</span>
+            <p>1. <strong>Thứ Năm 10:00 UTC</strong> là thời điểm vàng để tung Battle Pass và Event lớn giúp user cập nhật và chuẩn bị cho đỉnh lưu lượng cuối tuần.</p>
+            <p>2. Khi HoYoverse ra bản 6 tuần (Genshin/Star Rail), chi phí quảng cáo TikTok/Meta tăng vọt +45-60%, hãy giảm ngân sách UA trong 4 ngày đầu tiên.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: LiveOps Archetypes -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+            5 Mô Thức LiveOps Event Điển Hình (LiveOps Templates)
+          </h3>
+          <span class="text-xs text-slate-400">Benchmark mức tăng trưởng doanh thu</span>
+        </div>
+        <div id="liveopsTemplatesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- Section 3: Interactive LiveOps Event Forecaster -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-5 h-5 text-emerald-400"></i>
+              Công Cụ Lập Kế Hoạch & Dự Phóng Doanh Thu Sự Kiện (LiveOps Forecaster)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Nhập thông số sự kiện để xem dự phóng mức tăng doanh thu từng ngày và đánh giá rủi ro đụng độ lịch</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Loại Sự Kiện</label>
+            <select id="liveopsEventType" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer">
+              <option value="battle_pass_season">Battle Pass / Season Reset (28 ngày)</option>
+              <option value="limited_collab_gacha">Limited Collab / Gacha Banner (14 ngày)</option>
+              <option value="weekend_guild_raid">Weekend Guild War / KvK (3 ngày)</option>
+              <option value="flash_piggy_smash">Flash Sale / Piggy Bank (2 ngày)</option>
+              <option value="seasonal_holiday_festival">Seasonal Holiday Mega Festival (21 ngày)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Ngày Bắt Đầu Khởi Chạy</label>
+            <input type="date" id="liveopsStartDate" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Thời Lượng Sự Kiện (Ngày)</label>
+            <input type="number" id="liveopsDuration" value="14" min="2" max="60" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">DAU Nền Tảng (Base DAU)</label>
+            <input type="number" id="liveopsBaseDau" value="25000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">ARPDAU Bình Thường ($)</label>
+            <input type="number" id="liveopsBaseArpdau" value="0.08" step="0.01" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+        </div>
+
+        <button onclick="runLiveOpsPlanning()" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-cyan-900/30">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Dự Phóng Tăng Trưởng & Phân Tích Lịch Trình</span>
+        </button>
+
+        <!-- LiveOps Results Box -->
+        <div id="liveopsResultContainer" class="hidden space-y-4 pt-2">
+          <!-- 4 Summary KPI Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-cyan-500/30 bg-cyan-950/10">
+              <div class="text-xs text-slate-400">Tổng Doanh Thu Sự Kiện</div>
+              <div class="text-xl font-black text-cyan-400 mt-1" id="liveopsResTotalRev">--</div>
+              <div class="text-[10px] text-cyan-300/70 mt-0.5">Trong toàn bộ thời gian event</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+              <div class="text-xs text-slate-400">Doanh Thu Thặng Dư (Net Lift)</div>
+              <div class="text-xl font-black text-emerald-400 mt-1" id="liveopsResNetLift">--</div>
+              <div class="text-[10px] text-emerald-300/70 mt-0.5" id="liveopsResLiftPct">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
+              <div class="text-xs text-slate-400">Doanh Thu Đỉnh Ngày 1 (Peak)</div>
+              <div class="text-xl font-black text-amber-400 mt-1" id="liveopsResPeakDay">--</div>
+              <div class="text-[10px] text-amber-300/70 mt-0.5">Hiệu ứng mở bán giờ đầu</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-purple-500/30 bg-purple-950/10">
+              <div class="text-xs text-slate-400">Đánh Giá Thời Điểm Khởi Chạy</div>
+              <div class="text-sm font-black text-purple-300 mt-1" id="liveopsResTimingGrade">--</div>
+              <div class="text-[10px] text-purple-300/70 mt-0.5" id="liveopsResTimingTip">--</div>
+            </div>
+          </div>
+
+          <!-- Daily Breakdown Table -->
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-300">Đường Cong Doanh Thu Từng Ngày (Revenue Spike Trajectory)</span>
+              <span class="text-[11px] text-slate-500">Mô phỏng hàm suy giảm & climax</span>
+            </div>
+            <div class="overflow-x-auto max-h-56 overflow-y-auto">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] sticky top-0">
+                  <tr>
+                    <th class="px-3 py-2">Ngày</th>
+                    <th class="px-3 py-2">Thứ</th>
+                    <th class="px-3 py-2">Doanh Thu Dự Phóng</th>
+                    <th class="px-3 py-2">Doanh Thu Cơ Sở</th>
+                    <th class="px-3 py-2">Hệ Số Tăng Trưởng (Lift)</th>
+                  </tr>
+                </thead>
+                <tbody id="liveopsDailyTableBody" class="divide-y divide-slate-800 font-mono text-[11px]"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1613,7 +2086,7 @@
 
     // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
+      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
@@ -1633,6 +2106,9 @@
       if (tabId === 'creatives') loadCreativeSpy();
       if (tabId === 'simulator') initSimulatorTab();
       if (tabId === 'blueocean') loadBlueOceanRadar();
+      if (tabId === 'asolab') loadAsoVisualLab();
+      if (tabId === 'iapmatrix') initIapMatrixTab();
+      if (tabId === 'liveopsradar') initLiveOpsRadarTab();
       if (tabId === 'breakouts') loadBreakoutRadar();
       if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
@@ -3725,6 +4201,457 @@
         lucide.createIcons();
       } catch (err) {
         console.error("Error loading blue ocean radar:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE: ASO VISUAL OPTIMIZER & CVR LAB
+    // ==========================================
+    async function loadAsoVisualLab() {
+      const grid = document.getElementById('asoArchetypesGrid');
+      grid.innerHTML = '<div class="col-span-full py-6 text-center text-slate-400">Đang tải các trường phái thiết kế Icon...</div>';
+
+      try {
+        const res = await fetch('/api/mobile/aso/visual-archetypes');
+        const data = await res.json();
+        const items = data.archetypes || [];
+
+        grid.innerHTML = items.map(a => `
+          <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between hover:border-pink-500/40 transition-all">
+            <div class="space-y-2">
+              <div class="flex items-start justify-between gap-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-pink-500/20 text-pink-400 border border-pink-500/30">${a.cvr_lift} CVR</span>
+                <span class="text-[10px] text-slate-400 font-mono">Avg ${a.avg_cvr}%</span>
+              </div>
+              <h4 class="text-xs font-bold text-white leading-tight">${a.name}</h4>
+              <p class="text-[11px] text-slate-300 leading-snug">${a.psychology}</p>
+              
+              <div class="space-y-1 text-[10px] text-slate-400">
+                <div><strong class="text-slate-300">Thể loại tốt nhất:</strong> ${(a.best_genres || []).slice(0, 3).join(', ')}</div>
+                <div><strong class="text-slate-300">Tone màu:</strong> ${(a.color_palette || []).slice(0, 2).join(', ')}</div>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800 text-[10px] text-pink-300">
+              💡 ${a.dos_and_donts.dos[0] || ''}
+            </div>
+          </div>
+        `).join('');
+
+        onAsoInputChanged();
+        runAsoAudit();
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error loading ASO visual archetypes:", err);
+      }
+    }
+
+    function updateAsoCharLimits() {
+      const store = document.getElementById('asoAuditStore').value;
+      const subLabel = document.getElementById('asoSubtitleLabel');
+      if (store === 'app_store') {
+        subLabel.innerText = "Phụ Đề (Subtitle - Tối đa 30 ký tự)";
+      } else {
+        subLabel.innerText = "Mô Tả Ngắn (Short Description - Tối đa 80 ký tự)";
+      }
+      onAsoInputChanged();
+    }
+
+    function onAsoInputChanged() {
+      const store = document.getElementById('asoAuditStore').value;
+      const title = document.getElementById('asoAuditTitle').value || '';
+      const subtitle = document.getElementById('asoAuditSubtitle').value || '';
+      const titleLimit = 30;
+      const subtitleLimit = store === 'app_store' ? 30 : 80;
+
+      const titleCountElem = document.getElementById('asoTitleCount');
+      const subtitleCountElem = document.getElementById('asoSubtitleCount');
+
+      titleCountElem.innerText = `${title.length} / ${titleLimit}`;
+      titleCountElem.className = title.length > titleLimit ? "text-[11px] font-mono text-rose-400 font-bold" : "text-[11px] font-mono text-slate-400";
+
+      subtitleCountElem.innerText = `${subtitle.length} / ${subtitleLimit}`;
+      subtitleCountElem.className = subtitle.length > subtitleLimit ? "text-[11px] font-mono text-rose-400 font-bold" : "text-[11px] font-mono text-slate-400";
+    }
+
+    async function runAsoAudit() {
+      const title = document.getElementById('asoAuditTitle').value;
+      const subtitle = document.getElementById('asoAuditSubtitle').value;
+      const keywords = document.getElementById('asoAuditKeywords').value;
+      const genre = document.getElementById('asoAuditGenre').value;
+      const icon_style = document.getElementById('asoAuditIconStyle').value;
+      const target_store = document.getElementById('asoAuditStore').value;
+
+      try {
+        const res = await fetch('/api/mobile/aso/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: title,
+            subtitle: subtitle,
+            keywords: keywords,
+            genre: genre,
+            icon_archetype_id: icon_style,
+            target_store: target_store
+          })
+        });
+
+        const data = await res.json();
+
+        // Update scores
+        document.getElementById('asoEstimatedCvr').innerText = `${data.estimated_cvr}%`;
+        document.getElementById('asoHealthScore').innerText = `${data.overall_score} / 100`;
+
+        const gradeBadge = document.getElementById('asoHealthGradeBadge');
+        gradeBadge.innerText = data.health_grade;
+        if (data.badge_color === 'emerald') {
+          gradeBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+        } else if (data.badge_color === 'indigo') {
+          gradeBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30";
+        } else if (data.badge_color === 'amber') {
+          gradeBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+        } else {
+          gradeBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-rose-500/20 text-rose-400 border border-rose-500/30";
+        }
+
+        // Render matched keywords
+        const kwList = document.getElementById('asoMatchedKeywordsList');
+        document.getElementById('asoKwCount').innerText = `${data.matched_keywords.length} từ khóa`;
+        if (data.matched_keywords.length === 0) {
+          kwList.innerHTML = '<div class="text-[11px] text-slate-500 py-2">Không phát hiện từ khóa gaming phổ biến trong listing.</div>';
+        } else {
+          kwList.innerHTML = data.matched_keywords.map(kw => `
+            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-pink-400 capitalize">${kw.keyword}</span>
+                <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">${kw.found_in}</span>
+              </div>
+              <div class="flex items-center gap-3 text-[11px] font-mono">
+                <span class="text-emerald-400">Vol: ${kw.volume}</span>
+                <span class="text-amber-400">Diff: ${kw.difficulty}</span>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        // Render recommendations
+        const recList = document.getElementById('asoRecommendationsList');
+        recList.innerHTML = data.recommendations.map(r => `
+          <div class="flex items-start gap-2 p-1.5 rounded bg-slate-900/60 border border-slate-800/80">
+            <i data-lucide="arrow-right-circle" class="w-3.5 h-3.5 text-pink-400 shrink-0 mt-0.5"></i>
+            <span>${r}</span>
+          </div>
+        `).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error running ASO audit:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE: IAP MONETIZATION & PRICING MATRIX
+    // ==========================================
+    let cachedIapBenchmarks = null;
+
+    async function initIapMatrixTab() {
+      try {
+        const res = await fetch('/api/mobile/iap/benchmarks');
+        cachedIapBenchmarks = await res.json();
+
+        // Render default genre ladder
+        selectIapGenre('midcore_rpg');
+
+        // Render PPP table
+        const pppBody = document.getElementById('iapPppTableBody');
+        pppBody.innerHTML = (cachedIapBenchmarks.ppp_matrix || []).map(p => `
+          <tr class="hover:bg-slate-900/60 transition-colors">
+            <td class="px-4 py-3 font-semibold text-white">${p.region}</td>
+            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.tier === 'Tier 1' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">${p.tier}</span></td>
+            <td class="px-4 py-3 text-emerald-400 font-bold">${p.starter_local}</td>
+            <td class="px-4 py-3 text-amber-400 font-bold">${p.pass_local}</td>
+            <td class="px-4 py-3 text-purple-400 font-bold">${p.whale_local}</td>
+            <td class="px-4 py-3 text-slate-300 font-sans">${p.cvr_impact}</td>
+          </tr>
+        `).join('');
+
+        runIapSimulation();
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error initializing IAP matrix tab:", err);
+      }
+    }
+
+    function selectIapGenre(genreKey) {
+      if (!cachedIapBenchmarks || !cachedIapBenchmarks.genres) return;
+      const genres = ['midcore_rpg', 'hybrid_casual', 'strategy_4x', 'gacha_anime', 'casual_match3'];
+      genres.forEach(g => {
+        const btn = document.getElementById(`iapGenreBtn-${g}`);
+        if (!btn) return;
+        if (g === genreKey) {
+          btn.className = "px-3 py-1.5 rounded-lg bg-amber-600 text-white font-semibold cursor-pointer";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer";
+        }
+      });
+
+      const gData = cachedIapBenchmarks.genres[genreKey];
+      if (!gData) return;
+
+      const display = document.getElementById('iapLadderDisplay');
+      display.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-xl bg-slate-950 border border-amber-500/20">
+          <div>
+            <span class="text-xs text-slate-400">Thể Loại</span>
+            <div class="text-sm font-bold text-white mt-0.5">${gData.genre_name}</div>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400">Cơ Cấu Doanh Thu</span>
+            <div class="text-sm font-bold text-amber-400 mt-0.5">${gData.ad_vs_iap_split.iap_share}% IAP / ${gData.ad_vs_iap_split.ad_share}% Ads</div>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400">Tỷ Lệ Trả Tiền Chuẩn</span>
+            <div class="text-sm font-bold text-emerald-400 mt-0.5">~${gData.median_paying_conversion}% Paying DAU</div>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400">Trần Chi Tiêu Của Whale</span>
+            <div class="text-sm font-bold text-purple-400 mt-0.5">${gData.whale_cap}</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          ${gData.price_ladder.map(tier => `
+            <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 hover:border-amber-500/40 transition-colors">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-xs">${tier.tier}</span>
+                <span class="px-2 py-0.5 rounded text-xs font-black bg-amber-500/20 text-amber-400 border border-amber-500/30 font-mono">$${tier.price_usd}</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-snug">${tier.description}</p>
+              <div class="text-[10px] text-slate-400 pt-1 border-t border-slate-800/80 flex items-center justify-between">
+                <span>Tỷ trọng đơn hàng:</span>
+                <strong class="text-amber-300 font-mono">${tier.conversion_share}</strong>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-2 flex-wrap text-xs">
+          <span class="text-slate-400 font-semibold">Cơ chế monetization khuyến nghị:</span>
+          ${(gData.recommended_mechanics || []).map(m => `<span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[11px]">${m}</span>`).join('')}
+        </div>
+      `;
+
+      // Sync simulator genre dropdown
+      const simGenreSelect = document.getElementById('iapSimGenre');
+      if (simGenreSelect) simGenreSelect.value = genreKey;
+      lucide.createIcons();
+    }
+
+    async function runIapSimulation() {
+      const dau = document.getElementById('iapSimDau').value;
+      const genre = document.getElementById('iapSimGenre').value;
+      const region = document.getElementById('iapSimRegion').value;
+      const bpPrice = document.getElementById('iapSimBpPrice').value;
+      const cardPrice = document.getElementById('iapSimCardPrice').value;
+
+      try {
+        const res = await fetch('/api/mobile/iap/simulate-economy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dau: parseInt(dau) || 50000,
+            genre_key: genre,
+            region_tier: region,
+            battle_pass_price: parseFloat(bpPrice) || 9.99,
+            monthly_card_price: parseFloat(cardPrice) || 4.99
+          })
+        });
+
+        const data = await res.json();
+        const fin = data.financial_summary;
+        const sp = data.spender_distribution;
+
+        // Populate Financial KPIs
+        document.getElementById('iapResTotalGross').innerText = `$${Math.round(fin.total_monthly_gross_usd).toLocaleString()}`;
+        document.getElementById('iapResIap').innerText = `$${Math.round(fin.monthly_iap_usd).toLocaleString()}`;
+        document.getElementById('iapResAds').innerText = `$${Math.round(fin.monthly_ad_usd).toLocaleString()}`;
+        document.getElementById('iapResArppu').innerText = `$${fin.monthly_arppu_usd}`;
+        document.getElementById('iapResArpdau').innerText = `ARPDAU: $${fin.daily_arpdau_usd}`;
+        document.getElementById('iapResConversion').innerText = `${fin.payer_conversion_rate}%`;
+        document.getElementById('iapResGrossSplit').innerText = `${data.revenue_split.iap_pct}% IAP / ${data.revenue_split.ad_pct}% Ads`;
+
+        // Render Spender Cards
+        const container = document.getElementById('iapSpenderCardsContainer');
+        container.innerHTML = `
+          <!-- Whales -->
+          <div class="glass-card p-4 rounded-xl border border-purple-500/30 bg-purple-950/10 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-purple-300 flex items-center gap-1">🐋 Whales (Cá Voi)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-300 font-mono">${sp.whales.count.toLocaleString()} user</span>
+            </div>
+            <div class="text-xl font-black text-white font-mono">$${Math.round(sp.whales.total_revenue).toLocaleString()}</div>
+            <div class="text-[11px] text-purple-300/80">Chiếm <strong>${sp.whales.revenue_contribution_pct}%</strong> tổng doanh thu IAP</div>
+            <div class="text-[10px] text-slate-400">Chi tiêu trung bình: <strong class="text-slate-200 font-mono">$${sp.whales.avg_monthly_spend}/tháng</strong></div>
+          </div>
+
+          <!-- Dolphins -->
+          <div class="glass-card p-4 rounded-xl border border-indigo-500/30 bg-indigo-950/10 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-indigo-300 flex items-center gap-1">🐬 Dolphins (Cá Heo)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 font-mono">${sp.dolphins.count.toLocaleString()} user</span>
+            </div>
+            <div class="text-xl font-black text-white font-mono">$${Math.round(sp.dolphins.total_revenue).toLocaleString()}</div>
+            <div class="text-[11px] text-indigo-300/80">Chiếm <strong>${sp.dolphins.revenue_contribution_pct}%</strong> tổng doanh thu IAP</div>
+            <div class="text-[10px] text-slate-400">Mua Battle Pass + Thẻ tháng: <strong class="text-slate-200 font-mono">$${sp.dolphins.avg_monthly_spend}/tháng</strong></div>
+          </div>
+
+          <!-- Minnows -->
+          <div class="glass-card p-4 rounded-xl border border-sky-500/30 bg-sky-950/10 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-sky-300 flex items-center gap-1">🐟 Minnows (Cá Con)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 font-mono">${sp.minnows.count.toLocaleString()} user</span>
+            </div>
+            <div class="text-xl font-black text-white font-mono">$${Math.round(sp.minnows.total_revenue).toLocaleString()}</div>
+            <div class="text-[11px] text-sky-300/80">Chiếm <strong>${sp.minnows.revenue_contribution_pct}%</strong> tổng doanh thu IAP</div>
+            <div class="text-[10px] text-slate-400">Mua gói $0.99 mồi: <strong class="text-slate-200 font-mono">$${sp.minnows.avg_monthly_spend}/tháng</strong></div>
+          </div>
+
+          <!-- F2P Non-payers -->
+          <div class="glass-card p-4 rounded-xl border border-slate-700 bg-slate-900/60 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-slate-300 flex items-center gap-1">👥 F2P (Miễn Phí)</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 font-mono">${sp.f2p_users.pct_of_dau}% DAU</span>
+            </div>
+            <div class="text-xl font-black text-white font-mono">$${Math.round(sp.f2p_users.ad_value_generated).toLocaleString()}</div>
+            <div class="text-[11px] text-slate-400">Đóng góp qua quảng cáo Ads</div>
+            <div class="text-[10px] text-slate-500">Giữ chân cộng đồng & thanh khoản matchmaking</div>
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error running IAP simulation:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE: LIVEOPS CALENDAR & CLASH RADAR
+    // ==========================================
+    async function initLiveOpsRadarTab() {
+      // Set default start date to next Thursday
+      const today = new Date();
+      today.setDate(today.getDate() + ((4 + 7 - today.getDay()) % 7 || 7));
+      const formattedDate = today.toISOString().split('T')[0];
+      const dateInput = document.getElementById('liveopsStartDate');
+      if (dateInput && !dateInput.value) dateInput.value = formattedDate;
+
+      try {
+        const res = await fetch('/api/mobile/liveops/clash-radar');
+        const data = await res.json();
+
+        // Render Competitor Clash Windows
+        const clashContainer = document.getElementById('liveopsClashTimeline');
+        clashContainer.innerHTML = (data.radar.upcoming_clash_windows || []).map(w => `
+          <div class="glass-card p-4 rounded-xl border ${w.risk_level === 'High' ? 'border-rose-500/40 bg-rose-950/10' : 'border-amber-500/30 bg-amber-950/10'} space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-xs">${w.publisher}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${w.risk_level === 'High' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">
+                Rủi ro: ${w.risk_level}
+              </span>
+            </div>
+            <div class="text-[11px] text-slate-300 font-semibold">Tựa game: ${(w.titles || []).join(', ')}</div>
+            <div class="flex items-center gap-2 text-[11px] font-mono">
+              <span class="text-cyan-400 font-bold">${w.estimated_patch_date} (${w.weekday})</span>
+            </div>
+            <div class="p-2 rounded bg-slate-950 text-[10px] text-slate-300 border border-slate-800">
+              ⚡ <strong>Tác động CPI:</strong> ${w.auction_impact}
+            </div>
+            <p class="text-[10px] text-slate-400 leading-snug">${w.advisory}</p>
+          </div>
+        `).join('');
+
+        // Render LiveOps Templates
+        const templatesContainer = document.getElementById('liveopsTemplatesGrid');
+        templatesContainer.innerHTML = (data.templates || []).map(t => `
+          <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between hover:border-cyan-500/40 transition-colors">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <span class="px-2 py-0.5 rounded text-xs font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-mono">${t.revenue_lift} Rev</span>
+                <span class="text-[10px] text-slate-400">${t.cadence}</span>
+              </div>
+              <h4 class="text-xs font-bold text-white">${t.name}</h4>
+              <p class="text-[11px] text-slate-300 leading-snug">${t.monetization_impact}</p>
+              <div class="text-[10px] text-cyan-300/80">📈 <strong>Dạng sóng:</strong> ${t.revenue_curve}</div>
+            </div>
+            <div class="pt-2 border-t border-slate-800 text-[10px] text-slate-400 flex items-center justify-between">
+              <span>Ngày tối ưu: <strong class="text-slate-200">${t.recommended_day}</strong></span>
+              <button onclick="prefillLiveOpsForm('${t.id}', ${t.typical_duration_days})" class="text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer">Lập lịch →</button>
+            </div>
+          </div>
+        `).join('');
+
+        runLiveOpsPlanning();
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error initializing liveops radar:", err);
+      }
+    }
+
+    function prefillLiveOpsForm(typeId, duration) {
+      document.getElementById('liveopsEventType').value = typeId;
+      document.getElementById('liveopsDuration').value = duration;
+      runLiveOpsPlanning();
+    }
+
+    async function runLiveOpsPlanning() {
+      const type = document.getElementById('liveopsEventType').value;
+      const date = document.getElementById('liveopsStartDate').value;
+      const duration = document.getElementById('liveopsDuration').value;
+      const dau = document.getElementById('liveopsBaseDau').value;
+      const arpdau = document.getElementById('liveopsBaseArpdau').value;
+
+      try {
+        const res = await fetch('/api/mobile/liveops/plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_type_id: type,
+            start_date: date,
+            duration_days: parseInt(duration) || 14,
+            base_dau: parseInt(dau) || 25000,
+            base_arpdau: parseFloat(arpdau) || 0.08
+          })
+        });
+
+        const data = await res.json();
+        const fin = data.financial_forecast;
+        const timing = data.timing_advisory;
+
+        document.getElementById('liveopsResultContainer').classList.remove('hidden');
+
+        // Populate KPIs
+        document.getElementById('liveopsResTotalRev').innerText = `$${Math.round(fin.total_event_revenue_usd).toLocaleString()}`;
+        document.getElementById('liveopsResNetLift').innerText = `+$${Math.round(fin.incremental_revenue_gain_usd).toLocaleString()}`;
+        document.getElementById('liveopsResLiftPct').innerText = `Tăng trưởng +${fin.gross_revenue_lift_pct}% so với ngày thường`;
+        document.getElementById('liveopsResPeakDay').innerText = `$${Math.round(fin.peak_day_revenue_usd).toLocaleString()}`;
+        document.getElementById('liveopsResTimingGrade').innerText = `${timing.start_weekday} - ${timing.timing_grade}`;
+        document.getElementById('liveopsResTimingTip').innerText = timing.recommendation;
+
+        // Daily breakdown table
+        const tableBody = document.getElementById('liveopsDailyTableBody');
+        tableBody.innerHTML = (data.daily_forecast || []).map(d => `
+          <tr class="hover:bg-slate-900/60 transition-colors">
+            <td class="px-3 py-2 font-bold text-white">Ngày ${d.day}</td>
+            <td class="px-3 py-2 text-slate-400">${d.weekday} (${d.date})</td>
+            <td class="px-3 py-2 text-cyan-400 font-bold">$${d.projected_revenue.toLocaleString()}</td>
+            <td class="px-3 py-2 text-slate-500">$${d.baseline_revenue.toLocaleString()}</td>
+            <td class="px-3 py-2 font-semibold ${d.lift_multiplier > 1.4 ? 'text-amber-400' : 'text-emerald-400'}">x${d.lift_multiplier}</td>
+          </tr>
+        `).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error running LiveOps planning:", err);
       }
     }
 
