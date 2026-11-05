@@ -35,6 +35,7 @@ from app.analytics.blue_ocean_finder import BlueOceanFinder
 from app.analytics.aso_visual_optimizer import ASOVisualOptimizer
 from app.analytics.iap_monetization import IAPMonetizationAnalyzer
 from app.analytics.liveops_scheduler import LiveOpsScheduler
+from app.analytics.ua_campaign_optimizer import UACampaignOptimizer
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -53,6 +54,7 @@ blue_ocean_finder = BlueOceanFinder()
 aso_visual_optimizer = ASOVisualOptimizer()
 iap_analyzer = IAPMonetizationAnalyzer()
 liveops_scheduler = LiveOpsScheduler()
+ua_optimizer = UACampaignOptimizer()
 
 is_crawling = False
 
@@ -517,6 +519,29 @@ async def plan_liveops_event_api(request: Request):
         duration_days=duration_days,
         base_dau=base_dau,
         base_arpdau=base_arpdau
+    )
+
+# --- TikTok & Meta UA Campaign Optimizer & ROAS Pacing Endpoints ---
+@app.get("/api/mobile/campaign/dayparting-benchmarks")
+async def get_ua_dayparting_benchmarks_api():
+    """Returns 24-hour behavioral curves, network mechanics, and kill-switch rules."""
+    return ua_optimizer.get_benchmarks()
+
+@app.post("/api/mobile/campaign/optimize-pacing")
+async def optimize_campaign_pacing_api(request: Request):
+    """Calculates hourly budget dayparting schedule, bid multipliers, and ROI forecast."""
+    payload = await request.json()
+    budget = float(payload.get("daily_budget", 1000.0))
+    network = payload.get("network_id", "tiktok")
+    goal = payload.get("optimization_goal", "aeo_purchase")
+    cpi = float(payload.get("target_cpi", 1.80))
+    roas = float(payload.get("target_roas_d0", 20.0))
+    return ua_optimizer.optimize_campaign_pacing(
+        daily_budget=budget,
+        network_id=network,
+        optimization_goal=goal,
+        target_cpi=cpi,
+        target_roas_d0=roas
     )
 
 @app.get("/api/meta")

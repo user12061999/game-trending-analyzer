@@ -188,6 +188,9 @@
       <button onclick="switchTab('liveopsradar')" id="tabBtn-liveopsradar" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="calendar-clock" class="w-4 h-4 text-cyan-400"></i> LiveOps & Radar Tránh Đụng Độ
       </button>
+      <button onclick="switchTab('uapacing')" id="tabBtn-uapacing" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="gauge" class="w-4 h-4 text-violet-400"></i> UA Pacing & ROAS Dayparting
+      </button>
       <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
       </button>
@@ -1270,6 +1273,160 @@
       </div>
     </div>
 
+    <!-- TAB: UA CAMPAIGN BUDGET PACING & DAYPARTING -->
+    <div id="tabContent-uapacing" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-violet-500/20 text-violet-400 border border-violet-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-violet-500 animate-ping"></span>
+              HOURLY DAYPARTING & ROAS PACING
+            </span>
+            <span class="text-xs text-slate-400">TikTok, Meta & Unity Ads Optimization</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            📱 UA Campaign Budget Optimizer & ROAS Dayparting
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Thuật toán phân bổ ngân sách 24 giờ tự động theo nhịp sinh học người chơi mobile. Cắt giảm bid vào khung giờ ngủ (Dead Zone) để tránh ghost clicks, dồn 45% ngân sách vào giờ vàng cá voi (19:00 - 23:00) và hệ thống quy tắc tự động ngắt ad set thủng CPI.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 1: Ad Network Characteristics -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="uaNetworkCardsContainer"></div>
+
+      <!-- Section 2: Automated Kill-Switch & Scaling Rulebook -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+              Quy Tắc Tự Động Ngắt Ad Set Kém & Scale Ad Set Thắng (Kill-Switch Protocols)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Bộ quy tắc tự động hóa dành cho Media Buyer / UA Lead nhằm bảo vệ dòng vốn và nhân rộng chiến dịch hiệu quả</p>
+          </div>
+        </div>
+        <div id="uaKillSwitchGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+      </div>
+
+      <!-- Section 3: Interactive 24-Hour Dayparting Simulator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="clock" class="w-5 h-5 text-violet-400"></i>
+              Công Cụ Mô Phỏng Lịch Phân Bổ Ngân Sách 24 Giờ (24h Dayparting Simulator)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Nhập tổng ngân sách ngày và mục tiêu tối ưu để hệ thống tính toán chi tiết số tiền và hệ số bid từng giờ</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Ngân Sách Ngày ($ USD)</label>
+            <input type="number" id="uaSimBudget" value="1000" step="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Kênh Quảng Cáo</label>
+            <select id="uaSimNetwork" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500 cursor-pointer">
+              <option value="tiktok">TikTok Ads (Spark Ads / AEO)</option>
+              <option value="meta">Meta Ads (Advantage+ / VO)</option>
+              <option value="unity_applovin">Unity Ads / AppLovin MAX</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Mục Tiêu Tối Ưu Hóa</label>
+            <select id="uaSimGoal" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500 cursor-pointer">
+              <option value="aeo_purchase">AEO (In-App Purchase / First Deposit)</option>
+              <option value="vo_roas">VO (Value Optimization - Target ROAS)</option>
+              <option value="mai_install">MAI (Mobile App Installs - Volume Max)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Target CPI Mục Tiêu ($)</label>
+            <input type="number" id="uaSimTargetCpi" value="1.80" step="0.2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Target D0 ROAS (%)</label>
+            <input type="number" id="uaSimTargetRoas" value="20.0" step="5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500">
+          </div>
+        </div>
+
+        <button onclick="runUaPacingSimulation()" class="w-full py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-violet-900/30">
+          <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+          <span>Tối Ưu Hóa Phân Bổ Giờ & Xuất Lịch Chạy Ads</span>
+        </button>
+
+        <!-- Simulation Output Container -->
+        <div id="uaPacingResultsContainer" class="space-y-5 pt-2">
+          <!-- 5 KPI Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-violet-500/30 bg-violet-950/10">
+              <div class="text-xs text-slate-400">Dự Báo Doanh Thu Ngày</div>
+              <div class="text-xl font-black text-violet-400 mt-1" id="uaResRevenue">--</div>
+              <div class="text-[10px] text-violet-300/70 mt-0.5" id="uaResBlendedRoas">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+              <div class="text-xs text-slate-400">Lượng Cài Đặt Dự Kiến</div>
+              <div class="text-xl font-black text-emerald-400 mt-1" id="uaResInstalls">--</div>
+              <div class="text-[10px] text-emerald-300/70 mt-0.5" id="uaResEffectiveCpi">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
+              <div class="text-xs text-slate-400">Giờ Vàng Cá Voi (19-23h)</div>
+              <div class="text-xl font-black text-amber-400 mt-1" id="uaResPrimeBudget">--</div>
+              <div class="text-[10px] text-amber-300/70 mt-0.5" id="uaResPrimePct">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-sky-500/30 bg-sky-950/10">
+              <div class="text-xs text-slate-400">Phiên Nghỉ Trưa (11-13h)</div>
+              <div class="text-xl font-black text-sky-400 mt-1" id="uaResLunchBudget">--</div>
+              <div class="text-[10px] text-sky-300/70 mt-0.5" id="uaResLunchPct">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-rose-500/30 bg-rose-950/10">
+              <div class="text-xs text-slate-400">Tiết Kiệm Giờ Ngủ (01-05h)</div>
+              <div class="text-xl font-black text-rose-400 mt-1" id="uaResDeadZone">--</div>
+              <div class="text-[10px] text-rose-300/70 mt-0.5">Tránh ghost clicks</div>
+            </div>
+          </div>
+
+          <!-- 24-Hour Visual Pacing Bar -->
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-300">Biểu Đồ Nhiệt Cường Độ Ngân Sách 24 Giờ (24h Spend Intensity Heatmap)</span>
+              <span class="text-[11px] text-slate-400">Xanh = Giờ vàng, Tím = Trung bình, Tối = Hạ bid giờ ngủ</span>
+            </div>
+            <div id="uaHourlyHeatmapBar" class="grid grid-cols-12 md:grid-cols-24 gap-1"></div>
+          </div>
+
+          <!-- 24-Hour Full Schedule Table -->
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-300">Bảng Phân Bổ Ngân Sách & Hệ Số Bid Chi Tiết Theo Giờ</span>
+              <span class="text-[11px] text-slate-500">Dayparting Rules Schedule</span>
+            </div>
+            <div class="overflow-x-auto max-h-72 overflow-y-auto">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] sticky top-0">
+                  <tr>
+                    <th class="px-3 py-2">Khung Giờ</th>
+                    <th class="px-3 py-2">Giai Đoạn</th>
+                    <th class="px-3 py-2">Hệ Số Bid</th>
+                    <th class="px-3 py-2">Ngân Sách ($)</th>
+                    <th class="px-3 py-2">Tỷ Trọng (%)</th>
+                    <th class="px-3 py-2">Installs Ước Tính</th>
+                    <th class="px-3 py-2">Doanh Thu Dự Kiến</th>
+                    <th class="px-3 py-2">D0 ROAS</th>
+                    <th class="px-3 py-2">Chỉ Dẫn Chiến Lược</th>
+                  </tr>
+                </thead>
+                <tbody id="uaHourlyTableBody" class="divide-y divide-slate-800 font-mono text-[11px]"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- CUSTOM AD SCRIPT GENERATOR MODAL -->
     <div id="customAdScriptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
       <div class="glass-card bg-slate-900 rounded-2xl border border-purple-500/40 max-w-xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-2xl relative">
@@ -2086,7 +2243,7 @@
 
     // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
+      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
@@ -2109,6 +2266,7 @@
       if (tabId === 'asolab') loadAsoVisualLab();
       if (tabId === 'iapmatrix') initIapMatrixTab();
       if (tabId === 'liveopsradar') initLiveOpsRadarTab();
+      if (tabId === 'uapacing') initUaPacingTab();
       if (tabId === 'breakouts') loadBreakoutRadar();
       if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
@@ -4652,6 +4810,164 @@
         lucide.createIcons();
       } catch (err) {
         console.error("Error running LiveOps planning:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE: UA CAMPAIGN PACING & DAYPARTING
+    // ==========================================
+    async function initUaPacingTab() {
+      try {
+        const res = await fetch('/api/mobile/campaign/dayparting-benchmarks');
+        const data = await res.json();
+
+        // Render Network Cards
+        const netContainer = document.getElementById('uaNetworkCardsContainer');
+        const nets = Object.values(data.networks || {});
+        netContainer.innerHTML = nets.map(n => `
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3 flex flex-col justify-between hover:border-violet-500/40 transition-colors">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="radio" class="w-4 h-4 text-violet-400"></i>
+                  ${n.name}
+                </h4>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-violet-500/20 text-violet-300 font-mono">${n.best_optimization_goal.split(' ')[0]}</span>
+              </div>
+              <p class="text-[11px] text-slate-300 font-semibold">${n.core_objective}</p>
+              <div class="space-y-1 text-[10px] text-slate-400">
+                <div>⚡ <strong>Thuật toán pacing:</strong> ${n.pacing_algorithm}</div>
+                <div>🎯 <strong>Độ nhạy Creative:</strong> ${n.cpi_sensitivity}</div>
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap pt-1">
+                ${(n.recommended_formats || []).map(f => `<span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px] text-violet-300 font-mono">${f}</span>`).join('')}
+              </div>
+            </div>
+            <div class="pt-2 border-t border-slate-800 text-[10px] text-amber-300/90 font-mono">
+              📌 ${n.min_adset_budget_rule}
+            </div>
+          </div>
+        `).join('');
+
+        // Render Kill-Switch Grid
+        const killGrid = document.getElementById('uaKillSwitchGrid');
+        killGrid.innerHTML = (data.kill_switch_rules || []).map(r => {
+          let badgeClass = "bg-rose-500/20 text-rose-400 border-rose-500/30";
+          if (r.severity === 'POSITIVE_SCALE') badgeClass = "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+          if (r.severity === 'WARNING') badgeClass = "bg-amber-500/20 text-amber-400 border-amber-500/30";
+          if (r.severity === 'HIGH') badgeClass = "bg-orange-500/20 text-orange-400 border-orange-500/30";
+
+          return `
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2.5 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-start justify-between gap-1">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-extrabold border ${badgeClass}">${r.severity}</span>
+                </div>
+                <h4 class="text-xs font-bold text-white leading-snug">${r.name}</h4>
+                <div class="p-2 rounded bg-slate-900 border border-slate-800 text-[11px] text-slate-300">
+                  <span class="text-slate-500 block text-[10px] uppercase font-bold">Điều kiện kích hoạt:</span>
+                  <span class="font-mono text-amber-300">${r.trigger_condition}</span>
+                </div>
+                <div class="text-[11px] text-emerald-300 font-bold flex items-center gap-1">
+                  <span>Hành động:</span>
+                  <span class="underline">${r.action}</span>
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400 leading-snug pt-1 border-t border-slate-900">${r.logic}</p>
+            </div>
+          `;
+        }).join('');
+
+        runUaPacingSimulation();
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error initializing UA pacing tab:", err);
+      }
+    }
+
+    async function runUaPacingSimulation() {
+      const budget = document.getElementById('uaSimBudget').value;
+      const network = document.getElementById('uaSimNetwork').value;
+      const goal = document.getElementById('uaSimGoal').value;
+      const cpi = document.getElementById('uaSimTargetCpi').value;
+      const roas = document.getElementById('uaSimTargetRoas').value;
+
+      try {
+        const res = await fetch('/api/mobile/campaign/optimize-pacing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            daily_budget: parseFloat(budget) || 1000.0,
+            network_id: network,
+            optimization_goal: goal,
+            target_cpi: parseFloat(cpi) || 1.80,
+            target_roas_d0: parseFloat(roas) || 20.0
+          })
+        });
+
+        const data = await res.json();
+        const pSum = data.pacing_summary;
+        const pDist = data.phase_distribution;
+
+        // KPI cards
+        document.getElementById('uaResRevenue').innerText = `$${Math.round(pSum.projected_daily_revenue_usd).toLocaleString()}`;
+        document.getElementById('uaResBlendedRoas').innerText = `D0 ROAS: ${pSum.projected_blended_d0_roas}%`;
+        document.getElementById('uaResInstalls').innerText = `${pSum.total_estimated_installs.toLocaleString()} installs`;
+        document.getElementById('uaResEffectiveCpi').innerText = `CPI hiệu quả: $${pSum.blended_effective_cpi}`;
+        document.getElementById('uaResPrimeBudget').innerText = `$${Math.round(pDist.golden_prime_hours_usd).toLocaleString()}`;
+        document.getElementById('uaResPrimePct').innerText = `${pDist.golden_prime_hours_pct}% ngân sách ngày`;
+        document.getElementById('uaResLunchBudget').innerText = `$${Math.round(pDist.lunch_rush_usd).toLocaleString()}`;
+        document.getElementById('uaResLunchPct').innerText = `${pDist.lunch_rush_pct}% ngân sách ngày`;
+        document.getElementById('uaResDeadZone').innerText = `$${Math.round(pDist.dead_zone_saved_usd).toLocaleString()}`;
+
+        // 24-Hour Visual Heatmap Bar
+        const barContainer = document.getElementById('uaHourlyHeatmapBar');
+        barContainer.innerHTML = (data.hourly_schedule || []).map(h => {
+          let color = "bg-slate-800 text-slate-400 border-slate-700";
+          if (h.hour in {19:1, 20:1, 21:1, 22:1}) {
+            color = "bg-amber-500/30 text-amber-300 border-amber-500/50 font-bold";
+          } else if (h.hour in {11:1, 12:1, 13:1}) {
+            color = "bg-sky-500/30 text-sky-300 border-sky-500/50";
+          } else if (h.hour in {1:1, 2:1, 3:1, 4:1, 5:1}) {
+            color = "bg-rose-950/40 text-rose-400/60 border-rose-900/40";
+          } else {
+            color = "bg-violet-950/40 text-violet-300 border-violet-800/40";
+          }
+
+          return `
+            <div class="p-1.5 rounded-lg border text-center ${color} space-y-0.5">
+              <div class="text-[9px] font-mono leading-none">${h.hour}h</div>
+              <div class="text-[10px] font-mono font-bold leading-none">${h.bid_multiplier}x</div>
+              <div class="text-[8px] opacity-80 leading-none">$${Math.round(h.allocated_budget_usd)}</div>
+            </div>
+          `;
+        }).join('');
+
+        // Full 24-Hour Schedule Table
+        const tableBody = document.getElementById('uaHourlyTableBody');
+        tableBody.innerHTML = (data.hourly_schedule || []).map(h => {
+          let multBadge = "bg-violet-500/20 text-violet-300 border-violet-500/30";
+          if (h.bid_multiplier >= 1.5) multBadge = "bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold";
+          if (h.bid_multiplier <= 0.4) multBadge = "bg-rose-500/20 text-rose-300 border-rose-500/30";
+
+          return `
+            <tr class="hover:bg-slate-900/60 transition-colors">
+              <td class="px-3 py-2 font-bold text-white">${h.time_slot}</td>
+              <td class="px-3 py-2 text-slate-300 font-sans">${h.phase}</td>
+              <td class="px-3 py-2"><span class="px-1.5 py-0.5 rounded text-[10px] border ${multBadge}">${h.bid_multiplier}x</span></td>
+              <td class="px-3 py-2 text-emerald-400 font-bold">$${h.allocated_budget_usd.toFixed(2)}</td>
+              <td class="px-3 py-2 text-slate-400">${h.pct_of_day_budget}%</td>
+              <td class="px-3 py-2 text-sky-400 font-semibold">${h.estimated_installs}</td>
+              <td class="px-3 py-2 text-violet-300 font-bold">$${h.projected_revenue_usd.toFixed(2)}</td>
+              <td class="px-3 py-2 text-amber-400 font-bold">${h.projected_d0_roas_pct}%</td>
+              <td class="px-3 py-2 text-slate-400 font-sans">${h.strategy_advisory}</td>
+            </tr>
+          `;
+        }).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error running UA pacing simulation:", err);
       }
     }
 
