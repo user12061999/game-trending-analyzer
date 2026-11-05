@@ -26,6 +26,9 @@ from app.crawlers.orchestrator import CrawlerOrchestrator
 from app.analytics.trend_analyzer import TrendAnalyzer
 from app.analytics.report_generator import ReportGenerator
 from app.analytics.ai_analyst import AIAnalyst
+from app.analytics.review_miner import ReviewMiner
+from app.analytics.aso_analyzer import ASOAnalyzer
+from app.analytics.liveops_tracker import LiveOpsTracker
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -35,6 +38,9 @@ analyzer = TrendAnalyzer()
 report_generator = ReportGenerator()
 notifier = AlertNotifier()
 ai_analyst = AIAnalyst()
+review_miner = ReviewMiner()
+aso_analyzer = ASOAnalyzer()
+liveops_tracker = LiveOpsTracker()
 
 is_crawling = False
 
@@ -359,6 +365,25 @@ async def send_radar_alert_test(game_id: int):
         return {"error": "Không tìm thấy game"}
     sent = notifier.dispatch_radar_threat_alert(game)
     return {"status": "success", "alert_dispatched": sent}
+
+# --- Mobile Specialization Intelligence Endpoints (Review/Churn, ASO, LiveOps) ---
+@app.get("/api/mobile/reviews/{game_id}")
+async def get_mobile_reviews_api(game_id: str, title: Optional[str] = Query(None), platform: Optional[str] = Query("mobile")):
+    """Returns Sentiment breakdown, Churn drivers, Retention hooks and Studio Attack Playbook."""
+    result = review_miner.analyze_reviews(game_id=game_id, game_title=title or "", platform=platform)
+    return result
+
+@app.get("/api/mobile/aso/{game_id}")
+async def get_mobile_aso_api(game_id: str, title: Optional[str] = Query(None), genre: Optional[str] = Query("RPG")):
+    """Returns Title/Subtitle analysis, keyword density, ASO Health Score and Target Keywords."""
+    result = aso_analyzer.analyze_aso(game_id=game_id, game_title=title or "", genre=genre)
+    return result
+
+@app.get("/api/mobile/liveops/{game_id}")
+async def get_mobile_liveops_api(game_id: str, title: Optional[str] = Query(None)):
+    """Returns version changelog, event classification, timeline and revenue impact correlation."""
+    result = liveops_tracker.analyze_liveops(game_id=game_id, game_title=title or "")
+    return result
 
 @app.get("/api/meta")
 async def get_metadata():

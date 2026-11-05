@@ -776,106 +776,337 @@
         </div>
       </div>
 
-      <!-- Financial & Audience Estimates Row -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/30">
-        <div>
-          <span class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider flex items-center gap-1">
-            <i data-lucide="dollar-sign" class="w-3 h-3"></i> Doanh Thu Ngày Ước Tính
-          </span>
-          <h4 id="modalStatRevDaily" class="text-base font-bold text-emerald-300 mt-1">--</h4>
-          <span class="text-[10px] text-slate-400">Dựa theo Power Law Pareto</span>
-        </div>
-        <div>
-          <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider flex items-center gap-1">
-            <i data-lucide="calendar" class="w-3 h-3"></i> Doanh Thu Tháng Ước Tính
-          </span>
-          <h4 id="modalStatRevMonthly" class="text-base font-bold text-indigo-300 mt-1">--</h4>
-          <span class="text-[10px] text-slate-400">Chu kỳ 30 ngày liên tục</span>
-        </div>
-        <div>
-          <span class="text-[10px] text-sky-400 font-semibold uppercase tracking-wider flex items-center gap-1">
-            <i data-lucide="download" class="w-3 h-3"></i> Lượt Tải / CCU Ước Tính
-          </span>
-          <h4 id="modalStatDownloads" class="text-base font-bold text-sky-300 mt-1">--</h4>
-          <span class="text-[10px] text-slate-400">Quy mô người chơi mới</span>
-        </div>
-      </div>
-
-      <!-- AI Game Deconstruction Action Button -->
-      <div>
-        <button id="btnAiDeconstruct" onclick="requestAiDeconstruct()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-500 hover:via-indigo-500 hover:to-pink-500 text-white font-bold text-xs shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 transition-all active:scale-[0.99]">
-          <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
-          <span>🤖 Bóc Tách & Phân Tích Chuyên Sâu Bằng AI (AI Game Deconstruct)</span>
+      <!-- Modal Sub-Tabs Navigation -->
+      <div class="flex items-center gap-2 border-b border-slate-800 pb-2 text-xs font-semibold overflow-x-auto">
+        <button onclick="switchModalSubTab('overview')" id="modalSubTabBtn-overview" class="modal-subtab-btn px-3 py-1.5 rounded-lg bg-indigo-600 text-white flex items-center gap-1.5 transition-all cursor-pointer">
+          <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
+          <span>Tổng Quan & Doanh Thu</span>
+        </button>
+        <button onclick="switchModalSubTab('reviews')" id="modalSubTabBtn-reviews" class="modal-subtab-btn px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer">
+          <i data-lucide="message-square-quote" class="w-3.5 h-3.5 text-pink-400"></i>
+          <span>Review & Churn Miner</span>
+          <span class="px-1.5 py-0.2 rounded text-[9px] bg-pink-500/20 text-pink-400 font-bold border border-pink-500/30">MỚI</span>
+        </button>
+        <button onclick="switchModalSubTab('aso')" id="modalSubTabBtn-aso" class="modal-subtab-btn px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Gián Điệp ASO & Từ Khóa</span>
+          <span class="px-1.5 py-0.2 rounded text-[9px] bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">MỚI</span>
+        </button>
+        <button onclick="switchModalSubTab('liveops')" id="modalSubTabBtn-liveops" class="modal-subtab-btn px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>LiveOps & Sự Kiện</span>
+          <span class="px-1.5 py-0.2 rounded text-[9px] bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">MỚI</span>
         </button>
       </div>
 
-      <!-- AI Analysis Result Card Container -->
-      <div id="modalAiResultCard" class="hidden p-5 rounded-2xl bg-slate-950/90 border border-purple-500/40 space-y-4">
-        <div class="flex items-center justify-between border-b border-purple-500/20 pb-2">
-          <div class="flex items-center gap-2">
-            <div class="p-1.5 rounded-lg bg-purple-500/20 text-purple-300">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
+      <!-- SUB-TAB 1: OVERVIEW & FINANCIALS -->
+      <div id="modalSubTabContent-overview" class="space-y-6">
+        <!-- Financial & Audience Estimates Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/30">
+          <div>
+            <span class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="dollar-sign" class="w-3 h-3"></i> Doanh Thu Ngày Ước Tính
+            </span>
+            <h4 id="modalStatRevDaily" class="text-base font-bold text-emerald-300 mt-1">--</h4>
+            <span class="text-[10px] text-slate-400">Dựa theo Power Law Pareto</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="calendar" class="w-3 h-3"></i> Doanh Thu Tháng Ước Tính
+            </span>
+            <h4 id="modalStatRevMonthly" class="text-base font-bold text-indigo-300 mt-1">--</h4>
+            <span class="text-[10px] text-slate-400">Chu kỳ 30 ngày liên tục</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-sky-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+              <i data-lucide="download" class="w-3 h-3"></i> Lượt Tải / CCU Ước Tính
+            </span>
+            <h4 id="modalStatDownloads" class="text-base font-bold text-sky-300 mt-1">--</h4>
+            <span class="text-[10px] text-slate-400">Quy mô người chơi mới</span>
+          </div>
+        </div>
+
+        <!-- AI Game Deconstruction Action Button -->
+        <div>
+          <button id="btnAiDeconstruct" onclick="requestAiDeconstruct()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-500 hover:via-indigo-500 hover:to-pink-500 text-white font-bold text-xs shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 transition-all active:scale-[0.99] cursor-pointer">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
+            <span>🤖 Bóc Tách & Phân Tích Chuyên Sâu Bằng AI (AI Game Deconstruct)</span>
+          </button>
+        </div>
+
+        <!-- AI Analysis Result Card Container -->
+        <div id="modalAiResultCard" class="hidden p-5 rounded-2xl bg-slate-950/90 border border-purple-500/40 space-y-4">
+          <div class="flex items-center justify-between border-b border-purple-500/20 pb-2">
+            <div class="flex items-center gap-2">
+              <div class="p-1.5 rounded-lg bg-purple-500/20 text-purple-300">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white">Báo Cáo Bóc Tách Trí Tuệ Nhân Tạo (AI Teardown)</h4>
+                <p id="modalAiSourceBadge" class="text-[10px] text-purple-400">Nguồn: Gemini 1.5 Flash</p>
+              </div>
             </div>
+            <button onclick="toggleAiCard()" class="text-slate-400 hover:text-white text-xs cursor-pointer">Ẩn</button>
+          </div>
+
+          <div id="modalAiContent" class="space-y-4 text-xs leading-relaxed text-slate-300"></div>
+        </div>
+
+        <!-- Historical Stats Row -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <p class="text-[10px] text-slate-400 uppercase font-semibold">Rank Hiện Tại</p>
+            <h4 id="modalStatCurrentRank" class="text-lg font-bold text-indigo-400 mt-0.5">#--</h4>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <p class="text-[10px] text-slate-400 uppercase font-semibold">Kỷ Lục Rank Tốt Nhất</p>
+            <h4 id="modalStatBestRank" class="text-lg font-bold text-emerald-400 mt-0.5">#--</h4>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <p class="text-[10px] text-slate-400 uppercase font-semibold">Rank Trung Bình</p>
+            <h4 id="modalStatAvgRank" class="text-lg font-bold text-amber-400 mt-0.5">#--</h4>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <p class="text-[10px] text-slate-400 uppercase font-semibold">Đỉnh CCU / Tải Về</p>
+            <h4 id="modalStatPeakCCU" class="text-lg font-bold text-pink-400 mt-0.5">--</h4>
+          </div>
+        </div>
+
+        <!-- Trendline Chart -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="trending-up" class="w-4 h-4 text-indigo-400"></i>
+              Đường Cong Thứ Hạng Lịch Sử (Rank Trendline)
+            </h4>
+            <span class="text-[10px] text-slate-500">*Trục Y đảo ngược (Vị trí #1 ở trên đỉnh)</span>
+          </div>
+          <div class="h-64 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+            <canvas id="gameModalChart"></canvas>
+          </div>
+        </div>
+
+        <!-- History Table Snippet -->
+        <div>
+          <h4 class="text-xs font-bold text-slate-200 mb-2">Nhật Ký Các Ngày Gần Nhất</h4>
+          <div class="max-h-40 overflow-y-auto rounded-lg border border-slate-800 bg-slate-950">
+            <table class="w-full text-left text-[11px]">
+              <thead class="bg-slate-900 text-slate-400 sticky top-0">
+                <tr>
+                  <th class="py-2 px-3">Ngày</th>
+                  <th class="py-2 px-3">Thứ Hạng</th>
+                  <th class="py-2 px-3">Người Chơi (CCU)</th>
+                  <th class="py-2 px-3">Biến Động</th>
+                </tr>
+              </thead>
+              <tbody id="modalHistoryTableBody" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 2: REVIEW SENTIMENT & CHURN MINER -->
+      <div id="modalSubTabContent-reviews" class="hidden space-y-5">
+        <!-- Sentiment Overview Bar -->
+        <div class="glass-card p-4 rounded-xl border border-pink-500/30 bg-gradient-to-r from-pink-950/30 via-slate-900 to-slate-900/80 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <h4 class="text-sm font-bold text-white">Báo Cáo Bóc Tách Trí Tuệ Nhân Tạo (AI Teardown)</h4>
-              <p id="modalAiSourceBadge" class="text-[10px] text-purple-400">Nguồn: Gemini 1.5 Flash</p>
+              <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i data-lucide="heart" class="w-4 h-4 text-pink-400 fill-pink-400"></i>
+                Chỉ Số Hài Lòng & Cảm Xúc Người Chơi (Sentiment Distribution)
+              </span>
+              <p class="text-[11px] text-slate-400 mt-0.5" id="reviewsMetaSummary">Đang quét đánh giá từ kho ứng dụng...</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <span class="text-xs text-slate-400">Đánh giá TB:</span>
+                <span id="reviewsAvgRating" class="text-base font-bold text-amber-400 ml-1">-- ⭐</span>
+              </div>
             </div>
           </div>
-          <button onclick="toggleAiCard()" class="text-slate-400 hover:text-white text-xs">Ẩn</button>
+
+          <!-- Multi-color Sentiment Progress Bar -->
+          <div class="space-y-1.5">
+            <div class="w-full h-3 rounded-full bg-slate-800 overflow-hidden flex">
+              <div id="sentimentBarPos" class="bg-emerald-500 h-full transition-all duration-500" style="width: 60%" title="Tích cực"></div>
+              <div id="sentimentBarNeu" class="bg-amber-500 h-full transition-all duration-500" style="width: 15%" title="Trung lập"></div>
+              <div id="sentimentBarNeg" class="bg-rose-500 h-full transition-all duration-500" style="width: 25%" title="Tiêu cực"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px]">
+              <span class="text-emerald-400 font-semibold" id="sentimentPosLabel">🟢 Tích cực: --%</span>
+              <span class="text-amber-400 font-semibold" id="sentimentNeuLabel">🟡 Trung lập: --%</span>
+              <span class="text-rose-400 font-semibold" id="sentimentNegLabel">🔴 Tiêu cực: --%</span>
+            </div>
+          </div>
         </div>
 
-        <div id="modalAiContent" class="space-y-4 text-xs leading-relaxed text-slate-300"></div>
-      </div>
-
-      <!-- Historical Stats Row -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-          <p class="text-[10px] text-slate-400 uppercase font-semibold">Rank Hiện Tại</p>
-          <h4 id="modalStatCurrentRank" class="text-lg font-bold text-indigo-400 mt-0.5">#--</h4>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-          <p class="text-[10px] text-slate-400 uppercase font-semibold">Kỷ Lục Rank Tốt Nhất</p>
-          <h4 id="modalStatBestRank" class="text-lg font-bold text-emerald-400 mt-0.5">#--</h4>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-          <p class="text-[10px] text-slate-400 uppercase font-semibold">Rank Trung Bình</p>
-          <h4 id="modalStatAvgRank" class="text-lg font-bold text-amber-400 mt-0.5">#--</h4>
-        </div>
-        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
-          <p class="text-[10px] text-slate-400 uppercase font-semibold">Đỉnh CCU / Tải Về</p>
-          <h4 id="modalStatPeakCCU" class="text-lg font-bold text-pink-400 mt-0.5">--</h4>
-        </div>
-      </div>
-
-      <!-- Trendline Chart -->
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-            <i data-lucide="trending-up" class="w-4 h-4 text-indigo-400"></i>
-            Đường Cong Thứ Hạng Lịch Sử (Rank Trendline)
+        <!-- Churn Drivers (Why players quit) -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+            <i data-lucide="skull" class="w-4 h-4"></i>
+            Top "Tử Huyệt" Khiến Người Chơi Bỏ Game & Xóa Ứng Dụng (Churn Drivers)
           </h4>
-          <span class="text-[10px] text-slate-500">*Trục Y đảo ngược (Vị trí #1 ở trên đỉnh)</span>
+          <div id="churnDriversList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Populated via JS -->
+          </div>
         </div>
-        <div class="h-64 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
-          <canvas id="gameModalChart"></canvas>
+
+        <!-- Retention Hooks (What players praise) -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+            <i data-lucide="magnet" class="w-4 h-4"></i>
+            Điểm Gây Nghiện & Giữ Chân Người Chơi (Retention Hooks)
+          </h4>
+          <div id="retentionHooksList" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Studio Attack Playbook -->
+        <div class="p-4 rounded-xl bg-gradient-to-r from-purple-950/30 via-slate-900 to-indigo-950/30 border border-purple-500/30 space-y-2.5">
+          <h4 class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+            <i data-lucide="sword" class="w-4 h-4 text-amber-300"></i>
+            Cẩm Nang Cướp Người Chơi Cho Studio Của Bạn (Studio Attack Playbook)
+          </h4>
+          <p id="attackCoreOpportunity" class="text-xs text-slate-300 leading-relaxed">--</p>
+          <div id="attackStepsList" class="space-y-1.5"></div>
+          <div class="p-2.5 rounded-lg bg-purple-950/40 border border-purple-500/20 text-[11px] text-purple-200" id="attackMarketingHook">
+            --
+          </div>
+        </div>
+
+        <!-- Sample Reviews Carousel/List -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+            <i data-lucide="message-square" class="w-3.5 h-3.5 text-indigo-400"></i>
+            Trích Dẫn Đánh Giá Tiêu Biểu Từ Người Chơi
+          </h4>
+          <div id="sampleReviewsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto"></div>
         </div>
       </div>
 
-      <!-- History Table Snippet -->
-      <div>
-        <h4 class="text-xs font-bold text-slate-200 mb-2">Nhật Ký Các Ngày Gần Nhất</h4>
-        <div class="max-h-40 overflow-y-auto rounded-lg border border-slate-800 bg-slate-950">
-          <table class="w-full text-left text-[11px]">
-            <thead class="bg-slate-900 text-slate-400 sticky top-0">
-              <tr>
-                <th class="py-2 px-3">Ngày</th>
-                <th class="py-2 px-3">Thứ Hạng</th>
-                <th class="py-2 px-3">Người Chơi (CCU)</th>
-                <th class="py-2 px-3">Biến Động</th>
-              </tr>
-            </thead>
-            <tbody id="modalHistoryTableBody" class="divide-y divide-slate-800"></tbody>
-          </table>
+      <!-- SUB-TAB 3: ASO & KEYWORD SPY -->
+      <div id="modalSubTabContent-aso" class="hidden space-y-5">
+        <!-- ASO Health Score & Structure -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10 flex flex-col items-center justify-center text-center">
+            <span class="text-[10px] text-emerald-400 uppercase font-semibold">Điểm ASO Health Score</span>
+            <div class="text-3xl font-black text-emerald-300 mt-1" id="asoHealthScore">-- / 100</div>
+            <p class="text-[10px] text-slate-400 mt-1">Đánh giá tổng thể độ tối ưu kho tải</p>
+          </div>
+
+          <div class="glass-card p-4 rounded-xl border border-slate-800 md:col-span-2 space-y-2">
+            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="tag" class="w-3.5 h-3.5 text-indigo-400"></i>
+              Cấu Trúc Tiêu Đề & Phụ Đề (Title & Tagline)
+            </span>
+            <div class="text-xs text-slate-300 space-y-1">
+              <div><span class="text-slate-500 font-medium">Tên thương hiệu:</span> <strong id="asoBrandName" class="text-white">--</strong></div>
+              <div><span class="text-slate-500 font-medium">Subtitle / Tagline phụ:</span> <span id="asoTagline" class="text-indigo-300">--</span></div>
+              <div><span class="text-slate-500 font-medium">Độ dài tiêu đề:</span> <span id="asoTitleLenBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300">-- ký tự</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keyword Density Matrix -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <i data-lucide="bar-chart" class="w-3.5 h-3.5 text-emerald-400"></i>
+            Ma Trận Mật Độ Từ Khóa Cốt Lõi (Keyword Prominence & Density)
+          </h4>
+          <div class="rounded-xl border border-slate-800 overflow-hidden bg-slate-950">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900 text-slate-400 text-[11px]">
+                <tr>
+                  <th class="py-2.5 px-3">Từ Khóa</th>
+                  <th class="py-2.5 px-3">Số Lần Lặp</th>
+                  <th class="py-2.5 px-3">Mật Độ (%)</th>
+                  <th class="py-2.5 px-3">Trạng Thái ASO</th>
+                </tr>
+              </thead>
+              <tbody id="asoKeywordsTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Target Keyword Opportunities for User's Studio -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <h4 class="text-xs font-bold text-indigo-400 flex items-center gap-1.5">
+            <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+            Gợi Ý 8 Từ Khóa Ngách Cho Thể Loại Này (Target Keyword Bank)
+          </h4>
+          <div id="asoTargetKeywordsList" class="flex flex-wrap gap-2 pt-1"></div>
+        </div>
+
+        <!-- Suggested ASO Formulas -->
+        <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/20 via-slate-900 to-slate-900 border border-emerald-500/20 space-y-2.5">
+          <h4 class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            Công Thức Đặt Tên Chuẩn ASO Cho Game Của Bạn
+          </h4>
+          <div class="space-y-1.5 text-xs text-slate-300">
+            <div><span class="text-slate-500 font-semibold block text-[10px] uppercase">Công thức App Store (iOS max 30 ký tự):</span> <code id="asoFormulaIos" class="text-emerald-300 bg-slate-950 px-2 py-0.5 rounded font-mono">--</code></div>
+            <div><span class="text-slate-500 font-semibold block text-[10px] uppercase">Công thức Google Play (Android):</span> <code id="asoFormulaAndroid" class="text-indigo-300 bg-slate-950 px-2 py-0.5 rounded font-mono">--</code></div>
+          </div>
+        </div>
+
+        <!-- ASO Strategic Advice -->
+        <div class="space-y-1.5" id="asoAdviceContainer"></div>
+      </div>
+
+      <!-- SUB-TAB 4: LIVEOPS & EVENT TRACKER -->
+      <div id="modalSubTabContent-liveops" class="hidden space-y-5">
+        <!-- LiveOps Status Card -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
+            <span class="text-[10px] text-amber-400 uppercase font-semibold">Phiên Bản Hiện Tại</span>
+            <h4 id="liveopsVersion" class="text-xl font-black text-white mt-1">--</h4>
+            <span class="text-[11px] text-slate-400" id="liveopsReleaseDate">Ngày: --</span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-indigo-500/30 bg-indigo-950/10">
+            <span class="text-[10px] text-indigo-400 uppercase font-semibold">Chu Kỳ Cập Nhật LiveOps</span>
+            <h4 id="liveopsCadence" class="text-xl font-black text-indigo-300 mt-1">~ 28 ngày</h4>
+            <span class="text-[11px] text-slate-400">Dự kiến đợt kế: <span id="liveopsNextUpdate" class="text-white font-medium">--</span></span>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-rose-500/30 bg-rose-950/10">
+            <span class="text-[10px] text-rose-400 uppercase font-semibold">Tác Động Doanh Thu Ước Tính</span>
+            <h4 id="liveopsRevenueSpike" class="text-xl font-black text-rose-300 mt-1">+85% IAP</h4>
+            <span class="text-[11px] text-rose-300/70">Đạt đỉnh trong 7 ngày đầu</span>
+          </div>
+        </div>
+
+        <!-- Latest Event Type & Changelog -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-400"></i>
+              Nội Dung Bản Cập Nhật Mới Nhất (What's New)
+            </h4>
+            <span id="liveopsEventTypeBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+              --
+            </span>
+          </div>
+          <div id="liveopsReleaseNotes" class="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-3 rounded-lg border border-slate-800 whitespace-pre-line max-h-40 overflow-y-auto">
+            --
+          </div>
+        </div>
+
+        <!-- Historical LiveOps Timeline -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <i data-lucide="history" class="w-3.5 h-3.5 text-indigo-400"></i>
+            Dòng Thời Gian Sự Kiện & Doanh Thu Đột Biến (LiveOps Milestones)
+          </h4>
+          <div id="liveopsTimelineList" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Studio Tactical Counter-Strategy -->
+        <div class="p-4 rounded-xl bg-gradient-to-r from-amber-950/30 via-slate-900 to-slate-900 border border-amber-500/30 space-y-1.5">
+          <h4 class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+            <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+            Chiến Lược Phản Công Sự Kiện Cho Studio Của Bạn (Counter-Event Strategy)
+          </h4>
+          <p id="liveopsTacticalAdvice" class="text-xs text-slate-300 leading-relaxed">--</p>
         </div>
       </div>
     </div>
@@ -1880,6 +2111,211 @@
       lucide.createIcons();
     }
 
+    // --- MODAL SUB-TABS NAVIGATION & MOBILE SPECIALIZATION ---
+    let currentActiveModalGameTitle = "";
+    let currentActiveModalGamePlatform = "mobile";
+    let currentActiveModalGameGenre = "RPG";
+    let currentModalSubTab = "overview";
+
+    function switchModalSubTab(tabName) {
+      currentModalSubTab = tabName;
+      const subTabs = ['overview', 'reviews', 'aso', 'liveops'];
+      subTabs.forEach(t => {
+        const btn = document.getElementById(`modalSubTabBtn-${t}`);
+        const content = document.getElementById(`modalSubTabContent-${t}`);
+        if (!btn || !content) return;
+        if (t === tabName) {
+          btn.className = "modal-subtab-btn px-3 py-1.5 rounded-lg bg-indigo-600 text-white flex items-center gap-1.5 transition-all cursor-pointer shadow-md";
+          content.classList.remove('hidden');
+        } else {
+          btn.className = "modal-subtab-btn px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer";
+          content.classList.add('hidden');
+        }
+      });
+
+      if (tabName === 'reviews') loadModalReviews(currentActiveModalGameId, currentActiveModalGameTitle, currentActiveModalGamePlatform);
+      if (tabName === 'aso') loadModalASO(currentActiveModalGameId, currentActiveModalGameTitle, currentActiveModalGameGenre);
+      if (tabName === 'liveops') loadModalLiveOps(currentActiveModalGameId, currentActiveModalGameTitle);
+      lucide.createIcons();
+    }
+
+    async function loadModalReviews(gameId, title, platform) {
+      const metaSum = document.getElementById('reviewsMetaSummary');
+      metaSum.innerText = 'Đang quét và phân tích đánh giá từ người chơi...';
+      try {
+        const res = await fetch(`/api/mobile/reviews/${encodeURIComponent(gameId)}?title=${encodeURIComponent(title || '')}&platform=${encodeURIComponent(platform || 'mobile')}`);
+        const data = await res.json();
+
+        metaSum.innerText = `Dựa trên phân tích ${data.total_reviews_analyzed} đánh giá từ người dùng thực tế.`;
+        document.getElementById('reviewsAvgRating').innerText = `${data.average_rating} ⭐`;
+
+        const s = data.sentiment || {};
+        const pos = s.positive_percentage || 0;
+        const neu = s.neutral_percentage || 0;
+        const neg = s.negative_percentage || 0;
+
+        document.getElementById('sentimentBarPos').style.width = `${pos}%`;
+        document.getElementById('sentimentBarNeu').style.width = `${neu}%`;
+        document.getElementById('sentimentBarNeg').style.width = `${neg}%`;
+
+        document.getElementById('sentimentPosLabel').innerText = `🟢 Tích cực: ${pos}% (${s.positive_count || 0})`;
+        document.getElementById('sentimentNeuLabel').innerText = `🟡 Trung lập: ${neu}% (${s.neutral_count || 0})`;
+        document.getElementById('sentimentNegLabel').innerText = `🔴 Tiêu cực: ${neg}% (${s.negative_count || 0})`;
+
+        // Churn Drivers List
+        const churnList = document.getElementById('churnDriversList');
+        churnList.innerHTML = (data.churn_drivers || []).map(c => {
+          let badge = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+          if (c.severity === 'CRITICAL') badge = 'bg-rose-500/20 text-rose-400 border-rose-500/30 animate-pulse';
+          return `
+            <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white">${c.category}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded font-bold border ${badge}">${c.severity} (~${c.frequency_pct}%)</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">${c.description}</p>
+              <div class="text-[10px] text-rose-300/80 italic bg-rose-950/20 p-1.5 rounded border border-rose-500/20">
+                "${c.sample_quote}"
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Retention Hooks List
+        const hooksList = document.getElementById('retentionHooksList');
+        hooksList.innerHTML = (data.retention_hooks || []).map(h => `
+          <div class="p-3 rounded-xl bg-slate-950 border border-emerald-500/20 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-300">${h.feature}</span>
+              <span class="text-[10px] text-amber-400 font-bold">${h.rating}</span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">${h.summary}</p>
+          </div>
+        `).join('');
+
+        // Attack Playbook
+        const pb = data.studio_attack_playbook || {};
+        document.getElementById('attackCoreOpportunity').innerText = pb.core_opportunity || '--';
+        document.getElementById('attackStepsList').innerHTML = (pb.actionable_steps || []).map(st => `
+          <div class="flex items-start gap-2 text-xs">
+            <span class="text-emerald-400 font-bold">✔</span>
+            <div><strong class="text-white">${st.step}:</strong> <span class="text-slate-300">${st.detail}</span></div>
+          </div>
+        `).join('');
+        document.getElementById('attackMarketingHook').innerText = `📢 Khẩu hiệu đề xuất: "${pb.marketing_hook || ''}"`;
+
+        // Sample Reviews
+        const reviewsGrid = document.getElementById('sampleReviewsGrid');
+        reviewsGrid.innerHTML = (data.sample_reviews || []).map(r => {
+          const isPos = r.rating >= 4;
+          const starColor = isPos ? 'text-amber-400' : 'text-rose-400';
+          return `
+            <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="${starColor} font-bold">⭐ ${r.rating}/5 - ${r.title}</span>
+                <span class="text-[10px] text-slate-500">${r.author || 'User'} (${r.version || 'v1.0'})</span>
+              </div>
+              <p class="text-slate-300 leading-snug line-clamp-3">${r.content}</p>
+            </div>
+          `;
+        }).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error loading reviews:", err);
+      }
+    }
+
+    async function loadModalASO(gameId, title, genre) {
+      try {
+        const res = await fetch(`/api/mobile/aso/${encodeURIComponent(gameId)}?title=${encodeURIComponent(title || '')}&genre=${encodeURIComponent(genre || 'RPG')}`);
+        const data = await res.json();
+
+        document.getElementById('asoHealthScore').innerText = `${data.aso_health_score} / 100`;
+        document.getElementById('asoBrandName').innerText = data.brand_name || title;
+        document.getElementById('asoTagline').innerText = data.tagline || 'Chưa cài đặt Subtitle phụ';
+
+        const lenBadge = document.getElementById('asoTitleLenBadge');
+        lenBadge.innerText = `${data.title_length} / 30 ký tự ${data.title_length <= 30 ? '✅ Chuẩn' : '⚠️ Vượt quá'}`;
+        lenBadge.className = data.title_length <= 30 ? 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400' : 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400';
+
+        // Keywords Density Table
+        const kwBody = document.getElementById('asoKeywordsTableBody');
+        kwBody.innerHTML = (data.top_keywords || []).map(k => `
+          <tr class="hover:bg-slate-900/60">
+            <td class="py-2 px-3 font-semibold text-white">${k.keyword}</td>
+            <td class="py-2 px-3">${k.count} lần</td>
+            <td class="py-2 px-3 font-bold text-indigo-400">${k.density_percentage}%</td>
+            <td class="py-2 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${k.status === 'Tối ưu' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${k.status}</span></td>
+          </tr>
+        `).join('');
+
+        // Target Keyword Opportunities
+        const targetList = document.getElementById('asoTargetKeywordsList');
+        targetList.innerHTML = (data.recommended_keywords || []).map(k => `
+          <span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 text-xs font-semibold">
+            + ${k}
+          </span>
+        `).join('');
+
+        // Suggested formulas
+        const f = data.suggested_formula || {};
+        document.getElementById('asoFormulaIos').innerText = f.ios_formula || '--';
+        document.getElementById('asoFormulaAndroid').innerText = f.android_formula || '--';
+
+        // Strategic advice
+        const advBox = document.getElementById('asoAdviceContainer');
+        advBox.innerHTML = (data.aso_advice || []).map(ad => `
+          <div class="text-[11px] p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">${ad}</div>
+        `).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error loading ASO data:", err);
+      }
+    }
+
+    async function loadModalLiveOps(gameId, title) {
+      try {
+        const res = await fetch(`/api/mobile/liveops/${encodeURIComponent(gameId)}?title=${encodeURIComponent(title || '')}`);
+        const data = await res.json();
+
+        document.getElementById('liveopsVersion').innerText = data.current_version || 'v1.0';
+        document.getElementById('liveopsReleaseDate').innerText = `Ngày ra mắt: ${data.latest_release_date || 'Gần đây'}`;
+        document.getElementById('liveopsCadence').innerText = `~ ${data.update_cadence_days} ngày / lần`;
+        document.getElementById('liveopsNextUpdate').innerText = data.next_expected_update || 'Đang tính toán';
+        document.getElementById('liveopsRevenueSpike').innerText = data.revenue_impact?.estimated_revenue_spike || '+85% IAP';
+
+        const evtBadge = document.getElementById('liveopsEventTypeBadge');
+        evtBadge.innerText = data.primary_event_type || 'Bản cập nhật';
+        evtBadge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-${data.event_color || 'rose'}-500/20 text-${data.event_color || 'rose'}-400 border border-${data.event_color || 'rose'}-500/30`;
+
+        document.getElementById('liveopsReleaseNotes').innerText = data.release_notes || 'Không có mô tả chi tiết.';
+
+        // Timeline
+        const tlList = document.getElementById('liveopsTimelineList');
+        tlList.innerHTML = (data.event_timeline || []).map(item => `
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">${item.version}</span>
+                <span class="text-[10px] text-slate-400">(${item.date})</span>
+                <span class="text-[10px] px-2 py-0.5 rounded font-semibold bg-indigo-500/20 text-indigo-400">${item.type}</span>
+              </div>
+              <p class="text-[11px] text-slate-300 mt-1">${item.highlight}</p>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 whitespace-nowrap">${item.revenue_spike}</span>
+          </div>
+        `).join('');
+
+        document.getElementById('liveopsTacticalAdvice').innerText = data.studio_tactical_takeaway || '--';
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error loading LiveOps data:", err);
+      }
+    }
+
     // --- GAME INTELLIGENCE MODAL ---
     async function openGameModal(gameId) {
       currentActiveModalGameId = gameId;
@@ -1900,6 +2336,11 @@
         const g = data.game;
         const stats = data.stats || {};
         const history = data.history || [];
+
+        currentActiveModalGameTitle = g.title || '';
+        currentActiveModalGamePlatform = g.platform || 'mobile';
+        currentActiveModalGameGenre = g.genre || 'RPG';
+        switchModalSubTab('overview');
 
         document.getElementById('modalGameTitle').innerText = g.title;
         document.getElementById('modalGameDeveloper').innerText = `Studio: ${g.developer || 'N/A'}`;
