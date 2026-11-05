@@ -191,6 +191,21 @@
       <button onclick="switchTab('uapacing')" id="tabBtn-uapacing" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="gauge" class="w-4 h-4 text-violet-400"></i> UA Pacing & ROAS Dayparting
       </button>
+      <button onclick="switchTab('gachaecon')" id="tabBtn-gachaecon" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="dices" class="w-4 h-4 text-yellow-400"></i> Kinh Tế & Gacha
+      </button>
+      <button onclick="switchTab('pubpitch')" id="tabBtn-pubpitch" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="handshake" class="w-4 h-4 text-emerald-400"></i> Publisher Pitch
+      </button>
+      <button onclick="switchTab('c10nscan')" id="tabBtn-c10nscan" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="shield-check" class="w-4 h-4 text-rose-400"></i> Kiểm Duyệt C10n
+      </button>
+      <button onclick="switchTab('chokepoint')" id="tabBtn-chokepoint" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="git-pull-request" class="w-4 h-4 text-orange-400"></i> Choke-Point Churn
+      </button>
+      <button onclick="switchTab('viralkfactor')" id="tabBtn-viralkfactor" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="flame" class="w-4 h-4 text-pink-400"></i> Viral K-Factor
+      </button>
       <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
       </button>
@@ -1427,6 +1442,504 @@
       </div>
     </div>
 
+    <!-- TAB: GACHA & IN-GAME ECONOMY LAB -->
+    <div id="tabContent-gachaecon" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-yellow-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-yellow-500 animate-ping"></span>
+              GACHA PROBABILITY & INFLATION CONTROL
+            </span>
+            <span class="text-xs text-slate-400">Monte Carlo Simulation & Faucet-Sink Balancing</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            🎲 In-Game Economy & Gacha Monte Carlo Lab
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Mô phỏng toán học xác suất gacha (Soft & Hard Pity, cơ chế lệch rate 50/50), tính toán số tiền Whale cần bỏ ra để Max Sao nhân vật và phân tích tỷ lệ Nguồn sinh (Faucet) vs Nguồn xả (Sink) để chống lạm phát gem trong game.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 1: Monte Carlo Gacha Simulator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="dices" class="w-5 h-5 text-yellow-400"></i>
+              Mô Phỏng Xác Suất Gacha Monte Carlo (3,000 Lượt Thử Nghiệm)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Dự báo số vé quay và chi phí USD thực tế cho game thủ may mắn (P10), trung vị (P50) và xui xẻo (P90)</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Mô Hình Gacha Tiêu Chuẩn</label>
+            <select id="gachaSimModel" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-500 cursor-pointer">
+              <option value="genshin_style">Triple-A Anime (Pity 74-90, 50/50 - Genshin style)</option>
+              <option value="idle_rpg_style">Idle RPG Gacha (Pity 30, Tỷ lệ 4% - AFK style)</option>
+              <option value="classic_turnbased">Classic Hardcore (Pity 200, Tỷ lệ 1% - FGO style)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Số Lượng Bản Sao Mục Tiêu (Copies)</label>
+            <input type="number" id="gachaSimCopies" value="1" min="1" max="14" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-500">
+          </div>
+          <div class="flex items-end">
+            <button onclick="runGachaSimulation()" class="w-full py-2.5 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-yellow-900/30">
+              <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+              <span>Chạy Mô Phỏng Monte Carlo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Simulation Results -->
+        <div id="gachaResultsContainer" class="space-y-4 pt-2">
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-yellow-500/30 bg-yellow-950/10">
+              <div class="text-xs text-slate-400">Vé Quay Trung Bình (P50)</div>
+              <div class="text-xl font-black text-yellow-400 mt-1" id="gachaResAvgPulls">--</div>
+              <div class="text-[10px] text-yellow-300/70 mt-0.5" id="gachaResAvgCost">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+              <div class="text-xs text-slate-400">May Mắn Top 10% (P10)</div>
+              <div class="text-xl font-black text-emerald-400 mt-1" id="gachaResLuckyPulls">--</div>
+              <div class="text-[10px] text-emerald-300/70 mt-0.5" id="gachaResLuckyCost">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-rose-500/30 bg-rose-950/10">
+              <div class="text-xs text-slate-400">Xui Xẻo Top 90% (P90)</div>
+              <div class="text-xl font-black text-rose-400 mt-1" id="gachaResUnluckyPulls">--</div>
+              <div class="text-[10px] text-rose-300/70 mt-0.5" id="gachaResUnluckyCost">--</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-purple-500/30 bg-purple-950/10">
+              <div class="text-xs text-slate-400">Chi Phí Whale Max Sao</div>
+              <div class="text-xl font-black text-purple-400 mt-1" id="gachaResWhaleCost">--</div>
+              <div class="text-[10px] text-purple-300/70 mt-0.5">C6 / Thần thoại tối đa</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-sky-500/30 bg-sky-950/10">
+              <div class="text-xs text-slate-400">Trường Hợp Tệ Nhất (Worst)</div>
+              <div class="text-xl font-black text-sky-400 mt-1" id="gachaResWorstCase">--</div>
+              <div class="text-[10px] text-sky-300/70 mt-0.5">Lệch rate liên tục chạm trần</div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 leading-relaxed" id="gachaPsychologyVerdict">
+            --
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Faucet vs Sink Economy Balancer -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="scale" class="w-5 h-5 text-emerald-400"></i>
+              Cân Bằng Nguồn Cấp vs Nguồn Xả Tài Nguyên (Faucet vs Sink Balancer)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Kiểm tra tỷ lệ lạm phát tiền tệ ingame trong chu kỳ 30 ngày để tối ưu chuyển đổi nạp tiền</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-6 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Cấp Hàng Ngày (Gem/ngày)</label>
+            <input type="number" id="faucetDaily" value="150" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Cấp Event Tuần (Gem/tuần)</label>
+            <input type="number" id="faucetWeekly" value="500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Thẻ Tháng (Gem/tháng)</label>
+            <input type="number" id="faucetMonthlyPass" value="3000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Xả Hàng Ngày (Gem/ngày)</label>
+            <input type="number" id="sinkDaily" value="120" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Xả Tuần (Gem/tuần)</label>
+            <input type="number" id="sinkWeekly" value="800" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Giá 1 Vé Gacha (Gem)</label>
+            <input type="number" id="gachaPullGemCost" value="160" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+        </div>
+
+        <button onclick="runFaucetSinkEvaluation()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-900/30">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Thẩm Định Sức Khỏe Kinh Tế In-Game</span>
+        </button>
+
+        <div id="faucetSinkResults" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"></div>
+      </div>
+    </div>
+
+    <!-- TAB: PUBLISHER PITCH & SCORECARD -->
+    <div id="tabContent-pubpitch" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              GLOBAL PUBLISHING READINESS & DEAL ECONOMICS
+            </span>
+            <span class="text-xs text-slate-400">Benchmark KPIs & RevShare Simulation</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            🤝 Global Publisher Pitch Scorecard & Deal Evaluator
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Đánh giá chỉ số game của studio bạn đối chiếu với tiêu chuẩn ký hợp đồng của các Top Publisher quốc tế (Habby, Voodoo, Miniclip, Garena) và mô phỏng phân chia dòng tiền RevShare, bảo hiểm Minimum Guarantee (MG).
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 1: Publisher Readiness Evaluator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="target" class="w-5 h-5 text-emerald-400"></i>
+              Bảng Đánh Giá Tiềm Năng Ký Hợp Đồng Publisher (Readiness Scorecard)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Nhập các chỉ số thực tế sau khi chạy Soft-launch hoặc Playtest</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">D1 Retention (%)</label>
+            <input type="number" id="pubPitchD1" value="41.5" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">D7 Retention (%)</label>
+            <input type="number" id="pubPitchD7" value="16.2" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Tested CPI US ($)</label>
+            <input type="number" id="pubPitchCpi" value="0.95" step="0.05" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Thời Gian Chơi (Phút/ngày)</label>
+            <input type="number" id="pubPitchPlaytime" value="32" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Thể Loại Game</label>
+            <select id="pubPitchGenre" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="Hybrid-Casual">Hybrid-Casual / Roguelike</option>
+              <option value="Hyper-Casual">Hyper-Casual</option>
+              <option value="Mid-Core RPG">Mid-Core Action RPG</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="runPublisherScorecard()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-emerald-900/30">
+          <i data-lucide="award" class="w-4 h-4"></i>
+          <span>Chấm Điểm Đối Tác Publisher Phù Hợp</span>
+        </button>
+
+        <div id="pubScorecardGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"></div>
+      </div>
+
+      <!-- Section 2: Publishing Contract Deal Simulator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="handshake" class="w-5 h-5 text-indigo-400"></i>
+              Mô Phỏng Phân Chia Doanh Thu Hợp Đồng (Publishing Deal Simulator)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Tính toán thực nhận của Studio sau khi trừ phí Store (30%), chi phí UA Marketing và bảo lãnh Minimum Guarantee</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Doanh Thu Gross Dự Kiến ($)</label>
+            <input type="number" id="dealSimGross" value="500000" step="50000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Chi Phí UA Publisher Bỏ Ra ($)</label>
+            <input type="number" id="dealSimUa" value="300000" step="20000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Tỷ Lệ RevShare Của Studio (%)</label>
+            <input type="number" id="dealSimRevshare" value="40" min="10" max="90" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Minimum Guarantee - MG ($)</label>
+            <input type="number" id="dealSimMg" value="50000" step="10000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+        </div>
+
+        <button onclick="runPublishingDealSimulation()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-indigo-900/30">
+          <i data-lucide="calculator" class="w-4 h-4"></i>
+          <span>Mô Phỏng Dòng Tiền Hợp Đồng</span>
+        </button>
+
+        <div id="dealSimResults" class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2"></div>
+      </div>
+    </div>
+
+    <!-- TAB: CULTURALIZATION & REGULATORY C10N -->
+    <div id="tabContent-c10nscan" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+              CULTURALIZATION & APP STORE CENSORSHIP
+            </span>
+            <span class="text-xs text-slate-400">China, Japan, MENA & EU Regulatory Audits</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            🌍 Market Culturalization & Regulatory Compliance Scanner
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Rà soát trước nguy cơ bị Store từ chối duyệt hoặc xử phạt pháp lý tại các thị trường đặc thù: Trung Quốc (cấm xương/máu đỏ, bắt buộc ISBN), Nhật Bản (luật cấm Kompu Gacha), Trung Đông (RTL, trang phục kín đáo) và Châu Âu (luật cấm Loot Box).
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Audit Tool -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="shield-alert" class="w-5 h-5 text-rose-400"></i>
+              Công Cụ Kiểm Thử Rủi Ro Tuân Thủ Thị Trường (C10n Audit Checklist)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Đánh dấu các yếu tố hiện diện trong game của bạn để hệ thống kiểm tra với luật lệ từng quốc gia</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <label class="block text-xs font-bold text-slate-300 uppercase">Tên Dự Án Game</label>
+            <input type="text" id="c10nGameTitle" value="Shadow Slayer: Darkness Reborn" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+
+            <div class="space-y-2 pt-2">
+              <span class="block text-xs font-bold text-slate-300 uppercase">Các Yếu Tố Xuất Hiện In-Game:</span>
+              <label class="flex items-center gap-2.5 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="c10nCheckSkeletons" checked class="rounded border-slate-700 text-rose-600 focus:ring-0">
+                <span>Quái vật bộ xương người (Skulls / Skeletons / Xác chết lộ)</span>
+              </label>
+              <label class="flex items-center gap-2.5 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="c10nCheckBlood" checked class="rounded border-slate-700 text-rose-600 focus:ring-0">
+                <span>Hiệu ứng máu đỏ văng tung tóe (Red Blood Splatter)</span>
+              </label>
+              <label class="flex items-center gap-2.5 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="c10nCheckGacha" checked class="rounded border-slate-700 text-rose-600 focus:ring-0">
+                <span>Cơ chế quay hòm may rủi trả phí (Gacha / Paid Loot Box)</span>
+              </label>
+              <label class="flex items-center gap-2.5 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="c10nCheckCostumes" class="rounded border-slate-700 text-rose-600 focus:ring-0">
+                <span>Nhân vật nữ trang phục hở hang / bikini (Skimpy Costumes)</span>
+              </label>
+              <label class="flex items-center gap-2.5 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="c10nCheckRTL" class="rounded border-slate-700 text-rose-600 focus:ring-0">
+                <span>UI đã hỗ trợ hiển thị tiếng Ả Rập đọc từ phải sang trái (RTL)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <span class="block text-xs font-bold text-slate-300 uppercase">Thị Trường Dự Kiến Phát Hành:</span>
+            <div class="grid grid-cols-2 gap-2 text-xs text-slate-300">
+              <label class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="c10nRegChina" checked class="text-rose-600">
+                <span>🇨🇳 Trung Quốc (China)</span>
+              </label>
+              <label class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="c10nRegJapan" checked class="text-rose-600">
+                <span>🇯🇵 Nhật Bản (Japan)</span>
+              </label>
+              <label class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="c10nRegMena" checked class="text-rose-600">
+                <span>🇦🇪 Trung Đông (MENA)</span>
+              </label>
+              <label class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="c10nRegEU" checked class="text-rose-600">
+                <span>🇪🇺 Châu Âu (EU)</span>
+              </label>
+            </div>
+
+            <button onclick="runC10nAudit()" class="w-full mt-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-rose-900/30">
+              <i data-lucide="scan" class="w-4 h-4"></i>
+              <span>Quét Rủi Ro & Xuất Khuyến Nghị Khắc Phục</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Audit Findings -->
+        <div id="c10nAuditResults" class="space-y-4 pt-2"></div>
+      </div>
+    </div>
+
+    <!-- TAB: CHOKE-POINT & CHURN DIAGNOSTIC -->
+    <div id="tabContent-chokepoint" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-orange-500/30 bg-gradient-to-br from-orange-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
+              ONBOARDING FUNNEL & RAGE-QUIT WALLS
+            </span>
+            <span class="text-xs text-slate-400">FTUE Choke-Point & Emergency Rescue Packs</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            📉 Choke-Point & Churn Diagnostic Lab
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Bóc tách phễu rơi rụng người chơi trong 7 giai đoạn đầu (FTUE). Bắt bệnh tường độ khó (Difficulty Paywall) gây ức chế gỡ game và thiết lập gói cứu trợ khẩn cấp \$0.99 để cứu retention D1 và biến người chơi miễn phí thành Minnow.
+          </p>
+        </div>
+      </div>
+
+      <!-- Funnel Benchmarks & Simulator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="git-pull-request" class="w-5 h-5 text-orange-400"></i>
+              Mô Phỏng Phễu Rơi Rụng & Phát Hiện Tường Độ Khó (Funnel Diagnostic)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Nhập tỷ lệ vượt qua các chốt chặn trong game của bạn</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Lượt Cài Đặt (Installs)</label>
+            <input type="number" id="churnSimInstalls" value="10000" step="1000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Vượt Qua Tải Patch (%)</label>
+            <input type="number" id="churnSimPatchPass" value="84" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Xong Tutorial FTUE (%)</label>
+            <input type="number" id="churnSimTutorialPass" value="68" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Tỷ Lệ Thắng Boss Ải 1-3 (%)</label>
+            <input type="number" id="churnSimBossWin" value="38" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Số Lần Thua Thì Bỏ Game</label>
+            <input type="number" id="churnSimLossesToQuit" value="3" min="1" max="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+        </div>
+
+        <button onclick="runChurnFunnelDiagnostic()" class="w-full py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-orange-900/30">
+          <i data-lucide="activity" class="w-4 h-4"></i>
+          <span>Chẩn Đoán Điểm Gãy & Tự Động Tạo Gói Cứu Trợ</span>
+        </button>
+
+        <div id="churnDiagnosticContainer" class="space-y-4 pt-2"></div>
+      </div>
+    </div>
+
+    <!-- TAB: VIRAL K-FACTOR & TIKTOK FORECASTER -->
+    <div id="tabContent-viralkfactor" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-pink-500/30 bg-gradient-to-br from-pink-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-500/20 text-pink-400 border border-pink-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+              ORGANIC VIRALITY & TIKTOK CREATORS
+            </span>
+            <span class="text-xs text-slate-400">Viral Loop Coefficient (K = i * c) & Blended CPI Reduction</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            🚀 TikTok Creator & Organic K-Factor Viral Forecaster
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Mô phỏng toán học vòng lặp sinh trưởng tự nhiên (K-Factor) từ hiệu ứng người chơi mời bạn bè và dự phóng hiệu quả chiến dịch tài trợ Micro-Creators trên TikTok / Shorts để kéo giảm CPI tổng hợp (Blended CPI).
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 1: K-Factor Mathematical Simulator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="flame" class="w-5 h-5 text-pink-400"></i>
+              Công Cụ Mô Phỏng Hệ Số K-Factor (Viral Coefficient Simulator)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Công thức: K = Số lượt mời mỗi user (i) × Tỷ lệ chuyển đổi cài đặt (c)</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Lượt Mua Trả Phí (Paid Installs)</label>
+            <input type="number" id="kSimPaidInstalls" value="10000" step="1000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">CPI Trả Phí ($ USD)</label>
+            <input type="number" id="kSimPaidCpi" value="2.00" step="0.2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Số Lượt Mời/Chia Sẻ Mỗi User (i)</label>
+            <input type="number" id="kSimInvites" value="2.8" step="0.2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Tỷ Lệ Tải Từ Lời Mời (c %)</label>
+            <input type="number" id="kSimCvr" value="25.0" step="1.0" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+        </div>
+
+        <button onclick="runKFactorSimulation()" class="w-full py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-pink-900/30">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          <span>Tính Toán Vòng Lặp Viral & Tiết Kiệm CPI</span>
+        </button>
+
+        <div id="kFactorResultsContainer" class="space-y-4 pt-2"></div>
+      </div>
+
+      <!-- Section 2: TikTok Micro-Creator UGC Campaign ROI -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="video" class="w-5 h-5 text-purple-400"></i>
+              Dự Phóng Chiến Dịch Micro-Creator TikTok / Shorts (UGC Campaign ROI)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Đo lường lượng cài đặt trực tiếp từ link bio và lượng tìm kiếm tự nhiên (Organic Store Search Lift)</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Ngân Sách Tài Trợ Creator ($ USD)</label>
+            <input type="number" id="ugcSimBudget" value="5000" step="500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Số Lượng Creator Tham Gia</label>
+            <input type="number" id="ugcSimCreators" value="25" min="5" max="200" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Lượt Xem Trung Bình Mỗi Video</label>
+            <input type="number" id="ugcSimViews" value="40000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+        </div>
+
+        <button onclick="runTiktokUgcForecast()" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-purple-900/30">
+          <i data-lucide="trending-up" class="w-4 h-4"></i>
+          <span>Dự Phóng Lượt Xem & Lượt Tải Tự Nhiên</span>
+        </button>
+
+        <div id="ugcForecastResults" class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2"></div>
+      </div>
+    </div>
+
     <!-- CUSTOM AD SCRIPT GENERATOR MODAL -->
     <div id="customAdScriptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
       <div class="glass-card bg-slate-900 rounded-2xl border border-purple-500/40 max-w-xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-2xl relative">
@@ -2243,7 +2756,7 @@
 
     // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
+      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
@@ -2267,6 +2780,11 @@
       if (tabId === 'iapmatrix') initIapMatrixTab();
       if (tabId === 'liveopsradar') initLiveOpsRadarTab();
       if (tabId === 'uapacing') initUaPacingTab();
+      if (tabId === 'gachaecon') initGachaEconTab();
+      if (tabId === 'pubpitch') initPublisherPitchTab();
+      if (tabId === 'c10nscan') initC10nTab();
+      if (tabId === 'chokepoint') initChokePointTab();
+      if (tabId === 'viralkfactor') initViralKFactorTab();
       if (tabId === 'breakouts') loadBreakoutRadar();
       if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
@@ -4968,6 +5486,551 @@
         lucide.createIcons();
       } catch (err) {
         console.error("Error running UA pacing simulation:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE 1: GACHA & IN-GAME ECONOMY LAB
+    // ==========================================
+    async function initGachaEconTab() {
+      runGachaSimulation();
+      runFaucetSinkEvaluation();
+    }
+
+    async function runGachaSimulation() {
+      const model = document.getElementById('gachaSimModel').value;
+      const copies = document.getElementById('gachaSimCopies').value;
+
+      try {
+        const res = await fetch('/api/mobile/gacha/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model_key: model,
+            target_copies: parseInt(copies) || 1
+          })
+        });
+
+        const data = await res.json();
+        const stats = data.monte_carlo_stats;
+
+        document.getElementById('gachaResAvgPulls').innerText = `${stats.average_pulls} vé`;
+        document.getElementById('gachaResAvgCost').innerText = `Chi phí: $${stats.avg_cost_usd.toLocaleString()}`;
+
+        document.getElementById('gachaResLuckyPulls').innerText = `${stats.lucky_p10_pulls} vé`;
+        document.getElementById('gachaResLuckyCost').innerText = `Chi phí: $${stats.lucky_cost_usd.toLocaleString()}`;
+
+        document.getElementById('gachaResUnluckyPulls').innerText = `${stats.unlucky_p90_pulls} vé`;
+        document.getElementById('gachaResUnluckyCost').innerText = `Chi phí: $${stats.unlucky_cost_usd.toLocaleString()}`;
+
+        document.getElementById('gachaResWhaleCost').innerText = `$${stats.whale_full_ascension_cost_usd.toLocaleString()}`;
+        document.getElementById('gachaResWorstCase').innerText = `${stats.worst_case_pulls} vé`;
+
+        document.getElementById('gachaPsychologyVerdict').innerHTML = `
+          <strong class="text-yellow-400">📊 Đánh Giá Kinh Tế Gacha:</strong> ${data.spending_psychology_verdict}
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error running Gacha simulation:", err);
+      }
+    }
+
+    async function runFaucetSinkEvaluation() {
+      const dailyF = document.getElementById('faucetDaily').value;
+      const weeklyF = document.getElementById('faucetWeekly').value;
+      const passF = document.getElementById('faucetMonthlyPass').value;
+      const dailyS = document.getElementById('sinkDaily').value;
+      const weeklyS = document.getElementById('sinkWeekly').value;
+      const pullCost = document.getElementById('gachaPullGemCost').value;
+
+      try {
+        const res = await fetch('/api/mobile/gacha/faucet-sink', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            daily_faucet: parseInt(dailyF) || 150,
+            weekly_faucet: parseInt(weeklyF) || 500,
+            monthly_pass: parseInt(passF) || 3000,
+            daily_sink: parseInt(dailyS) || 120,
+            weekly_sink: parseInt(weeklyS) || 800,
+            pull_cost: parseInt(pullCost) || 160
+          })
+        });
+
+        const data = await res.json();
+        const met = data.monthly_metrics;
+        const diag = data.diagnosis;
+
+        const container = document.getElementById('faucetSinkResults');
+        container.innerHTML = `
+          <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-2">
+            <span class="text-xs text-slate-400">Cơ Cấu Tháng (30 Ngày)</span>
+            <div class="text-sm font-bold text-white">Tổng Cấp: <span class="text-emerald-400 font-mono">${met.total_faucet_gems.toLocaleString()}</span> Gem</div>
+            <div class="text-sm font-bold text-white">Tổng Xả: <span class="text-rose-400 font-mono">${met.total_sink_gems.toLocaleString()}</span> Gem</div>
+            <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-800">Tích lũy ròng: <strong class="text-yellow-400 font-mono">+${met.net_monthly_gems_saved.toLocaleString()}</strong> Gem (~${met.free_pulls_per_month} vé free)</div>
+          </div>
+
+          <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-2">
+            <span class="text-xs text-slate-400">Hệ Số Lạm Phát (Faucet/Sink)</span>
+            <div class="text-2xl font-black font-mono ${diag.health_color === 'emerald' ? 'text-emerald-400' : (diag.health_color === 'amber' ? 'text-amber-400' : 'text-rose-400')}">
+              ${met.faucet_sink_ratio}x
+            </div>
+            <div class="text-xs font-bold text-white">${diag.status}</div>
+            <div class="text-[10px] text-slate-400 leading-snug">${diag.verdict}</div>
+          </div>
+
+          <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-2">
+            <span class="text-xs text-slate-400">Chỉ Dẫn Cân Bằng Game Design</span>
+            <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-emerald-300 leading-relaxed">
+              💡 ${diag.recommended_action}
+            </div>
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error evaluating faucet-sink:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE 2: PUBLISHER PITCH & SCORECARD
+    // ==========================================
+    async function initPublisherPitchTab() {
+      runPublisherScorecard();
+      runPublishingDealSimulation();
+    }
+
+    async function runPublisherScorecard() {
+      const d1 = document.getElementById('pubPitchD1').value;
+      const d7 = document.getElementById('pubPitchD7').value;
+      const cpi = document.getElementById('pubPitchCpi').value;
+      const playtime = document.getElementById('pubPitchPlaytime').value;
+      const genre = document.getElementById('pubPitchGenre').value;
+
+      try {
+        const res = await fetch('/api/mobile/publisher/scorecard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            d1_retention: parseFloat(d1) || 40.0,
+            d7_retention: parseFloat(d7) || 15.0,
+            cpi_us: parseFloat(cpi) || 0.85,
+            playtime_mins: parseInt(playtime) || 28,
+            genre: genre
+          })
+        });
+
+        const data = await res.json();
+        const grid = document.getElementById('pubScorecardGrid');
+
+        grid.innerHTML = (data.evaluations || []).map(e => `
+          <div class="glass-card p-5 rounded-2xl border ${e.badge_color === 'emerald' ? 'border-emerald-500/40 bg-emerald-950/10' : (e.badge_color === 'indigo' ? 'border-indigo-500/30 bg-indigo-950/10' : 'border-slate-800')} space-y-3 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <h4 class="text-xs font-bold text-white">${e.publisher_archetype}</h4>
+                  <div class="text-[10px] text-slate-400 mt-0.5">${e.examples.join(', ')}</div>
+                </div>
+                <span class="px-2 py-0.5 rounded text-xs font-black font-mono ${e.badge_color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-300'}">
+                  ${e.weighted_score}/100
+                </span>
+              </div>
+
+              <div class="text-[11px] font-bold ${e.badge_color === 'emerald' ? 'text-emerald-300' : 'text-slate-300'}">
+                🎯 ${e.readiness_grade}
+              </div>
+
+              <!-- Pass/Fail Matrix -->
+              <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
+                <div class="p-1.5 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <span>D1 (${e.benchmark_comparison.d1.actual}%):</span>
+                  <span class="${e.benchmark_comparison.d1.passed ? 'text-emerald-400' : 'text-rose-400'}">${e.benchmark_comparison.d1.passed ? 'PASSED' : 'MISS'}</span>
+                </div>
+                <div class="p-1.5 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <span>D7 (${e.benchmark_comparison.d7.actual}%):</span>
+                  <span class="${e.benchmark_comparison.d7.passed ? 'text-emerald-400' : 'text-rose-400'}">${e.benchmark_comparison.d7.passed ? 'PASSED' : 'MISS'}</span>
+                </div>
+                <div class="p-1.5 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <span>CPI ($${e.benchmark_comparison.cpi.actual}):</span>
+                  <span class="${e.benchmark_comparison.cpi.passed ? 'text-emerald-400' : 'text-rose-400'}">${e.benchmark_comparison.cpi.passed ? 'PASSED' : 'MISS'}</span>
+                </div>
+                <div class="p-1.5 rounded bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <span>Play (${e.benchmark_comparison.playtime.actual}m):</span>
+                  <span class="${e.benchmark_comparison.playtime.passed ? 'text-emerald-400' : 'text-rose-400'}">${e.benchmark_comparison.playtime.passed ? 'PASSED' : 'MISS'}</span>
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-[10px] space-y-1 text-slate-300">
+                <div><strong>RevShare thông lệ:</strong> <span class="text-amber-300 font-mono">${e.deal_terms_preview.revshare}</span></div>
+                <div><strong>Bảo lãnh MG:</strong> <span class="text-emerald-300 font-mono">${e.deal_terms_preview.minimum_guarantee}</span></div>
+              </div>
+            </div>
+
+            <p class="text-[10px] text-slate-400 leading-snug pt-2 border-t border-slate-800">
+              ${e.deal_terms_preview.advisory}
+            </p>
+          </div>
+        `).join('');
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error running publisher scorecard:", err);
+      }
+    }
+
+    async function runPublishingDealSimulation() {
+      const gross = document.getElementById('dealSimGross').value;
+      const ua = document.getElementById('dealSimUa').value;
+      const revshare = document.getElementById('dealSimRevshare').value;
+      const mg = document.getElementById('dealSimMg').value;
+
+      try {
+        const res = await fetch('/api/mobile/publisher/simulate-deal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projected_gross: parseFloat(gross) || 500000.0,
+            ua_budget: parseFloat(ua) || 300000.0,
+            studio_revshare: parseFloat(revshare) || 40.0,
+            minimum_guarantee: parseFloat(mg) || 50000.0
+          })
+        });
+
+        const data = await res.json();
+        const fin = data.financial_breakdown;
+
+        const results = document.getElementById('dealSimResults');
+        results.innerHTML = `
+          <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+            <span class="text-xs text-slate-400">Studio Thực Nhận (Net)</span>
+            <div class="text-xl font-black text-emerald-400 mt-1 font-mono">$${Math.round(fin.studio_net_earnings_usd).toLocaleString()}</div>
+            <div class="text-[10px] text-emerald-300/70 mt-0.5">Bảo lãnh tối thiểu: $${fin.minimum_guarantee_paid_usd.toLocaleString()}</div>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-indigo-500/30 bg-indigo-950/10">
+            <span class="text-xs text-slate-400">Publisher Net Lãi Ròng</span>
+            <div class="text-xl font-black text-indigo-400 mt-1 font-mono">$${Math.round(fin.publisher_net_profit_usd).toLocaleString()}</div>
+            <div class="text-[10px] text-indigo-300/70 mt-0.5">Sau khi đã thanh toán UA và Studio</div>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-slate-700 bg-slate-900/60">
+            <span class="text-xs text-slate-400">Phí Store 30% (Apple/Google)</span>
+            <div class="text-xl font-black text-slate-300 mt-1 font-mono">$${Math.round(fin.app_store_fee_usd).toLocaleString()}</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Nền tảng trừ trực tiếp</div>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
+            <span class="text-xs text-slate-400">Ngân Sách UA Marketing</span>
+            <div class="text-xl font-black text-amber-400 mt-1 font-mono">$${Math.round(fin.ua_ad_spend_usd).toLocaleString()}</div>
+            <div class="text-[10px] text-amber-300/70 mt-0.5">Publisher tài trợ 100%</div>
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error simulating publishing deal:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE 3: CULTURALIZATION & REGULATORY C10N
+    // ==========================================
+    async function initC10nTab() {
+      runC10nAudit();
+    }
+
+    async function runC10nAudit() {
+      const title = document.getElementById('c10nGameTitle').value;
+      const skeletons = document.getElementById('c10nCheckSkeletons').checked;
+      const blood = document.getElementById('c10nCheckBlood').checked;
+      const gacha = document.getElementById('c10nCheckGacha').checked;
+      const costumes = document.getElementById('c10nCheckCostumes').checked;
+      const rtl = document.getElementById('c10nCheckRTL').checked;
+
+      const regions = [];
+      if (document.getElementById('c10nRegChina').checked) regions.push('china');
+      if (document.getElementById('c10nRegJapan').checked) regions.push('japan');
+      if (document.getElementById('c10nRegMena').checked) regions.push('mena');
+      if (document.getElementById('c10nRegEU').checked) regions.push('eu');
+
+      try {
+        const res = await fetch('/api/mobile/culturalization/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            game_title: title,
+            target_regions: regions,
+            has_skeletons: skeletons,
+            has_red_blood: blood,
+            has_gacha_lootbox: gacha,
+            has_skimpy_costumes: costumes,
+            supports_rtl_arabic: rtl
+          })
+        });
+
+        const data = await res.json();
+        const results = document.getElementById('c10nAuditResults');
+
+        results.innerHTML = `
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div class="text-xs text-slate-400">Kết Quả Thẩm Định Kiểm Duyệt Toàn Diện</div>
+              <div class="text-sm font-bold text-white mt-0.5">${data.executive_summary}</div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-black ${data.badge_color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : (data.badge_color === 'indigo' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30')}">
+              ${data.overall_status}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${(data.risk_breakdown || []).map(r => `
+              <div class="p-4 rounded-xl bg-slate-950 border border-rose-500/30 space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div class="font-bold text-white text-xs flex items-center gap-1.5">
+                    <span>${r.flag}</span>
+                    <span>${r.region_name}</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 font-mono">${r.risk_count} Rủi Ro</span>
+                </div>
+                <div class="space-y-2">
+                  ${r.issues.map(iss => `
+                    <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1 text-xs">
+                      <div class="flex items-center justify-between">
+                        <strong class="text-rose-400 text-[11px]">[${iss.code}] ${iss.category}</strong>
+                        <span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-950 text-rose-300">${iss.severity}</span>
+                      </div>
+                      <p class="text-[11px] text-slate-300 leading-snug">${iss.rule}</p>
+                      <div class="text-[10px] text-emerald-300 pt-1 border-t border-slate-800/60 leading-snug">
+                        🛠️ <strong>Giải pháp sửa:</strong> ${iss.remediation}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error running C10n audit:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE 4: CHOKE-POINT & CHURN DIAGNOSTIC
+    // ==========================================
+    async function initChokePointTab() {
+      runChurnFunnelDiagnostic();
+    }
+
+    async function runChurnFunnelDiagnostic() {
+      const installs = document.getElementById('churnSimInstalls').value;
+      const patch = document.getElementById('churnSimPatchPass').value;
+      const tutorial = document.getElementById('churnSimTutorialPass').value;
+      const boss = document.getElementById('churnSimBossWin').value;
+      const losses = document.getElementById('churnSimLossesToQuit').value;
+
+      try {
+        const res = await fetch('/api/mobile/churn/diagnose', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            installs: parseInt(installs) || 10000,
+            patch_pass_pct: parseFloat(patch) || 84.0,
+            tutorial_pass_pct: parseFloat(tutorial) || 68.0,
+            boss_win_pct: parseFloat(boss) || 38.0,
+            losses_to_quit: parseInt(losses) || 3
+          })
+        });
+
+        const data = await res.json();
+        const fRes = data.custom_funnel_results;
+        const evalRes = data.chokepoint_evaluation;
+        const pack = data.dynamic_rescue_pack;
+
+        const container = document.getElementById('churnDiagnosticContainer');
+        container.innerHTML = `
+          <!-- Funnel Flow KPIs -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Vượt Qua Tải Patch</span>
+              <div class="text-xl font-black text-white mt-1 font-mono">${fRes.users_survived_patch.toLocaleString()}</div>
+              <div class="text-[10px] text-slate-500">Rơi rụng: ${(fRes.initial_installs - fRes.users_survived_patch).toLocaleString()} user</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Xong Tutorial FTUE</span>
+              <div class="text-xl font-black text-white mt-1 font-mono">${fRes.users_completed_tutorial.toLocaleString()}</div>
+              <div class="text-[10px] text-slate-500">Người chơi bước vào core loop</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-rose-500/30 bg-rose-950/10">
+              <span class="text-xs text-slate-400">Rage-Quit Tại Ải Boss</span>
+              <div class="text-xl font-black text-rose-400 mt-1 font-mono">${fRes.users_rage_quit_at_chokepoint.toLocaleString()}</div>
+              <div class="text-[10px] text-rose-300/70">Ức chế gỡ game do kẹt độ khó</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+              <span class="text-xs text-slate-400">Dự Báo D1 Retention</span>
+              <div class="text-xl font-black text-emerald-400 mt-1 font-mono">${fRes.projected_d1_retention_pct}%</div>
+              <div class="text-[10px] text-emerald-300/70">D1 sống sót quay lại</div>
+            </div>
+          </div>
+
+          <!-- Alert & Dynamic Rescue Pack Lifeline -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+            <div class="md:col-span-5 p-4 rounded-xl bg-slate-950 border ${evalRes.badge_color === 'rose' ? 'border-rose-500/40 bg-rose-950/10' : 'border-slate-800'} space-y-2">
+              <div class="text-xs font-extrabold ${evalRes.badge_color === 'rose' ? 'text-rose-400' : 'text-emerald-400'}">
+                ${evalRes.severity_status}
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">${evalRes.diagnosis}</p>
+              <div class="pt-2 text-[10px] text-slate-400">
+                Tỷ lệ thắng ải Boss hiện tại: <strong class="text-white font-mono">${evalRes.boss_win_rate_pct}%</strong>
+              </div>
+            </div>
+
+            <!-- Dynamic Rescue Pack Proposal -->
+            <div class="md:col-span-7 glass-card p-5 rounded-2xl border border-orange-500/40 bg-orange-950/10 space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-black bg-orange-500/20 text-orange-400 border border-orange-500/30 font-mono">${pack.badge_sticker}</span>
+                  <h4 class="text-sm font-bold text-white mt-1">${pack.pack_title}</h4>
+                </div>
+                <div class="text-2xl font-black text-orange-400 font-mono">$${pack.price_point_usd}</div>
+              </div>
+
+              <div class="text-[11px] text-slate-300">
+                ⚡ <strong>Điều kiện kích hoạt tự động:</strong> ${pack.trigger_condition}
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-[10px]">
+                ${pack.contents.map(c => `<div class="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300">🎁 ${c}</div>`).join('')}
+              </div>
+
+              <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px]">
+                <span class="text-emerald-400 font-semibold">${pack.projected_conversion_boost}</span>
+                <span class="text-sky-400 font-semibold">${pack.d1_retention_saved}</span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error diagnosing churn funnel:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE 5: VIRAL K-FACTOR & TIKTOK FORECASTER
+    // ==========================================
+    async function initViralKFactorTab() {
+      runKFactorSimulation();
+      runTiktokUgcForecast();
+    }
+
+    async function runKFactorSimulation() {
+      const paid = document.getElementById('kSimPaidInstalls').value;
+      const cpi = document.getElementById('kSimPaidCpi').value;
+      const invites = document.getElementById('kSimInvites').value;
+      const cvr = document.getElementById('kSimCvr').value;
+
+      try {
+        const res = await fetch('/api/mobile/viral/k-factor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paid_installs: parseInt(paid) || 10000,
+            paid_cpi: parseFloat(cpi) || 2.00,
+            invites_per_user: parseFloat(invites) || 2.8,
+            invitee_cvr: (parseFloat(cvr) || 25.0) / 100.0,
+            cycles: 5
+          })
+        });
+
+        const data = await res.json();
+        const met = data.k_factor_metrics;
+        const acq = data.acquisition_impact;
+
+        const container = document.getElementById('kFactorResultsContainer');
+        container.innerHTML = `
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-pink-500/30 bg-pink-950/10">
+              <span class="text-xs text-slate-400">Hệ Số K-Factor</span>
+              <div class="text-2xl font-black text-pink-400 mt-1 font-mono">${met.k_factor_value}</div>
+              <div class="text-[10px] text-pink-300/70 mt-0.5">${met.classification}</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+              <span class="text-xs text-slate-400">Lượt Tải Lan Truyền (Free)</span>
+              <div class="text-2xl font-black text-emerald-400 mt-1 font-mono">+${acq.organic_viral_installs_gained.toLocaleString()}</div>
+              <div class="text-[10px] text-emerald-300/70 mt-0.5">Kéo theo từ bạn bè</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-purple-500/30 bg-purple-950/10">
+              <span class="text-xs text-slate-400">CPI Tổng Hợp (Blended CPI)</span>
+              <div class="text-2xl font-black text-purple-400 mt-1 font-mono">$${acq.blended_cpi_usd}</div>
+              <div class="text-[10px] text-purple-300/70 mt-0.5">Tiết kiệm -${acq.cpi_reduction_pct}% so với giá gốc $${acq.initial_paid_cpi_usd}</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-sky-500/30 bg-sky-950/10">
+              <span class="text-xs text-slate-400">Tổng Người Dùng Thu Về</span>
+              <div class="text-2xl font-black text-sky-400 mt-1 font-mono">${acq.total_users_acquired.toLocaleString()}</div>
+              <div class="text-[10px] text-sky-300/70 mt-0.5">Sau 5 vòng lặp chia sẻ</div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
+            <strong>💬 Nhận Định Tăng Trưởng:</strong> ${met.verdict}
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error running K-factor simulation:", err);
+      }
+    }
+
+    async function runTiktokUgcForecast() {
+      const budget = document.getElementById('ugcSimBudget').value;
+      const creators = document.getElementById('ugcSimCreators').value;
+      const views = document.getElementById('ugcSimViews').value;
+
+      try {
+        const res = await fetch('/api/mobile/viral/tiktok-forecast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            budget: parseFloat(budget) || 5000.0,
+            creator_count: parseInt(creators) || 25,
+            avg_views: parseInt(views) || 40000
+          })
+        });
+
+        const data = await res.json();
+        const p = data.performance_forecast;
+
+        const container = document.getElementById('ugcForecastResults');
+        container.innerHTML = `
+          <div class="glass-card p-4 rounded-xl border border-purple-500/30 bg-purple-950/10">
+            <span class="text-xs text-slate-400">Lượt Xem Video Dự Kiến</span>
+            <div class="text-xl font-black text-purple-400 mt-1 font-mono">${p.total_projected_views.toLocaleString()}</div>
+            <div class="text-[10px] text-purple-300/70 mt-0.5">CPM: $${p.effective_cpm_usd}</div>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-sky-500/30 bg-sky-950/10">
+            <span class="text-xs text-slate-400">Lượt Tải Trực Tiếp (Bio)</span>
+            <div class="text-xl font-black text-sky-400 mt-1 font-mono">${p.direct_bio_installs.toLocaleString()}</div>
+            <div class="text-[10px] text-sky-300/70 mt-0.5">CTR 1.5% từ link</div>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+            <span class="text-xs text-slate-400">Lực Đẩy Tìm Kiếm Store</span>
+            <div class="text-xl font-black text-emerald-400 mt-1 font-mono">+${p.organic_search_lift_installs.toLocaleString()}</div>
+            <div class="text-[10px] text-emerald-300/70 mt-0.5">Organic Search Lift x2.2</div>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
+            <span class="text-xs text-slate-400">CPI Thực Tế UGC</span>
+            <div class="text-xl font-black text-amber-400 mt-1 font-mono">$${p.effective_cpi_usd}</div>
+            <div class="text-[10px] text-amber-300/70 mt-0.5">Tổng: ${p.total_campaign_installs.toLocaleString()} installs</div>
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error forecasting TikTok UGC:", err);
       }
     }
 

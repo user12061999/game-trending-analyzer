@@ -36,6 +36,11 @@ from app.analytics.aso_visual_optimizer import ASOVisualOptimizer
 from app.analytics.iap_monetization import IAPMonetizationAnalyzer
 from app.analytics.liveops_scheduler import LiveOpsScheduler
 from app.analytics.ua_campaign_optimizer import UACampaignOptimizer
+from app.analytics.gacha_economy_simulator import GachaEconomySimulator
+from app.analytics.publisher_deal_evaluator import PublisherDealEvaluator
+from app.analytics.culturalization_scanner import CulturalizationScanner
+from app.analytics.churn_chokepoint_analyzer import ChurnChokepointAnalyzer
+from app.analytics.viral_kfactor_forecaster import ViralKFactorForecaster
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -55,6 +60,11 @@ aso_visual_optimizer = ASOVisualOptimizer()
 iap_analyzer = IAPMonetizationAnalyzer()
 liveops_scheduler = LiveOpsScheduler()
 ua_optimizer = UACampaignOptimizer()
+gacha_simulator = GachaEconomySimulator()
+publisher_evaluator = PublisherDealEvaluator()
+c10n_scanner = CulturalizationScanner()
+churn_analyzer = ChurnChokepointAnalyzer()
+kfactor_forecaster = ViralKFactorForecaster()
 
 is_crawling = False
 
@@ -542,6 +552,144 @@ async def optimize_campaign_pacing_api(request: Request):
         optimization_goal=goal,
         target_cpi=cpi,
         target_roas_d0=roas
+    )
+
+# --- Gacha & In-Game Economy Endpoints ---
+@app.get("/api/mobile/gacha/models")
+async def get_gacha_models_api():
+    """Returns preset gacha system models and mechanics."""
+    return {"models": gacha_simulator.preset_models}
+
+@app.post("/api/mobile/gacha/simulate")
+async def simulate_gacha_api(request: Request):
+    """Runs Monte Carlo gacha probability simulations."""
+    payload = await request.json()
+    model = payload.get("model_key", "genshin_style")
+    copies = int(payload.get("target_copies", 1))
+    return gacha_simulator.simulate_gacha_pulls(model_key=model, target_copies=copies)
+
+@app.post("/api/mobile/gacha/faucet-sink")
+async def evaluate_faucet_sink_api(request: Request):
+    """Calculates resource faucet vs sink balance and inflation health."""
+    payload = await request.json()
+    return gacha_simulator.evaluate_economy_faucet_sink(
+        daily_gem_faucet=int(payload.get("daily_faucet", 150)),
+        weekly_event_faucet=int(payload.get("weekly_faucet", 500)),
+        monthly_pass_faucet=int(payload.get("monthly_pass", 3000)),
+        daily_gem_sink=int(payload.get("daily_sink", 120)),
+        weekly_gem_sink=int(payload.get("weekly_sink", 800)),
+        gacha_pull_cost_gems=int(payload.get("pull_cost", 160))
+    )
+
+# --- Global Publisher Deal & Scorecard Endpoints ---
+@app.post("/api/mobile/publisher/scorecard")
+async def get_publisher_scorecard_api(request: Request):
+    """Evaluates game metrics against Tier 1 & Tier 2 global publisher benchmarks."""
+    payload = await request.json()
+    d1 = float(payload.get("d1_retention", 40.0))
+    d7 = float(payload.get("d7_retention", 15.0))
+    cpi = float(payload.get("cpi_us", 0.85))
+    playtime = int(payload.get("playtime_mins", 28))
+    genre = payload.get("genre", "Hybrid-Casual")
+    return publisher_evaluator.evaluate_game_readiness(
+        d1_retention=d1,
+        d7_retention=d7,
+        tested_cpi_us=cpi,
+        avg_playtime_mins=playtime,
+        game_genre=genre
+    )
+
+@app.post("/api/mobile/publisher/simulate-deal")
+async def simulate_publisher_deal_api(request: Request):
+    """Simulates net studio earnings under standard post-UA recoupment contract."""
+    payload = await request.json()
+    gross = float(payload.get("projected_gross", 500000.0))
+    ua = float(payload.get("ua_budget", 300000.0))
+    revshare = float(payload.get("studio_revshare", 40.0))
+    mg = float(payload.get("minimum_guarantee", 50000.0))
+    return publisher_evaluator.simulate_publishing_deal_cashflow(
+        projected_gross_revenue=gross,
+        ua_marketing_budget=ua,
+        studio_revshare_pct=revshare,
+        minimum_guarantee=mg
+    )
+
+# --- Culturalization & Regulatory Scanner Endpoints ---
+@app.get("/api/mobile/culturalization/standards")
+async def get_culturalization_standards_api():
+    """Returns regional compliance and cultural standards for China, Japan, MENA, EU."""
+    return {"regions": c10n_scanner.get_all_standards()}
+
+@app.post("/api/mobile/culturalization/audit")
+async def audit_culturalization_api(request: Request):
+    """Audits game configuration against targeted regional standards."""
+    payload = await request.json()
+    title = payload.get("game_title", "Mobile Project")
+    regions = payload.get("target_regions", ["china", "japan", "mena", "eu"])
+    return c10n_scanner.audit_game_compliance(
+        game_title=title,
+        target_regions=regions,
+        has_skeletons=bool(payload.get("has_skeletons", False)),
+        has_red_blood=bool(payload.get("has_red_blood", False)),
+        has_gacha_lootbox=bool(payload.get("has_gacha_lootbox", True)),
+        has_skimpy_costumes=bool(payload.get("has_skimpy_costumes", False)),
+        supports_rtl_arabic=bool(payload.get("supports_rtl_arabic", False))
+    )
+
+# --- Choke-Point & Churn Diagnostic Endpoints ---
+@app.get("/api/mobile/churn/funnel-benchmark")
+async def get_churn_benchmark_api():
+    """Returns benchmark player onboarding funnel conversion rates."""
+    return {"funnel": churn_analyzer.benchmark_funnel}
+
+@app.post("/api/mobile/churn/diagnose")
+async def diagnose_churn_api(request: Request):
+    """Diagnoses custom studio funnel drop-offs and rage-quit walls."""
+    payload = await request.json()
+    installs = int(payload.get("installs", 10000))
+    patch_pass = float(payload.get("patch_pass_pct", 85.0))
+    tutorial_pass = float(payload.get("tutorial_pass_pct", 70.0))
+    boss_win = float(payload.get("boss_win_pct", 40.0))
+    losses_to_quit = int(payload.get("losses_to_quit", 3))
+    return churn_analyzer.diagnose_player_funnel(
+        install_count=installs,
+        patch_download_pass_pct=patch_pass,
+        tutorial_complete_pct=tutorial_pass,
+        chokepoint_boss_win_pct=boss_win,
+        consecutive_losses_to_quit=losses_to_quit
+    )
+
+# --- TikTok Creator & Viral K-Factor Endpoints ---
+@app.post("/api/mobile/viral/k-factor")
+async def calculate_kfactor_api(request: Request):
+    """Calculates viral K-Factor and models viral loop user acquisition."""
+    payload = await request.json()
+    paid_installs = int(payload.get("paid_installs", 10000))
+    cpi = float(payload.get("paid_cpi", 2.00))
+    invites = float(payload.get("invites_per_user", 2.5))
+    cvr = float(payload.get("invitee_cvr", 0.24))
+    cycles = int(payload.get("cycles", 5))
+    return kfactor_forecaster.calculate_k_factor_loop(
+        paid_installs=paid_installs,
+        paid_cpi=cpi,
+        invites_per_user=invites,
+        invitee_conversion_rate=cvr,
+        simulation_cycles=cycles
+    )
+
+@app.post("/api/mobile/viral/tiktok-forecast")
+async def forecast_tiktok_campaign_api(request: Request):
+    """Projects ROI and organic store search lift from a TikTok/Shorts Micro-Creator campaign."""
+    payload = await request.json()
+    budget = float(payload.get("budget", 5000.0))
+    creators = int(payload.get("creator_count", 25))
+    views = int(payload.get("avg_views", 40000))
+    network = payload.get("network", "TikTok")
+    return kfactor_forecaster.forecast_tiktok_creator_campaign(
+        creator_budget_usd=budget,
+        creator_count=creators,
+        avg_views_per_creator=views,
+        target_network=network
     )
 
 @app.get("/api/meta")
