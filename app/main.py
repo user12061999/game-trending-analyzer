@@ -41,6 +41,10 @@ from app.analytics.publisher_deal_evaluator import PublisherDealEvaluator
 from app.analytics.culturalization_scanner import CulturalizationScanner
 from app.analytics.churn_chokepoint_analyzer import ChurnChokepointAnalyzer
 from app.analytics.viral_kfactor_forecaster import ViralKFactorForecaster
+from app.analytics.webhook_bot_service import WebhookBotService
+from app.analytics.pitch_deck_generator import PitchDeckGenerator
+from app.analytics.ab_testing_calculator import ABTestingCalculator
+from app.analytics.ad_mediation_optimizer import AdMediationOptimizer
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -65,6 +69,10 @@ publisher_evaluator = PublisherDealEvaluator()
 c10n_scanner = CulturalizationScanner()
 churn_analyzer = ChurnChokepointAnalyzer()
 kfactor_forecaster = ViralKFactorForecaster()
+bot_service = WebhookBotService()
+pitch_generator = PitchDeckGenerator()
+ab_calculator = ABTestingCalculator()
+mediation_optimizer = AdMediationOptimizer()
 
 is_crawling = False
 
@@ -690,6 +698,99 @@ async def forecast_tiktok_campaign_api(request: Request):
         creator_count=creators,
         avg_views_per_creator=views,
         target_network=network
+    )
+
+# --- Discord & Telegram Webhook Bot Endpoints ---
+@app.get("/api/mobile/webhook/config")
+async def get_webhook_config_api():
+    """Returns saved webhook bot configuration."""
+    return bot_service.get_config()
+
+@app.post("/api/mobile/webhook/config")
+async def save_webhook_config_api(request: Request):
+    """Saves Discord and Telegram webhook credentials and preferences."""
+    payload = await request.json()
+    return bot_service.save_config(payload)
+
+@app.post("/api/mobile/webhook/test")
+async def test_webhook_api():
+    """Sends an instant test alert to enabled webhook channels."""
+    return bot_service.trigger_test_alert()
+
+@app.post("/api/mobile/webhook/trigger-digest")
+async def trigger_morning_digest_api():
+    """Triggers immediate broadcast of morning market digest."""
+    return bot_service.trigger_morning_digest()
+
+# --- Executive Pitch Deck Generator Endpoints ---
+@app.post("/api/mobile/deck/generate")
+async def generate_pitch_deck_api(request: Request):
+    """Generates standalone printable HTML pitch deck presentation."""
+    payload = await request.json()
+    deck_html = pitch_generator.generate_deck_html(
+        game_title=payload.get("game_title", "Project Valkyrie"),
+        genre=payload.get("genre", "Mid-Core Action RPG"),
+        target_regions=payload.get("target_regions", "Global (Tier 1 US/JP & SEA)"),
+        target_cpi=float(payload.get("target_cpi", 1.80)),
+        projected_d1=float(payload.get("projected_d1", 42.0)),
+        projected_d7=float(payload.get("projected_d7", 16.5)),
+        target_break_even_day=int(payload.get("break_even_day", 45)),
+        whale_cap=payload.get("whale_cap", "$1,500+"),
+        publisher_fit=payload.get("publisher_fit", "Habby / Miniclip (Tier 1 Mid-Core)")
+    )
+    return HTMLResponse(content=deck_html)
+
+# --- Soft-Launch A/B Testing Calculator Endpoints ---
+@app.post("/api/mobile/ab-test/sample-size")
+async def calculate_sample_size_api(request: Request):
+    """Calculates minimum sample size per variant needed for soft-launch test."""
+    payload = await request.json()
+    base = float(payload.get("baseline_rate_pct", 40.0))
+    lift = float(payload.get("expected_lift_pct", 3.0))
+    conf = float(payload.get("confidence_level", 95.0))
+    power = float(payload.get("power", 80.0))
+    country = payload.get("country", "philippines")
+    return ab_calculator.calculate_required_sample_size(
+        baseline_rate_pct=base,
+        expected_lift_pct=lift,
+        confidence_level=conf,
+        power=power,
+        country_key=country
+    )
+
+@app.post("/api/mobile/ab-test/evaluate")
+async def evaluate_ab_test_api(request: Request):
+    """Evaluates statistical significance of A/B test results (Z-test, p-value)."""
+    payload = await request.json()
+    return ab_calculator.evaluate_ab_test_significance(
+        visitors_a=int(payload.get("visitors_a", 1500)),
+        conversions_a=int(payload.get("conversions_a", 600)),
+        visitors_b=int(payload.get("visitors_b", 1500)),
+        conversions_b=int(payload.get("conversions_b", 660)),
+        metric_name=payload.get("metric_name", "D1 Retention")
+    )
+
+# --- Ad Mediation Waterfall & eCPM Floor Endpoints ---
+@app.get("/api/mobile/mediation/benchmarks")
+async def get_mediation_benchmarks_api():
+    """Returns regional eCPM benchmarks and standard waterfall templates."""
+    return mediation_optimizer.get_benchmarks()
+
+@app.post("/api/mobile/mediation/simulate")
+async def simulate_mediation_api(request: Request):
+    """Simulates ad revenue yield and ad fatigue retention penalty."""
+    payload = await request.json()
+    dau = int(payload.get("dau", 50000))
+    session_mins = int(payload.get("session_mins", 15))
+    cooldown = int(payload.get("cooldown_secs", 60))
+    rewarded = float(payload.get("rewarded_watches", 2.5))
+    region = payload.get("region", "us")
+    return mediation_optimizer.simulate_mediation_yield(
+        dau=dau,
+        avg_session_mins=session_mins,
+        interstitial_cooldown_secs=cooldown,
+        rewarded_watches_per_user=rewarded,
+        region_tier=region
     )
 
 @app.get("/api/meta")

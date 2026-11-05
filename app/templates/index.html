@@ -206,6 +206,18 @@
       <button onclick="switchTab('viralkfactor')" id="tabBtn-viralkfactor" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="flame" class="w-4 h-4 text-pink-400"></i> Viral K-Factor
       </button>
+      <button onclick="switchTab('botcenter')" id="tabBtn-botcenter" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="bell-ring" class="w-4 h-4 text-emerald-400"></i> Bot Webhook
+      </button>
+      <button onclick="switchTab('pitchdeck')" id="tabBtn-pitchdeck" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="presentation" class="w-4 h-4 text-indigo-400"></i> Pitch Deck PDF
+      </button>
+      <button onclick="switchTab('abtesting')" id="tabBtn-abtesting" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="test-tube-2" class="w-4 h-4 text-cyan-400"></i> A/B Test Soft-Launch
+      </button>
+      <button onclick="switchTab('mediation')" id="tabBtn-mediation" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="split" class="w-4 h-4 text-amber-400"></i> Ad Mediation
+      </button>
       <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
       </button>
@@ -1940,6 +1952,404 @@
       </div>
     </div>
 
+    <!-- TAB: WEBHOOK AUTOMATION BOT CENTER -->
+    <div id="tabContent-botcenter" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              REAL-TIME STUDIO AUTOMATION & LIVE ALERTS
+            </span>
+            <span class="text-xs text-slate-400">Discord & Telegram Push Notifications</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            🔔 Trung Tâm Tự Động Hóa Webhook Bot (Discord & Telegram)
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Kết nối trực tiếp hệ thống phân tích với group chat làm việc của studio. Tự động bắn tin cảnh báo khi đối thủ nhảy vọt thứ hạng, cảnh báo bão giá CPI trước sự kiện của các game tỷ đô và nhận bản tin tóm tắt thị trường mỗi buổi sáng lúc 08:30.
+          </p>
+        </div>
+      </div>
+
+      <!-- Webhook Configuration Form -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Discord Setup -->
+          <div class="p-5 rounded-2xl bg-slate-950 border border-indigo-500/30 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="message-square" class="w-4 h-4 text-indigo-400"></i>
+                Kênh Discord (Webhook URL)
+              </h3>
+              <label class="flex items-center gap-2 text-xs text-indigo-300 cursor-pointer">
+                <input type="checkbox" id="botDiscordEnabled" class="rounded border-slate-700 text-indigo-600">
+                <span>Kích Hoạt Discord</span>
+              </label>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Webhook URL của Server Discord:</label>
+              <input type="password" id="botDiscordUrl" placeholder="https://discord.com/api/webhooks/..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <span class="text-[10px] text-slate-500 mt-1 block">Tạo webhook tại: Server Settings -> Integrations -> Webhooks</span>
+            </div>
+          </div>
+
+          <!-- Telegram Setup -->
+          <div class="p-5 rounded-2xl bg-slate-950 border border-sky-500/30 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="send" class="w-4 h-4 text-sky-400"></i>
+                Kênh Telegram (Bot Token & Chat ID)
+              </h3>
+              <label class="flex items-center gap-2 text-xs text-sky-300 cursor-pointer">
+                <input type="checkbox" id="botTelegramEnabled" class="rounded border-slate-700 text-sky-600">
+                <span>Kích Hoạt Telegram</span>
+              </label>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Telegram Bot Token:</label>
+                <input type="password" id="botTelegramToken" placeholder="123456789:ABCdefGHIjk..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Telegram Chat ID (Group hoặc Cá nhân):</label>
+                <input type="text" id="botTelegramChatId" placeholder="-1001234567890 hoặc 987654321" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alert Preferences & Buttons -->
+        <div class="pt-2 border-t border-slate-800 flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-4 text-xs text-slate-300 flex-wrap">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="botPrefRivalJump" checked class="text-emerald-600">
+              <span>Bắn tin khi đối thủ nhảy ≥20 bậc</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="botPrefLiveopsClash" checked class="text-emerald-600">
+              <span>Cảnh báo LiveOps bão giá CPI trước 48h</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="botPrefMorningDigest" checked class="text-emerald-600">
+              <span>Bản tin thị trường sáng 08:30</span>
+            </label>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button onclick="saveWebhookConfig()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs transition-colors cursor-pointer">
+              💾 Lưu Cấu Hình
+            </button>
+            <button onclick="triggerWebhookTest()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors cursor-pointer shadow-lg shadow-emerald-900/30">
+              🚀 Bắn Alert Test Thử
+            </button>
+            <button onclick="triggerMorningDigestManual()" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition-colors cursor-pointer shadow-lg shadow-amber-900/30">
+              ☀️ Gửi Bản Tin Sáng Ngay
+            </button>
+          </div>
+        </div>
+
+        <div id="botDispatchStatusBox" class="hidden p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs"></div>
+      </div>
+    </div>
+
+    <!-- TAB: EXECUTIVE PITCH DECK GENERATOR -->
+    <div id="tabContent-pitchdeck" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
+              1-CLICK STRATEGIC REPORT & INVESTOR DECK
+            </span>
+            <span class="text-xs text-slate-400">Printable PDF & Interactive Presentation</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            📊 Bộ Xuất Báo Cáo Chiến Lược Điều Hành & Pitch Deck PDF
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Tổng hợp toàn diện dữ liệu phân tích thị trường, mô hình dòng tiền CPI/LTV, dự báo điểm hòa vốn, thang giá nạp IAP và năng lực đàm phán Publisher thành một bản slide báo cáo sang trọng, sẵn sàng in PDF hoặc trình chiếu trước Ban Giám Đốc và Nhà Đầu Tư.
+          </p>
+        </div>
+      </div>
+
+      <!-- Pitch Deck Parameters -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="presentation" class="w-5 h-5 text-indigo-400"></i>
+              Thông Số Đóng Gói Slide Thuyết Trình
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Tùy biến các chỉ số trọng yếu trước khi xuất bản trình chiếu</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Tên Dự Án Game</label>
+            <input type="text" id="deckInputTitle" value="Project Valkyrie" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Thể Loại Phân Khúc</label>
+            <input type="text" id="deckInputGenre" value="Mid-Core Action RPG" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Vùng Thị Trường</label>
+            <input type="text" id="deckInputRegions" value="Global (Tier 1 US/JP & SEA)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Target CPI Blended ($)</label>
+            <input type="number" id="deckInputCpi" value="1.80" step="0.1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">D1 Retention Dự Kiến (%)</label>
+            <input type="number" id="deckInputD1" value="42.0" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">D7 Retention Dự Kiến (%)</label>
+            <input type="number" id="deckInputD7" value="16.5" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Ngày Hòa Vốn Mục Tiêu</label>
+            <input type="number" id="deckInputBreakEven" value="45" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Publisher Khuyến Nghị</label>
+            <input type="text" id="deckInputPub" value="Habby / Miniclip (Tier 1 Mid-Core)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+        </div>
+
+        <button onclick="launchPitchDeckPresentation()" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-indigo-900/30 text-sm">
+          <i data-lucide="external-link" class="w-4 h-4"></i>
+          <span>Mở Slide Trình Chiếu Độc Lập & Sẵn Sàng In PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAB: SOFT-LAUNCH A/B TESTING CALCULATOR -->
+    <div id="tabContent-abtesting" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-500 animate-ping"></span>
+              STATISTICAL SIGNIFICANCE (p < 0.05) & Z-TEST LAB
+            </span>
+            <span class="text-xs text-slate-400">Sample Size Planning & Winner Evaluation</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            🧪 Bộ Đo Kiểm Thống Kê Soft-Launch & A/B Testing Calculator
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Tính toán chính xác cỡ mẫu (Sample Size) cần thu thập tại các thị trường Soft-launch (Philippines, Brazil, Canada) để đạt độ tin cậy khoa học 95%. Công cụ kiểm định Z-test xác định xem nhánh Icon/Gameplay mới có thực sự chiến thắng hay chỉ là do may rủi.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 1: Sample Size Planner -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="calculator" class="w-5 h-5 text-cyan-400"></i>
+              Công Cụ Tính Cỡ Mẫu Thử Nghiệm Tối Thiểu (Sample Size Planner)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Xác định số lượt cài đặt cần mua để phát hiện mức tăng trưởng mong muốn</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Tỷ Lệ Cơ Bản Gốc (Baseline %)</label>
+            <input type="number" id="abPlanBaseRate" value="40.0" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Kỳ Vọng Tăng Trưởng (Lift %)</label>
+            <input type="number" id="abPlanLift" value="3.0" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Độ Tin Cậy Thống Kê</label>
+            <select id="abPlanConfidence" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="95.0">95% (Chuẩn Khoa Học p < 0.05)</option>
+              <option value="90.0">90% (Khảo Sát Nhanh)</option>
+              <option value="99.0">99% (Độ Chính Xác Tuyệt Đối)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Quốc Gia Chạy Soft-Launch</label>
+            <select id="abPlanCountry" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="philippines">Philippines ($0.28 CPI - English FTUE)</option>
+              <option value="brazil">Brazil ($0.35 CPI - Volume PvP)</option>
+              <option value="poland">Poland ($0.75 CPI - EU Proxy)</option>
+              <option value="canada">Canada ($2.20 CPI - US Whale Proxy)</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button onclick="runSampleSizeCalculation()" class="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-cyan-900/30">
+              <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+              <span>Tính Cỡ Mẫu</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="sampleSizeResultContainer" class="pt-2"></div>
+      </div>
+
+      <!-- Section 2: Two-Proportion Z-Test Significance Evaluator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="scale" class="w-5 h-5 text-indigo-400"></i>
+              Kiểm Định Z-Test Đánh Giá Nhánh Thắng Cuộc (A/B Test Significance)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Nhập số liệu thực tế của Nhánh A (Đối Chứng) và Nhánh B (Thử Nghiệm)</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+            <span class="text-xs font-bold text-slate-400 block uppercase">Nhánh A (Control - Bản Cũ)</span>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] text-slate-400 mb-1">Số Lượng Mẫu (Users A)</label>
+                <input type="number" id="abTestVisA" value="1500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+              <div>
+                <label class="block text-[11px] text-slate-400 mb-1">Lượt Chuyển Đổi (Conversions A)</label>
+                <input type="number" id="abTestConvA" value="600" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+            <span class="text-xs font-bold text-cyan-400 block uppercase">Nhánh B (Treatment - Bản Mới)</span>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] text-slate-400 mb-1">Số Lượng Mẫu (Users B)</label>
+                <input type="number" id="abTestVisB" value="1500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+              <div>
+                <label class="block text-[11px] text-slate-400 mb-1">Lượt Chuyển Đổi (Conversions B)</label>
+                <input type="number" id="abTestConvB" value="665" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="runAbSignificanceEvaluation()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-indigo-900/30">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Thẩm Định Ý Nghĩa Thống Kê (Z-Test)</span>
+        </button>
+
+        <div id="abSignificanceResults" class="space-y-4 pt-2"></div>
+      </div>
+    </div>
+
+    <!-- TAB: AD MEDIATION WATERFALL & ECPM OPTIMIZER -->
+    <div id="tabContent-mediation" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              APPLOVIN MAX & ADMOB WATERFALL ARCHITECTURE
+            </span>
+            <span class="text-xs text-slate-400">eCPM Floors & Frequency Capping Simulator</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            💵 Tối Ưu Thác Doanh Thu Quảng Cáo (Ad Mediation Waterfall)
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Chuẩn hóa thang giá sàn (eCPM Floors) cho các mạng hòa mạng quảng cáo (AppLovin MAX / Google AdMob / LevelPlay) theo quốc gia, mô phỏng tần suất hiển thị (Frequency Capping) để tối đa hóa doanh thu quảng cáo mà không gây sụt giảm retention.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 1: Regional eCPM Benchmarks Table -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-5 h-5 text-amber-400"></i>
+              Bảng Benchmark Giá Sàn eCPM Toàn Cầu (Regional eCPM Floors)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Giá chuẩn eCPM cho Rewarded Video, Interstitial và Banner</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="px-4 py-3">Quốc Gia</th>
+                <th class="px-4 py-3">Phân Tier</th>
+                <th class="px-4 py-3">Rewarded Video eCPM</th>
+                <th class="px-4 py-3">Interstitial eCPM</th>
+                <th class="px-4 py-3">Banner eCPM</th>
+                <th class="px-4 py-3">Đặc Thù Thị Trường</th>
+              </tr>
+            </thead>
+            <tbody id="mediationBenchmarkTableBody" class="divide-y divide-slate-800 font-mono"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 2: Frequency Capping & Retention Churn Simulator -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="clock" class="w-5 h-5 text-emerald-400"></i>
+              Mô Phỏng Tần Suất Quảng Cáo vs Độ Giữ Chân (Ad Fatigue Simulator)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Tìm điểm cân bằng vàng (Golden Sweet Spot) giữa doanh thu ads và nguy cơ người chơi ức chế gỡ game</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">DAU Mục Tiêu</label>
+            <input type="number" id="medSimDau" value="50000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Thời Lượng Chơi (Phút/Session)</label>
+            <input type="number" id="medSimSession" value="15" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Giãn Cách Interstitial (Giây)</label>
+            <select id="medSimCooldown" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="40">40 Giây (Bão Ads - Rủi ro cao)</option>
+              <option value="60">60 Giây (Tần suất dày)</option>
+              <option value="75" selected>75 Giây (Tiêu Chuẩn Vàng)</option>
+              <option value="90">90 Giây (An Toàn Retention)</option>
+              <option value="120">120 Giây (Thưa thớt)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Lượt Xem Rewarded/User/Ngày</label>
+            <input type="number" id="medSimRewarded" value="2.5" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Khu Vực Phân Bổ</label>
+            <select id="medSimRegion" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="us">United States (Tier 1)</option>
+              <option value="jp">Japan (Tier 1)</option>
+              <option value="vn">Vietnam (Tier 3)</option>
+              <option value="br">Brazil (Tier 3)</option>
+            </select>
+          </div>
+        </div>
+
+        <button onclick="runMediationSimulation()" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-amber-900/30">
+          <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+          <span>Mô Phỏng Doanh Thu Ads & Cảnh Báo Churn</span>
+        </button>
+
+        <div id="mediationSimResults" class="space-y-4 pt-2"></div>
+      </div>
+    </div>
+
     <!-- CUSTOM AD SCRIPT GENERATOR MODAL -->
     <div id="customAdScriptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
       <div class="glass-card bg-slate-900 rounded-2xl border border-purple-500/40 max-w-xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-2xl relative">
@@ -2756,7 +3166,7 @@
 
     // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
+      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'botcenter', 'pitchdeck', 'abtesting', 'mediation', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
@@ -2785,6 +3195,10 @@
       if (tabId === 'c10nscan') initC10nTab();
       if (tabId === 'chokepoint') initChokePointTab();
       if (tabId === 'viralkfactor') initViralKFactorTab();
+      if (tabId === 'botcenter') initBotCenterTab();
+      if (tabId === 'pitchdeck') initPitchDeckTab();
+      if (tabId === 'abtesting') initAbTestingTab();
+      if (tabId === 'mediation') initMediationTab();
       if (tabId === 'breakouts') loadBreakoutRadar();
       if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
@@ -6031,6 +6445,377 @@
         lucide.createIcons();
       } catch (err) {
         console.error("Error forecasting TikTok UGC:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE 1: WEBHOOK BOT SERVICE
+    // ==========================================
+    async function initBotCenterTab() {
+      try {
+        const res = await fetch('/api/mobile/webhook/config');
+        const cfg = await res.json();
+
+        if (cfg.discord_webhook_url) document.getElementById('botDiscordUrl').value = cfg.discord_webhook_url;
+        document.getElementById('botDiscordEnabled').checked = !!cfg.discord_enabled;
+
+        if (cfg.telegram_bot_token) document.getElementById('botTelegramToken').value = cfg.telegram_bot_token;
+        if (cfg.telegram_chat_id) document.getElementById('botTelegramChatId').value = cfg.telegram_chat_id;
+        document.getElementById('botTelegramEnabled').checked = !!cfg.telegram_enabled;
+
+        document.getElementById('botPrefRivalJump').checked = cfg.alert_on_rival_rank_jump !== false;
+        document.getElementById('botPrefLiveopsClash').checked = cfg.alert_on_liveops_cpi_surge !== false;
+        document.getElementById('botPrefMorningDigest').checked = cfg.daily_morning_digest !== false;
+      } catch (err) {
+        console.error("Error loading webhook config:", err);
+      }
+    }
+
+    async function saveWebhookConfig() {
+      const discordUrl = document.getElementById('botDiscordUrl').value;
+      const discordEnabled = document.getElementById('botDiscordEnabled').checked;
+      const telegramToken = document.getElementById('botTelegramToken').value;
+      const telegramChatId = document.getElementById('botTelegramChatId').value;
+      const telegramEnabled = document.getElementById('botTelegramEnabled').checked;
+
+      const prefRival = document.getElementById('botPrefRivalJump').checked;
+      const prefLiveops = document.getElementById('botPrefLiveopsClash').checked;
+      const prefDigest = document.getElementById('botPrefMorningDigest').checked;
+
+      try {
+        const res = await fetch('/api/mobile/webhook/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            discord_webhook_url: discordUrl,
+            discord_enabled: discordEnabled,
+            telegram_bot_token: telegramToken,
+            telegram_chat_id: telegramChatId,
+            telegram_enabled: telegramEnabled,
+            alert_on_rival_rank_jump: prefRival,
+            alert_on_liveops_cpi_surge: prefLiveops,
+            daily_morning_digest: prefDigest
+          })
+        });
+        const data = await res.json();
+        showToast(data.message || 'Đã lưu cấu hình Webhook Bot!');
+      } catch (err) {
+        showToast('Lỗi khi lưu cấu hình Webhook Bot');
+      }
+    }
+
+    async function triggerWebhookTest() {
+      const box = document.getElementById('botDispatchStatusBox');
+      box.classList.remove('hidden');
+      box.innerHTML = '<span class="text-slate-400">Đang gửi gói tin alert thử nghiệm tới các kênh...</span>';
+
+      try {
+        const res = await fetch('/api/mobile/webhook/test', { method: 'POST' });
+        const data = await res.json();
+        box.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-emerald-400">Kết quả phát tín hiệu:</span>
+            <div class="space-x-3 font-mono text-[11px]">
+              <span>Discord: <strong class="${data.discord === true ? 'text-emerald-400' : 'text-slate-500'}">${data.discord === true ? 'THÀNH CÔNG' : (data.discord === false ? 'THẤT BẠI' : 'TẮT')}</strong></span>
+              <span>Telegram: <strong class="${data.telegram === true ? 'text-emerald-400' : 'text-slate-500'}">${data.telegram === true ? 'THÀNH CÔNG' : (data.telegram === false ? 'THẤT BẠI' : 'TẮT')}</strong></span>
+            </div>
+          </div>
+        `;
+        showToast('Đã phát tín hiệu Alert thử nghiệm!');
+      } catch (err) {
+        box.innerHTML = '<span class="text-rose-400">Lỗi kết nối khi gửi Alert Test</span>';
+      }
+    }
+
+    async function triggerMorningDigestManual() {
+      const box = document.getElementById('botDispatchStatusBox');
+      box.classList.remove('hidden');
+      box.innerHTML = '<span class="text-slate-400">Đang tổng hợp và phát bản tin sáng...</span>';
+
+      try {
+        const res = await fetch('/api/mobile/webhook/trigger-digest', { method: 'POST' });
+        const data = await res.json();
+        box.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-amber-400">Bản Tin Chiến Lược Sáng:</span>
+            <div class="space-x-3 font-mono text-[11px]">
+              <span>Discord: <strong class="${data.discord === true ? 'text-emerald-400' : 'text-slate-500'}">${data.discord === true ? 'ĐÃ GỬI' : 'TẮT'}</strong></span>
+              <span>Telegram: <strong class="${data.telegram === true ? 'text-emerald-400' : 'text-slate-500'}">${data.telegram === true ? 'ĐÃ GỬI' : 'TẮT'}</strong></span>
+            </div>
+          </div>
+        `;
+        showToast('Đã phát bản tin sáng thành công!');
+      } catch (err) {
+        box.innerHTML = '<span class="text-rose-400">Lỗi khi phát bản tin sáng</span>';
+      }
+    }
+
+    // ==========================================
+    // MODULE 2: EXECUTIVE PITCH DECK GENERATOR
+    // ==========================================
+    function initPitchDeckTab() {
+      // Inputs already hold defaults
+    }
+
+    async function launchPitchDeckPresentation() {
+      const title = document.getElementById('deckInputTitle').value;
+      const genre = document.getElementById('deckInputGenre').value;
+      const regions = document.getElementById('deckInputRegions').value;
+      const cpi = document.getElementById('deckInputCpi').value;
+      const d1 = document.getElementById('deckInputD1').value;
+      const d7 = document.getElementById('deckInputD7').value;
+      const breakEven = document.getElementById('deckInputBreakEven').value;
+      const pub = document.getElementById('deckInputPub').value;
+
+      try {
+        showToast('Đang biên dịch Slide Deck PDF...');
+        const res = await fetch('/api/mobile/deck/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            game_title: title,
+            genre: genre,
+            target_regions: regions,
+            target_cpi: parseFloat(cpi) || 1.80,
+            projected_d1: parseFloat(d1) || 42.0,
+            projected_d7: parseFloat(d7) || 16.5,
+            break_even_day: parseInt(breakEven) || 45,
+            publisher_fit: pub
+          })
+        });
+
+        const html = await res.text();
+        const win = window.open('', '_blank');
+        if (win) {
+          win.document.open();
+          win.document.write(html);
+          win.document.close();
+        } else {
+          showToast('Vui lòng cho phép Pop-up trên trình duyệt để mở Slide');
+        }
+      } catch (err) {
+        console.error("Error generating pitch deck:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE 3: SOFT-LAUNCH A/B TESTING
+    // ==========================================
+    async function initAbTestingTab() {
+      runSampleSizeCalculation();
+      runAbSignificanceEvaluation();
+    }
+
+    async function runSampleSizeCalculation() {
+      const base = document.getElementById('abPlanBaseRate').value;
+      const lift = document.getElementById('abPlanLift').value;
+      const conf = document.getElementById('abPlanConfidence').value;
+      const country = document.getElementById('abPlanCountry').value;
+
+      try {
+        const res = await fetch('/api/mobile/ab-test/sample-size', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            baseline_rate_pct: parseFloat(base) || 40.0,
+            expected_lift_pct: parseFloat(lift) || 3.0,
+            confidence_level: parseFloat(conf) || 95.0,
+            power: 80.0,
+            country: country
+          })
+        });
+
+        const data = await res.json();
+        const sRes = data.sample_size_results;
+
+        const container = document.getElementById('sampleSizeResultContainer');
+        container.innerHTML = `
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-cyan-500/30 bg-cyan-950/10">
+              <span class="text-xs text-slate-400">Cỡ Mẫu / Mỗi Nhánh</span>
+              <div class="text-xl font-black text-cyan-400 mt-1 font-mono">${sRes.sample_per_variant.toLocaleString()} user</div>
+              <div class="text-[10px] text-cyan-300/70 mt-0.5">Mỗi nhánh A và B</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-indigo-500/30 bg-indigo-950/10">
+              <span class="text-xs text-slate-400">Tổng Installs Cần Mua</span>
+              <div class="text-xl font-black text-indigo-400 mt-1 font-mono">${sRes.total_sample_needed.toLocaleString()} user</div>
+              <div class="text-[10px] text-indigo-300/70 mt-0.5">Đạt độ tin cậy 95%</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+              <span class="text-xs text-slate-400">Ngân Sách Dự Kiến</span>
+              <div class="text-xl font-black text-emerald-400 mt-1 font-mono">$${sRes.estimated_budget_usd.toLocaleString()}</div>
+              <div class="text-[10px] text-emerald-300/70 mt-0.5">CPI test: $${sRes.country_cpi_usd}</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-slate-700 bg-slate-900/60">
+              <span class="text-xs text-slate-400">Mục Tiêu Thử Nghiệm</span>
+              <div class="text-xs font-bold text-white mt-1 leading-snug">${sRes.testing_advisory}</div>
+            </div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 mt-3">
+            <strong>📋 Khuyến Nghị Khoa Học:</strong> ${data.recommendation}
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error calculating sample size:", err);
+      }
+    }
+
+    async function runAbSignificanceEvaluation() {
+      const visA = document.getElementById('abTestVisA').value;
+      const convA = document.getElementById('abTestConvA').value;
+      const visB = document.getElementById('abTestVisB').value;
+      const convB = document.getElementById('abTestConvB').value;
+
+      try {
+        const res = await fetch('/api/mobile/ab-test/evaluate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            visitors_a: parseInt(visA) || 1500,
+            conversions_a: parseInt(convA) || 600,
+            visitors_b: parseInt(visB) || 1500,
+            conversions_b: parseInt(convB) || 665,
+            metric_name: "D1 Retention"
+          })
+        });
+
+        const data = await res.json();
+        const cmp = data.comparison;
+        const dec = data.decision;
+
+        const results = document.getElementById('abSignificanceResults');
+        results.innerHTML = `
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <span class="text-xs text-slate-400">Kết Luận Thẩm Định Z-Test (p-value: ${cmp.p_value})</span>
+              <div class="text-sm font-bold text-white mt-0.5">${dec.recommended_action}</div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-black ${dec.badge_color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : (dec.badge_color === 'rose' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30')}">
+              ${dec.verdict}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Tăng Trưởng Tương Đối</span>
+              <div class="text-xl font-black ${cmp.relative_lift_pct >= 0 ? 'text-emerald-400' : 'text-rose-400'} mt-1 font-mono">
+                ${cmp.relative_lift_pct >= 0 ? '+' : ''}${cmp.relative_lift_pct}%
+              </div>
+              <div class="text-[10px] text-slate-500">Chênh lệch: ${cmp.absolute_diff_pct}%</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Hệ Số Z-Score</span>
+              <div class="text-xl font-black text-white mt-1 font-mono">${cmp.z_score}</div>
+              <div class="text-[10px] text-slate-500">Chuẩn ngưỡng |Z| > 1.96</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Độ Tin Cậy Thống Kê</span>
+              <div class="text-xl font-black text-cyan-400 mt-1 font-mono">${cmp.confidence_pct}%</div>
+              <div class="text-[10px] text-cyan-300/70">Mức chuẩn 95%</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Tỷ Lệ Nhánh B vs A</span>
+              <div class="text-sm font-bold text-white mt-1 font-mono">${data.variant_b_treatment.rate_pct}% vs ${data.variant_a_control.rate_pct}%</div>
+              <div class="text-[10px] text-slate-500">Conversion rate</div>
+            </div>
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error evaluating A/B test:", err);
+      }
+    }
+
+    // ==========================================
+    // MODULE 4: AD MEDIATION WATERFALL & ECPM
+    // ==========================================
+    async function initMediationTab() {
+      try {
+        const res = await fetch('/api/mobile/mediation/benchmarks');
+        const data = await res.json();
+
+        const tbody = document.getElementById('mediationBenchmarkTableBody');
+        tbody.innerHTML = (data.ecpm_benchmarks || []).map(b => `
+          <tr class="hover:bg-slate-900/60 transition-colors">
+            <td class="px-4 py-3 font-semibold text-white">${b.region}</td>
+            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${b.tier === 'Tier 1' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300'}">${b.tier}</span></td>
+            <td class="px-4 py-3 text-emerald-400 font-bold font-mono">$${b.rewarded_ecpm.toFixed(2)}</td>
+            <td class="px-4 py-3 text-amber-400 font-bold font-mono">$${b.interstitial_ecpm.toFixed(2)}</td>
+            <td class="px-4 py-3 text-sky-400 font-bold font-mono">$${b.banner_ecpm.toFixed(2)}</td>
+            <td class="px-4 py-3 text-slate-400 font-sans">${b.notes}</td>
+          </tr>
+        `).join('');
+
+        runMediationSimulation();
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error initializing mediation tab:", err);
+      }
+    }
+
+    async function runMediationSimulation() {
+      const dau = document.getElementById('medSimDau').value;
+      const session = document.getElementById('medSimSession').value;
+      const cooldown = document.getElementById('medSimCooldown').value;
+      const rewarded = document.getElementById('medSimRewarded').value;
+      const region = document.getElementById('medSimRegion').value;
+
+      try {
+        const res = await fetch('/api/mobile/mediation/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            dau: parseInt(dau) || 50000,
+            session_mins: parseInt(session) || 15,
+            cooldown_secs: parseInt(cooldown) || 75,
+            rewarded_watches: parseFloat(rewarded) || 2.5,
+            region: region
+          })
+        });
+
+        const data = await res.json();
+        const rev = data.revenue_forecast;
+        const churn = data.ad_fatigue_churn_analysis;
+
+        const results = document.getElementById('mediationSimResults');
+        results.innerHTML = `
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
+              <span class="text-xs text-slate-400">Doanh Thu Ads Tháng (Gross)</span>
+              <div class="text-2xl font-black text-amber-400 mt-1 font-mono">$${Math.round(rev.total_monthly_ad_revenue_usd).toLocaleString()}</div>
+              <div class="text-[10px] text-amber-300/70 mt-0.5">Ad ARPDAU: $${rev.effective_ad_arpdau_usd}</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
+              <span class="text-xs text-slate-400">Rewarded Video Doanh Thu</span>
+              <div class="text-2xl font-black text-emerald-400 mt-1 font-mono">$${Math.round(rev.monthly_rewarded_rev_usd).toLocaleString()}</div>
+              <div class="text-[10px] text-emerald-300/70 mt-0.5">${rev.daily_rewarded_impressions.toLocaleString()} imp/ngày</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-sky-500/30 bg-sky-950/10">
+              <span class="text-xs text-slate-400">Interstitial Ads Doanh Thu</span>
+              <div class="text-2xl font-black text-sky-400 mt-1 font-mono">$${Math.round(rev.monthly_interstitial_rev_usd).toLocaleString()}</div>
+              <div class="text-[10px] text-sky-300/70 mt-0.5">${rev.daily_interstitial_impressions.toLocaleString()} imp/ngày</div>
+            </div>
+            <div class="glass-card p-4 rounded-xl border ${churn.badge_color === 'emerald' ? 'border-emerald-500/30 bg-emerald-950/10' : (churn.badge_color === 'amber' ? 'border-amber-500/30 bg-amber-950/10' : 'border-rose-500/30 bg-rose-950/10')}">
+              <span class="text-xs text-slate-400">Mức Độ Rủi Ro Ad Churn</span>
+              <div class="text-sm font-black ${churn.badge_color === 'emerald' ? 'text-emerald-400' : (churn.badge_color === 'amber' ? 'text-amber-400' : 'text-rose-400')} mt-1">
+                ${churn.churn_risk_level}
+              </div>
+              <div class="text-[10px] text-slate-400 mt-0.5">Tác động retention: <strong class="text-white">${churn.projected_d1_retention_penalty}</strong></div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 flex items-center gap-2">
+            <span class="text-emerald-400 font-bold shrink-0">💡 Chiến Lược Tần Suất:</span>
+            <span>${churn.strategic_recommendation}</span>
+          </div>
+        `;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error simulating mediation:", err);
       }
     }
 
