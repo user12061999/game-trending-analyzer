@@ -29,6 +29,9 @@ from app.analytics.ai_analyst import AIAnalyst
 from app.analytics.review_miner import ReviewMiner
 from app.analytics.aso_analyzer import ASOAnalyzer
 from app.analytics.liveops_tracker import LiveOpsTracker
+from app.analytics.creative_spy import CreativeSpy
+from app.analytics.cpi_ltv_simulator import CPILTVForecaster
+from app.analytics.blue_ocean_finder import BlueOceanFinder
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -41,6 +44,9 @@ ai_analyst = AIAnalyst()
 review_miner = ReviewMiner()
 aso_analyzer = ASOAnalyzer()
 liveops_tracker = LiveOpsTracker()
+creative_spy = CreativeSpy()
+cpi_simulator = CPILTVForecaster()
+blue_ocean_finder = BlueOceanFinder()
 
 is_crawling = False
 
@@ -384,6 +390,52 @@ async def get_mobile_liveops_api(game_id: str, title: Optional[str] = Query(None
     """Returns version changelog, event classification, timeline and revenue impact correlation."""
     result = liveops_tracker.analyze_liveops(game_id=game_id, game_title=title or "")
     return result
+
+# --- Mobile Strategy Lab Endpoints (Creative Spy, CPI Simulator, Blue Ocean) ---
+@app.get("/api/mobile/creatives")
+async def get_creative_archetypes_api(genre: Optional[str] = Query(None), network: Optional[str] = Query(None)):
+    """Returns top winning video ad archetypes and storyboards."""
+    return {"archetypes": creative_spy.get_all_archetypes(genre=genre, network=network)}
+
+@app.post("/api/mobile/creatives/generate")
+async def generate_creative_script_api(request: Request):
+    """Generates a custom 20-second video ad script for studio production."""
+    payload = await request.json()
+    title = payload.get("game_title", "")
+    genre = payload.get("genre", "RPG")
+    network = payload.get("target_network", "TikTok")
+    script = creative_spy.generate_custom_ad_script(game_title=title, genre=genre, target_network=network)
+    return script
+
+@app.get("/api/mobile/simulator/cpi")
+async def get_cpi_benchmark_api(country: str = Query("vn"), genre: str = Query("rpg"), platform: str = Query("all")):
+    """Returns estimated CPI cost for given country and genre."""
+    cpi = cpi_simulator.get_cpi_benchmark(country=country, genre=genre, platform=platform)
+    return {"country": country.upper(), "genre": genre.title(), "platform": platform.upper(), "estimated_cpi": cpi}
+
+@app.post("/api/mobile/simulator/run")
+async def run_ua_simulation_api(request: Request):
+    """Performs 180-day UA simulation and computes break-even day and ROAS milestones."""
+    payload = await request.json()
+    budget = float(payload.get("budget", 5000.0))
+    country = payload.get("country", "vn")
+    genre = payload.get("genre", "rpg")
+    platform = payload.get("platform", "all")
+    custom_cpi = payload.get("custom_cpi")
+    res = cpi_simulator.simulate_ua_campaign(budget=budget, country=country, genre=genre, platform=platform, custom_cpi=custom_cpi)
+    return res
+
+@app.get("/api/mobile/blue-ocean")
+async def get_blue_ocean_api(classification: Optional[str] = Query(None)):
+    """Returns market saturation matrix, blue oceans, and aging monopolies."""
+    niches = blue_ocean_finder.get_market_niches(classification=classification)
+    aging = blue_ocean_finder.get_aging_monopolies()
+    stats = blue_ocean_finder.get_market_overview_stats()
+    return {
+        "stats": stats,
+        "niches": niches,
+        "aging_monopolies": aging
+    }
 
 @app.get("/api/meta")
 async def get_metadata():
