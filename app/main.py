@@ -45,6 +45,10 @@ from app.analytics.webhook_bot_service import WebhookBotService
 from app.analytics.pitch_deck_generator import PitchDeckGenerator
 from app.analytics.ab_testing_calculator import ABTestingCalculator
 from app.analytics.ad_mediation_optimizer import AdMediationOptimizer
+from app.analytics.playable_ad_generator import PlayableAdGenerator
+from app.analytics.voiceover_studio import VoiceoverStudio
+from app.analytics.feature_rice_scorer import FeatureRICEScorer
+from app.analytics.ad_fraud_scanner import AdFraudScanner
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -73,6 +77,10 @@ bot_service = WebhookBotService()
 pitch_generator = PitchDeckGenerator()
 ab_calculator = ABTestingCalculator()
 mediation_optimizer = AdMediationOptimizer()
+playable_generator = PlayableAdGenerator()
+voiceover_studio = VoiceoverStudio()
+rice_scorer = FeatureRICEScorer()
+ad_fraud_scanner = AdFraudScanner()
 
 is_crawling = False
 
@@ -791,6 +799,82 @@ async def simulate_mediation_api(request: Request):
         interstitial_cooldown_secs=cooldown,
         rewarded_watches_per_user=rewarded,
         region_tier=region
+    )
+
+# --- Playable Ad Canvas Sandbox & MRAID Exporter Endpoints ---
+@app.get("/api/mobile/playable/templates")
+async def get_playable_templates_api():
+    """Returns high-converting playable ad templates."""
+    return playable_generator.get_templates()
+
+@app.post("/api/mobile/playable/export-mraid")
+async def export_playable_mraid_api(request: Request):
+    """Exports a single-file standalone MRAID 2.0 HTML5 playable ad bundle."""
+    payload = await request.json()
+    template_id = payload.get("template_id", "gate_multiplier")
+    game_title = payload.get("game_title", "Stickman Army War")
+    call_to_action = payload.get("call_to_action", "PLAY NOW FREE")
+    store_url = payload.get("store_url", "https://apps.apple.com")
+    html_code = playable_generator.generate_mraid_bundle(
+        template_id=template_id,
+        game_title=game_title,
+        call_to_action=call_to_action,
+        store_url=store_url
+    )
+    return HTMLResponse(content=html_code)
+
+# --- Multilingual Ad Voiceover & Audio Preview Studio Endpoints ---
+@app.get("/api/mobile/voiceover/meta")
+async def get_voiceover_meta_api():
+    """Returns supported localization markets and emotion tones."""
+    return {
+        "markets": voiceover_studio.get_supported_markets(),
+        "emotions": voiceover_studio.get_supported_emotions()
+    }
+
+@app.post("/api/mobile/voiceover/generate")
+async def generate_voiceover_api(request: Request):
+    """Generates localized ad script with audio directions and Web Speech API params."""
+    payload = await request.json()
+    return voiceover_studio.generate_voiceover_script(
+        game_title=payload.get("game_title", "Shadow Legends War"),
+        genre=payload.get("genre", "RPG / Strategy"),
+        target_market=payload.get("target_market", "US"),
+        emotion_tone=payload.get("emotion_tone", "hype"),
+        duration_seconds=int(payload.get("duration_seconds", 15))
+    )
+
+# --- Game Feature RICE Scorer & Production Roadmap Endpoints ---
+@app.get("/api/mobile/rice/presets")
+async def get_rice_presets_api():
+    """Returns 10 classic mobile liveops feature presets."""
+    return rice_scorer.get_presets()
+
+@app.post("/api/mobile/rice/evaluate")
+async def evaluate_rice_api(request: Request):
+    """Calculates RICE priority scores and assigns quarterly sprints."""
+    payload = await request.json()
+    custom_features = payload.get("features", [])
+    return rice_scorer.evaluate_features(custom_features)
+
+# --- UA Ad Fraud & Click Injection Diagnostic Scanner Endpoints ---
+@app.get("/api/mobile/fraud/samples")
+async def get_fraud_samples_api():
+    """Returns preset benchmark networks for fraud comparison."""
+    return ad_fraud_scanner.get_sample_networks()
+
+@app.post("/api/mobile/fraud/audit")
+async def audit_fraud_api(request: Request):
+    """Audits network MTTI / CTIT distribution and calculates clawback refund claim."""
+    payload = await request.json()
+    return ad_fraud_scanner.audit_network(
+        network_name=payload.get("network_name", "Custom Network"),
+        total_installs=int(payload.get("total_installs", 25000)),
+        mtti_under_10s_pct=float(payload.get("mtti_under_10s_pct", 35.0)),
+        mtti_over_24h_pct=float(payload.get("mtti_over_24h_pct", 20.0)),
+        d1_retention_pct=float(payload.get("d1_retention_pct", 12.0)),
+        ad_spend_usd=float(payload.get("ad_spend_usd", 37500.0)),
+        cpi_usd=float(payload.get("cpi_usd", 1.50)) if payload.get("cpi_usd") else None
     )
 
 @app.get("/api/meta")

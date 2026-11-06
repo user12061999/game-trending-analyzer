@@ -218,6 +218,18 @@
       <button onclick="switchTab('mediation')" id="tabBtn-mediation" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="split" class="w-4 h-4 text-amber-400"></i> Ad Mediation
       </button>
+      <button onclick="switchTab('playable')" id="tabBtn-playable" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="gamepad-2" class="w-4 h-4 text-emerald-400"></i> Playable Ad Studio
+      </button>
+      <button onclick="switchTab('voiceover')" id="tabBtn-voiceover" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="mic" class="w-4 h-4 text-rose-400"></i> Voiceover Studio
+      </button>
+      <button onclick="switchTab('rice')" id="tabBtn-rice" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="kanban" class="w-4 h-4 text-violet-400"></i> Feature RICE
+      </button>
+      <button onclick="switchTab('fraud')" id="tabBtn-fraud" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> UA Fraud Scanner
+      </button>
       <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
       </button>
@@ -2412,6 +2424,616 @@
       </div>
     </div>
 
+    <!-- PLAYABLE AD MRAID HTML5 CODE MODAL -->
+    <div id="playableCodeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div class="glass-card bg-slate-900 rounded-2xl border border-emerald-500/40 max-w-3xl w-full max-h-[92vh] overflow-hidden flex flex-col p-6 space-y-4 shadow-2xl relative">
+        <button onclick="togglePlayableCodeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
+            <i data-lucide="code" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Mã Nguồn MRAID 2.0 Độc Lập (Single-File HTML5)</h3>
+            <p class="text-xs text-slate-400">Tương thích AppLovin, Unity Ads, IronSource, Mintegral, TikTok Pangle</p>
+          </div>
+        </div>
+        <div class="flex-1 overflow-hidden flex flex-col">
+          <textarea id="playableCodeArea" readonly class="w-full flex-1 bg-slate-950 border border-slate-800 rounded-xl p-3 text-emerald-300 font-mono text-[11px] h-96 focus:outline-none select-all resize-none"></textarea>
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+          <span class="text-[11px] text-slate-400">Dung lượng: &lt; 25KB (Chuẩn ad networks cho phép &lt; 5MB)</span>
+          <div class="flex items-center gap-2">
+            <button onclick="copyMraidCode()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Sao Chép Mã
+            </button>
+            <button onclick="exportMraidBundle()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-lg shadow-emerald-600/30">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Tải File .html
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: PLAYABLE AD CANVAS SANDBOX & MRAID EXPORTER -->
+    <div id="tabContent-playable" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              INTERACTIVE PLAYABLE AD CANVAS & MRAID 2.0 BUNDLER
+            </span>
+            <span class="text-xs text-slate-400">Single-File HTML5 (&lt;5MB) cho AppLovin, Unity Ads, IronSource</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="gamepad-2" class="w-6 h-6 text-emerald-400"></i>
+            Playable Ad Studio & HTML5 Sandbox
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Mô phỏng cơ chế mini-game giữ chân cao (Gate Multiplier, Pull-the-Pin, Merge Swords, Tap Dodge) trực tiếp trên trình duyệt,
+            tùy chỉnh tiêu đề game và xuất file HTML5 MRAID 2.0 độc lập (zero CDN dependency) sẵn sàng upload chạy UA ngay lập tức.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="exportMraidBundle()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            Xuất Bundle MRAID 2.0 (.html)
+          </button>
+        </div>
+      </div>
+
+      <!-- Playable Studio Workspace -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Controls & Config (5 cols) -->
+        <div class="lg:col-span-5 space-y-5">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+              <i data-lucide="sliders" class="w-4 h-4 text-emerald-400"></i>
+              Cấu Hình Mini-Game & Brand Playable
+            </h3>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Chọn Mẫu Cơ Chế Mini-Game (Mechanic Template)</label>
+                <select id="playableTemplateSelect" onchange="onPlayableTemplateChange()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-emerald-500">
+                  <option value="gate_multiplier">Cổng Cấp Số Nhân (Gate Multiplier Runner x2 x5) - CVR 36.5%</option>
+                  <option value="pull_the_pin">Kéo Chốt Cứu Người (Pull-The-Pin Hero Rescue) - CVR 41.2%</option>
+                  <option value="merge_weapons">Hợp Thể Vũ Khí (Merge Weapons Lv1 -&gt; Lv100) - CVR 34.8%</option>
+                  <option value="tap_to_dodge">Chạm Nhảy Tránh Bẫy (Tap to Dodge & Rage Fail) - CVR 29.4%</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tên Game (Game Title)</label>
+                <input type="text" id="playableGameTitle" value="Stickman Army: Clash War" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-emerald-500" placeholder="Nhập tên game...">
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-slate-400 mb-1 font-semibold">Nút Kêu Gọi (CTA Text)</label>
+                  <input type="text" id="playableCtaText" value="CHƠI NGAY MIỄN PHÍ" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-emerald-500">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1 font-semibold">Store URL (App Store/Google Play)</label>
+                  <input type="text" id="playableStoreUrl" value="https://apps.apple.com" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-emerald-500">
+                </div>
+              </div>
+
+              <!-- Template Benchmark Detail Card -->
+              <div class="p-3.5 rounded-xl bg-slate-900/90 border border-emerald-500/20 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-emerald-400 text-xs" id="tplCardName">Gate Multiplier Runner</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold" id="tplCardCvr">Avg CVR: 36.5%</span>
+                </div>
+                <p class="text-[11px] text-slate-300 leading-relaxed" id="tplCardDesc">
+                  Người chơi điều khiển nhân vật lướt qua các cổng +10, x2, x5 để nhân số lượng quân lính, tránh cổng đỏ -5.
+                </p>
+                <div class="text-[10px] text-slate-400 border-t border-slate-800 pt-1.5 space-y-1">
+                  <div>🎯 <span class="text-slate-300 font-medium">Hook Mechanic:</span> <span id="tplCardHook">Tạo cảm giác thỏa mãn khi nhân số lượng quân lính lấp đầy màn hình.</span></div>
+                  <div>💥 <span class="text-slate-300 font-medium">Fail/Win Trigger:</span> <span id="tplCardTrigger">Đi vào cổng trừ lính khiến quân số về 0 hoặc đạt đích -&gt; Hiện Endcard.</span></div>
+                </div>
+              </div>
+
+              <div class="flex gap-2 pt-2">
+                <button onclick="resetPlayableSandbox()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-700 cursor-pointer">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  Chơi Lại Từ Đầu
+                </button>
+                <button onclick="togglePlayableCodeModal()" class="flex-1 py-2.5 rounded-xl bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 font-bold text-xs flex items-center justify-center gap-1.5 border border-indigo-500/30 cursor-pointer">
+                  <i data-lucide="code" class="w-3.5 h-3.5"></i>
+                  Xem Mã HTML5 MRAID
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Canvas Sandbox Mockup (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col items-center">
+          <!-- Smartphone Device Mockup Frame -->
+          <div class="relative w-[340px] h-[640px] bg-slate-950 rounded-[44px] p-3 shadow-2xl border-4 border-slate-700 ring-1 ring-slate-800 flex flex-col overflow-hidden">
+            <!-- Speaker notch & camera -->
+            <div class="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-4 bg-slate-900 rounded-full z-30 flex items-center justify-center">
+              <div class="w-3 h-3 rounded-full bg-slate-950 border border-slate-800 mr-2"></div>
+              <div class="w-10 h-1 bg-slate-800 rounded-full"></div>
+            </div>
+
+            <!-- Ad Network Header Simulator -->
+            <div class="w-full pt-6 pb-2 px-3 flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-800/80 z-20 bg-slate-950/80 backdrop-blur">
+              <span class="flex items-center gap-1 font-bold text-emerald-400">
+                <i data-lucide="play-circle" class="w-3.5 h-3.5"></i> MRAID AD
+              </span>
+              <span class="font-mono text-[10px] text-slate-400" id="sandboxTimer">00:08</span>
+              <button onclick="triggerSandboxCta()" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-2 py-0.5 rounded text-slate-300 border border-slate-700">
+                Bỏ qua (✕)
+              </button>
+            </div>
+
+            <!-- The HTML5 Interactive Canvas -->
+            <div class="relative flex-1 rounded-2xl overflow-hidden bg-slate-900 flex items-center justify-center">
+              <canvas id="playableCanvas" width="316" height="520" class="block w-full h-full cursor-pointer"></canvas>
+
+              <!-- Victory / Fail Endcard Overlay -->
+              <div id="canvasEndcardOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md hidden flex-col items-center justify-center p-6 text-center z-20 space-y-3">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg shadow-amber-500/40 animate-bounce">
+                  👑
+                </div>
+                <h4 class="text-lg font-black text-white uppercase tracking-wider" id="endcardTitle">CHIẾN THẮNG TUYỆT ĐỐI!</h4>
+                <p class="text-xs text-slate-300" id="endcardDesc">Bạn đã nhân quân số lên hơn 100+ chiến binh!</p>
+                <button onclick="triggerSandboxCta()" id="endcardCtaBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-emerald-500/40 animate-pulse cursor-pointer">
+                  CHƠI NGAY MIỄN PHÍ
+                </button>
+                <span class="text-[10px] text-slate-400">MRAID.open() Store Redirect Ready</span>
+              </div>
+            </div>
+
+            <!-- Home indicator bar -->
+            <div class="w-28 h-1 bg-slate-600 rounded-full mx-auto my-2 z-20"></div>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-2 flex items-center gap-1">
+            <i data-lucide="mouse-pointer" class="w-3 h-3 text-emerald-400"></i> Kéo chuột / Chạm ngón tay trên màn hình điện thoại để tương tác mini-game
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: MULTILINGUAL AD VOICEOVER & AUDIO PREVIEW STUDIO -->
+    <div id="tabContent-voiceover" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+              LOCALIZED AUDIO VOICEOVER & SPEECH SYNTHESIS STUDIO
+            </span>
+            <span class="text-xs text-slate-400">US, Japan, Korea, Brazil, Vietnam Markets</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="mic" class="w-6 h-6 text-rose-400"></i>
+            Ad Voiceover Studio & Audio Preview
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Sinh kịch bản lồng tiếng video quảng cáo 15s/30s bản địa hóa chuẩn ngôn ngữ Gen Z / Streamer / Anime / Fail-ad,
+            kèm chỉ dẫn đạo diễn khung hình, hiệu ứng âm thanh SFX và phát thử nghiệm trực tiếp bằng Web Speech API.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="copyFullVoiceoverScript()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-2 border border-slate-700 transition-all cursor-pointer">
+            <i data-lucide="copy" class="w-4 h-4 text-rose-400"></i>
+            Sao Chép Kịch Bản
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls & Script Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Control Form (4 cols) -->
+        <div class="lg:col-span-4 space-y-5">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+              <i data-lucide="sliders-horizontal" class="w-4 h-4 text-rose-400"></i>
+              Thiết Lập Chiến Dịch Lồng Tiếng
+            </h3>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tên Game</label>
+                <input type="text" id="voGameTitle" value="Shadow Legends War" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-rose-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Thể Loại Game (Genre)</label>
+                <input type="text" id="voGenre" value="Mid-Core RPG / Gacha" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-rose-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Thị Trường Mục Tiêu (Target Market)</label>
+                <select id="voTargetMarket" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-rose-500">
+                  <option value="US">🇺🇸 United States (Tier 1 English - Streamer Slang)</option>
+                  <option value="JP">🇯🇵 Japan (Anime Seiyuu / Otaku Dramatic)</option>
+                  <option value="KR">🇰🇷 Korea (Competitive PvP / Guild Flex)</option>
+                  <option value="BR">🇧🇷 Brazil (Portuguese Meme / Baile Energy)</option>
+                  <option value="VN" selected>🇻🇳 Vietnam (Gen Z Streamer / Hài Hước Lầy Lội)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tông Cảm Xúc (Emotion / Archetype)</label>
+                <select id="voEmotionTone" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-rose-500">
+                  <option value="hype" selected>🔥 Streamer Hype / Adrenaline Rush (Hò reo nổ hũ)</option>
+                  <option value="fail_rage">🤬 Fail-Ad / Rage-Bait ("99% người chơi chịu thua")</option>
+                  <option value="anime_waifu">🌸 Anime Companion / Waifu Ngọt Ngào (Live2D)</option>
+                  <option value="meme_comedy">🤪 Meme Comedy / Sarcastic Reaction (Cười ra nước mắt)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Thời Lượng Video Quảng Cáo</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" onclick="setVoDuration(15)" id="voBtnDur15" class="py-2 rounded-lg bg-rose-600 text-white font-bold text-xs border border-rose-500">
+                    15 Giây (TikTok / Reels)
+                  </button>
+                  <button type="button" onclick="setVoDuration(30)" id="voBtnDur30" class="py-2 rounded-lg bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 hover:bg-slate-700">
+                    30 Giây (Rewarded Video)
+                  </button>
+                </div>
+              </div>
+
+              <button onclick="generateVoiceoverScript()" class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 transition-all cursor-pointer mt-2">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                Sinh Kịch Bản & Cấu Hình Audio
+              </button>
+            </div>
+          </div>
+
+          <!-- Marketing Strategy Card -->
+          <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-2.5 text-xs">
+            <h4 class="font-bold text-white flex items-center gap-1.5 text-xs">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
+              Chiến Lược Tối Ưu Âm Thanh Video UA
+            </h4>
+            <div class="space-y-1.5 text-[11px] text-slate-300">
+              <div>🎯 <b class="text-rose-300">Hook 3s Đầu:</b> <span id="voHookAdvice">Khai thác câu hỏi thách thức hoặc âm thanh nổ sấm chớp giật mình để kéo tai người xem.</span></div>
+              <div>⚡ <b class="text-amber-300">Nhịp Điệu BGM:</b> <span id="voBgmAdvice">140 BPM EDM / Trap Beat sôi động.</span></div>
+              <div>🎙️ <b class="text-emerald-300">Đạo Diễn Casting:</b> <span id="voCastingAdvice">Chọn diễn viên lồng tiếng trẻ tuổi, năng lượng cao, ngữ điệu tự nhiên.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Script Timeline & Web Speech Audio Player (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          <!-- Audio Synthesizer Bar -->
+          <div class="glass-card p-4 rounded-2xl border border-rose-500/20 bg-slate-900/90 flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-3">
+              <button onclick="playVoiceoverSpeech()" id="voPlayBtn" class="w-12 h-12 rounded-xl bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-600/40 transition-all cursor-pointer">
+                <i data-lucide="volume-2" class="w-6 h-6"></i>
+              </button>
+              <div>
+                <div class="text-sm font-bold text-white flex items-center gap-2">
+                  <span>Web Speech API Synthesis Preview</span>
+                  <span id="voSpeakingIndicator" class="hidden px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500 text-white animate-pulse">
+                    ĐANG PHÁT ÂM THANH...
+                  </span>
+                </div>
+                <p class="text-[11px] text-slate-400">
+                  Nghe thử nghiệm giọng máy với cao độ (pitch) và tốc độ (rate) tối ưu hóa theo thị trường.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="stopVoiceoverSpeech()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5">
+                <i data-lucide="square" class="w-3.5 h-3.5"></i> Dừng
+              </button>
+            </div>
+          </div>
+
+          <!-- Script Timeline Cards Container -->
+          <div id="voTimelineContainer" class="space-y-3">
+            <!-- Dynamic lines rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: GAME FEATURE RICE SCORER & PRODUCTION ROADMAP -->
+    <div id="tabContent-rice" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-violet-500/20 text-violet-400 border border-violet-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-violet-500 animate-ping"></span>
+              GAME PRODUCER RICE PRIORITIZATION FRAMEWORK
+            </span>
+            <span class="text-xs text-slate-400">Reach × Impact × Confidence / Effort</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="kanban" class="w-6 h-6 text-violet-400"></i>
+            Feature RICE Scorer & Production Roadmap Planner
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Hệ thống chấm điểm tính năng chuẩn quốc tế cho Game Producer / Lead Designer:
+            Tự động xếp hạng độ ưu tiên, dự phóng mức tăng trưởng doanh thu (Rev Lift %) và D30 Retention,
+            đồng thời phân bổ tính năng vào lộ trình Sprint quý (Quarterly Roadmap) tự động.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="recalculateRiceMatrix()" class="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-violet-600/30 transition-all cursor-pointer">
+            <i data-lucide="calculator" class="w-4 h-4"></i>
+            Tính Lại Ma Trận RICE
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Tính Năng Đạt ROI Cao Nhất</span>
+          <span class="text-sm font-black text-violet-400 mt-1 block truncate" id="riceTopFeature">Gói Nạp Lần Đầu $0.99</span>
+          <span class="text-[10px] text-slate-400">Điểm RICE kỷ lục</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Tổng Tính Năng Đánh Giá</span>
+          <span class="text-xl font-black text-white mt-1 block" id="riceTotalFeatures">10</span>
+          <span class="text-[10px] text-emerald-400 font-semibold">10 Mẫu LiveOps Chuẩn</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Tổng Công Sức (Person-Weeks)</span>
+          <span class="text-xl font-black text-amber-400 mt-1 block" id="riceTotalEffort">31.5 wks</span>
+          <span class="text-[10px] text-slate-400">Tương đương 1 quý (6 sprints)</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Dự Phóng Tăng Trưởng Doanh Thu</span>
+          <span class="text-xl font-black text-emerald-400 mt-1 block" id="riceProjectedRev">+48.2%</span>
+          <span class="text-[10px] text-slate-400">Top 5 tính năng ưu tiên</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Dự Phóng Giữ Chân D30</span>
+          <span class="text-xl font-black text-cyan-400 mt-1 block" id="riceProjectedD30">+11.4%</span>
+          <span class="text-[10px] text-slate-400">Retention lift tích lũy</span>
+        </div>
+      </div>
+
+      <!-- Feature RICE Scoring Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="list-ordered" class="w-4 h-4 text-violet-400"></i>
+            Bảng Xếp Hạng Tính Năng Theo Điểm RICE (R = Reach × Impact × Confidence ÷ Effort)
+          </h3>
+          <span class="text-xs text-slate-400">Sắp xếp tự động theo giá trị ưu tiên</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[11px]">
+              <tr>
+                <th class="py-3 px-4">Tên Tính Năng</th>
+                <th class="py-3 px-3">Phân Loại</th>
+                <th class="py-3 px-3">Reach (Users)</th>
+                <th class="py-3 px-3">Impact</th>
+                <th class="py-3 px-3">Confidence</th>
+                <th class="py-3 px-3">Effort (Tuần)</th>
+                <th class="py-3 px-3 text-violet-400 font-bold">RICE Score</th>
+                <th class="py-3 px-3 text-emerald-400">Rev Lift</th>
+                <th class="py-3 px-3 text-cyan-400">D30 Lift</th>
+                <th class="py-3 px-4">Độ Ưu Tiên</th>
+              </tr>
+            </thead>
+            <tbody id="riceTableBody" class="divide-y divide-slate-800/60">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Visual 6-Sprint Quarterly Roadmap -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4 text-violet-400"></i>
+            Lộ Trình Triển Khai Quý (Quarterly Gantt Roadmap - 6 Sprints)
+          </h3>
+          <span class="text-xs text-slate-400">Phân bổ tự động dựa trên RICE và Capacity</span>
+        </div>
+        <div id="riceRoadmapGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Dynamically populated sprint cards -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: UA AD FRAUD & CLICK INJECTION SCANNER -->
+    <div id="tabContent-fraud" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+              MTTI ATTRIBUTION AUDIT & CLAWBACK CALCULATOR
+            </span>
+            <span class="text-xs text-slate-400">AppsFlyer & Adjust Fraud Prevention Suite</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="shield-alert" class="w-6 h-6 text-red-400"></i>
+            UA Ad Fraud & Click Injection Scanner
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Phát hiện gian lận phân bổ (Attribution Fraud) qua phân phối MTTI (Mean Time to Install / CTIT):
+            Bóc trần chiêu trò Click Injection (&lt;10s cướp install), Click Flooding (&gt;24h spam click),
+            Device Farm (D1 &lt;2%), ước tính số tiền hoàn trả (Clawback Refund) và xuất bộ quy tắc chống gian lận.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="auditAdFraud()" class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all cursor-pointer">
+            <i data-lucide="scan" class="w-4 h-4"></i>
+            Tiến Hành Kiểm Toán Fraud
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Benchmark Presets -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+        <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+          <i data-lucide="database" class="w-4 h-4 text-amber-400"></i> Nạp Dữ Liệu Đối Soát Mẫu (Audit Presets):
+        </span>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="loadFraudPreset(0)" class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 text-xs font-semibold">
+            🚨 Mạng A: Click Injection (58% &lt;10s)
+          </button>
+          <button onclick="loadFraudPreset(1)" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold">
+            ⚠️ Mạng B: Click Flooding (47% &gt;24h)
+          </button>
+          <button onclick="loadFraudPreset(2)" class="px-3 py-1.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-xs font-semibold">
+            🤖 Mạng C: Nông Trại Bot (D1: 1.4%)
+          </button>
+          <button onclick="loadFraudPreset(3)" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold">
+            ✅ Mạng Sạch: Meta / Apple Ads
+          </button>
+        </div>
+      </div>
+
+      <!-- Input Form & Audit Results -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Input Form (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+              <i data-lucide="sliders" class="w-4 h-4 text-red-400"></i>
+              Thông Số Kiểm Toán MMP / Network
+            </h3>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tên Ad Network / DSP Đối Soát</label>
+                <input type="text" id="fraudNetName" value="Suspicious-AdNet-X" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-red-500">
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-slate-400 mb-1 font-semibold">Tổng Lượt Cài Đặt</label>
+                  <input type="number" id="fraudInstalls" value="45000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-red-500">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1 font-semibold">Tổng Chi Tiêu ($ USD)</label>
+                  <input type="number" id="fraudSpend" value="67500" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-red-500">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tỷ Lệ MTTI / CTIT &lt; 10 Giây (%)</label>
+                <input type="number" step="0.1" id="fraudMttiUnder10" value="58.4" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-red-500">
+                <span class="text-[10px] text-slate-400">Ngưỡng chuẩn an toàn: &lt; 5.0%</span>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tỷ Lệ MTTI / CTIT &gt; 24 Giờ (%)</label>
+                <input type="number" step="0.1" id="fraudMttiOver24" value="8.2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-red-500">
+                <span class="text-[10px] text-slate-400">Ngưỡng chuẩn an toàn: &lt; 15.0%</span>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tỷ Lệ Giữ Chân D1 Retention (%)</label>
+                <input type="number" step="0.1" id="fraudD1Ret" value="14.2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-red-500">
+                <span class="text-[10px] text-slate-400">Ngưỡng chuẩn mobile game: &gt; 28.0%</span>
+              </div>
+
+              <button onclick="auditAdFraud()" class="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 transition-all cursor-pointer mt-2">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                Chẩn Đoán & Tính Tiền Hoàn Trả
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Findings & Financial Impact (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          <!-- Verdict & Financial Claim Banner -->
+          <div class="glass-card p-5 rounded-2xl border border-red-500/30 bg-slate-900/90 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+              <div>
+                <span class="text-xs text-slate-400">Kết Luận Thanh Tra MMP:</span>
+                <h4 class="text-lg font-black text-white" id="fraudVerdictText">🚨 FRAUD NGUY HIỂM CAO (Cần Khiếu Nại Hoàn Tiền Ngay)</h4>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">Chỉ Số Rủi Ro:</span>
+                <span class="px-3 py-1 rounded-full text-xs font-black bg-red-500/20 text-red-400 border border-red-500/40" id="fraudRiskScore">
+                  RỦI RO: 85/100
+                </span>
+              </div>
+            </div>
+
+            <!-- Financial Claim Box -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="p-3.5 rounded-xl bg-red-950/40 border border-red-500/40">
+                <span class="text-[11px] text-red-300 font-bold block uppercase tracking-wider">Tiền Yêu Cầu Hoàn Lại (Clawback)</span>
+                <span class="text-2xl font-black text-red-400 mt-0.5 block" id="fraudClawbackUsd">$34,250.00</span>
+                <span class="text-[10px] text-slate-400">Dựa trên số install bị cướp</span>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700">
+                <span class="text-[11px] text-slate-400 font-semibold block uppercase tracking-wider">Số Lượt Cài Đặt Gian Lận</span>
+                <span class="text-xl font-bold text-white mt-0.5 block" id="fraudInstallCount">22,833 installs</span>
+                <span class="text-[10px] text-slate-400" id="fraudInstallPct">Chiếm 50.7% chiến dịch</span>
+              </div>
+              <div class="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30">
+                <span class="text-[11px] text-emerald-300 font-bold block uppercase tracking-wider">Chi Phí Hợp Lệ Có Thể Trả</span>
+                <span class="text-xl font-bold text-emerald-400 mt-0.5 block" id="fraudSafeSpendUsd">$33,250.00</span>
+                <span class="text-[10px] text-slate-400">Được bảo vệ bởi Rulebook</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- MTTI Histogram Distribution -->
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+            <h4 class="text-sm font-bold text-white flex items-center justify-between">
+              <span class="flex items-center gap-2">
+                <i data-lucide="bar-chart-2" class="w-4 h-4 text-red-400"></i>
+                Phân Bổ Thời Gian Từ Click Đến Cài Đặt (MTTI / CTIT Distribution)
+              </span>
+              <span class="text-[11px] text-slate-400 font-normal">Đường cong chuẩn người thật: Đỉnh nhọn tại 30s-180s</span>
+            </h4>
+            <div id="fraudMttiBars" class="space-y-2">
+              <!-- Dynamically populated MTTI histogram bars -->
+            </div>
+          </div>
+
+          <!-- Detected Fraud Flags -->
+          <div id="fraudFlagsList" class="space-y-2.5">
+            <!-- Dynamically populated flags -->
+          </div>
+
+          <!-- Anti-Fraud Rulebook & Dispute Clawback Letter -->
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4 text-amber-400"></i>
+                Bộ Quy Tắc Chặn Gian Lận MMP & Thư Khiếu Nại Hoàn Tiền (Dispute)
+              </h4>
+              <button onclick="copyClawbackLetter()" class="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 cursor-pointer">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Sao Chép Thư Khiếu Nại
+              </button>
+            </div>
+            <div class="space-y-3 text-xs">
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                <span class="font-bold text-emerald-400 block mb-1">AppsFlyer Protect360 Configuration:</span>
+                <ul class="space-y-1 text-slate-300 text-[11px] list-disc list-inside" id="afRulesList">
+                  <li>Reject attribution if CTIT &lt; 12s (Auto re-attribute to Organic).</li>
+                  <li>Cap Click-Through Attribution Window to 24 hours.</li>
+                </ul>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                <span class="font-bold text-cyan-400 block mb-1">Adjust Fraud Prevention Suite (FPS):</span>
+                <ul class="space-y-1 text-slate-300 text-[11px] list-disc list-inside" id="adjustRulesList">
+                  <li>Click Injection Filter: Enabled (Android Broadcast validation).</li>
+                  <li>Click Spamming Filter: Enabled (Outlier frequency capping).</li>
+                </ul>
+              </div>
+              <textarea id="clawbackLetterText" rows="6" readonly class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-300 font-mono text-[11px] focus:outline-none select-all"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB 5: WATCHLIST & RIVALS (GAME QUAN SÁT) -->
     <div id="tabContent-watchlist" class="hidden space-y-6">
       <div class="glass-card p-5 rounded-2xl border border-amber-500/30 flex items-center justify-between flex-wrap gap-4">
@@ -3166,7 +3788,7 @@
 
     // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'botcenter', 'pitchdeck', 'abtesting', 'mediation', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
+      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'botcenter', 'pitchdeck', 'abtesting', 'mediation', 'playable', 'voiceover', 'rice', 'fraud', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
@@ -3199,6 +3821,10 @@
       if (tabId === 'pitchdeck') initPitchDeckTab();
       if (tabId === 'abtesting') initAbTestingTab();
       if (tabId === 'mediation') initMediationTab();
+      if (tabId === 'playable') initPlayableTab();
+      if (tabId === 'voiceover') initVoiceoverTab();
+      if (tabId === 'rice') initRiceTab();
+      if (tabId === 'fraud') initFraudTab();
       if (tabId === 'breakouts') loadBreakoutRadar();
       if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
@@ -6816,6 +7442,979 @@
         lucide.createIcons();
       } catch (err) {
         console.error("Error simulating mediation:", err);
+      }
+    }
+
+    // --- 1. PLAYABLE AD CANVAS SANDBOX & MRAID EXPORTER ---
+    let playableTemplates = [];
+    let sandboxAnimId = null;
+    let sandboxState = {
+      template: 'gate_multiplier',
+      playerX: 158,
+      playerCount: 10,
+      distance: 0,
+      gameOver: false,
+      won: false,
+      gates: [
+        { y: 120, leftText: '+10', leftVal: 10, leftType: 'add', rightText: '-5', rightVal: 5, rightType: 'sub' },
+        { y: 280, leftText: 'x2', leftVal: 2, leftType: 'mul', rightText: '+5', rightVal: 5, rightType: 'add' },
+        { y: 440, leftText: 'x5', leftVal: 5, leftType: 'mul', rightText: '-10', rightVal: 10, rightType: 'sub' }
+      ],
+      pin1Pulled: false,
+      pin2Pulled: false,
+      lavaFell: false,
+      waterFell: false,
+      mergeSlots: [1, 1, 2, 1],
+      selectedSlot: null,
+      bossHp: 100,
+      runnerY: 380,
+      runnerVy: 0,
+      isJumping: false,
+      spikes: [{ x: 260 }, { x: 440 }, { x: 620 }]
+    };
+
+    async function initPlayableTab() {
+      try {
+        if (!playableTemplates || playableTemplates.length === 0) {
+          const res = await fetch('/api/mobile/playable/templates');
+          if (res.ok) {
+            playableTemplates = await res.json();
+          }
+        }
+        onPlayableTemplateChange();
+        setupPlayableCanvasListeners();
+        resetPlayableSandbox();
+      } catch (e) {
+        console.error("Error initializing Playable Studio:", e);
+      }
+    }
+
+    function onPlayableTemplateChange() {
+      const select = document.getElementById('playableTemplateSelect');
+      if (!select) return;
+      const tplId = select.value;
+      sandboxState.template = tplId;
+      const tpl = (playableTemplates && playableTemplates.find(t => t.id === tplId)) || {
+        name: select.options[select.selectedIndex].text,
+        avg_cvr: '35%',
+        description: 'Mô phỏng cơ chế mini-game ad tương tác.',
+        hook_mechanic: 'Hook 3s đầu',
+        fail_trigger: 'Trigger Endcard'
+      };
+      const nameEl = document.getElementById('tplCardName');
+      const cvrEl = document.getElementById('tplCardCvr');
+      const descEl = document.getElementById('tplCardDesc');
+      const hookEl = document.getElementById('tplCardHook');
+      const trigEl = document.getElementById('tplCardTrigger');
+      if (nameEl) nameEl.textContent = tpl.name;
+      if (cvrEl) cvrEl.textContent = `Avg CVR: ${tpl.avg_cvr}`;
+      if (descEl) descEl.textContent = tpl.description;
+      if (hookEl) hookEl.textContent = tpl.hook_mechanic;
+      if (trigEl) trigEl.textContent = tpl.fail_trigger;
+
+      resetPlayableSandbox();
+    }
+
+    function setupPlayableCanvasListeners() {
+      const canvas = document.getElementById('playableCanvas');
+      if (!canvas || canvas.dataset.listening === 'true') return;
+      canvas.dataset.listening = 'true';
+
+      const handleMove = (clientX) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const x = (clientX - rect.left) * scaleX;
+        sandboxState.playerX = Math.max(30, Math.min(canvas.width - 30, x));
+      };
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (sandboxState.template === 'gate_multiplier') {
+          handleMove(e.clientX);
+        }
+      });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches[0] && sandboxState.template === 'gate_multiplier') {
+          handleMove(e.touches[0].clientX);
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const clickX = (e.clientX - rect.left) * scaleX;
+        const clickY = (e.clientY - rect.top) * scaleY;
+
+        if (sandboxState.template === 'pull_the_pin') {
+          if (clickY > 150 && clickY < 200 && !sandboxState.pin1Pulled) {
+            sandboxState.pin1Pulled = true;
+            sandboxState.waterFell = true;
+          } else if (clickY > 260 && clickY < 310 && !sandboxState.pin2Pulled) {
+            sandboxState.pin2Pulled = true;
+            sandboxState.lavaFell = true;
+          }
+        } else if (sandboxState.template === 'merge_weapons') {
+          const slotIdx = getMergeSlotUnder(clickX, clickY);
+          if (slotIdx !== -1) {
+            if (sandboxState.selectedSlot === null) {
+              sandboxState.selectedSlot = slotIdx;
+            } else if (sandboxState.selectedSlot === slotIdx) {
+              sandboxState.selectedSlot = null;
+            } else {
+              const s1 = sandboxState.selectedSlot;
+              const s2 = slotIdx;
+              if (sandboxState.mergeSlots[s1] === sandboxState.mergeSlots[s2] && sandboxState.mergeSlots[s1] > 0) {
+                sandboxState.mergeSlots[s2] += 1;
+                sandboxState.mergeSlots[s1] = 0;
+                sandboxState.bossHp = Math.max(0, sandboxState.bossHp - 45);
+              }
+              sandboxState.selectedSlot = null;
+            }
+          }
+        } else if (sandboxState.template === 'tap_to_dodge') {
+          if (!sandboxState.isJumping) {
+            sandboxState.isJumping = true;
+            sandboxState.runnerVy = -11;
+          }
+        }
+      });
+    }
+
+    function getMergeSlotUnder(x, y) {
+      const slots = [
+        { x: 50, y: 310, w: 90, h: 70 },
+        { x: 176, y: 310, w: 90, h: 70 },
+        { x: 50, y: 400, w: 90, h: 70 },
+        { x: 176, y: 400, w: 90, h: 70 }
+      ];
+      for (let i = 0; i < slots.length; i++) {
+        const s = slots[i];
+        if (x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h) return i;
+      }
+      return -1;
+    }
+
+    function resetPlayableSandbox() {
+      if (sandboxAnimId) cancelAnimationFrame(sandboxAnimId);
+      const endcard = document.getElementById('canvasEndcardOverlay');
+      if (endcard) {
+        endcard.classList.add('hidden');
+        endcard.classList.remove('flex');
+      }
+
+      sandboxState.playerCount = 10;
+      sandboxState.playerX = 158;
+      sandboxState.distance = 0;
+      sandboxState.gameOver = false;
+      sandboxState.won = false;
+      sandboxState.pin1Pulled = false;
+      sandboxState.pin2Pulled = false;
+      sandboxState.waterFell = false;
+      sandboxState.lavaFell = false;
+      sandboxState.mergeSlots = [1, 1, 2, 1];
+      sandboxState.selectedSlot = null;
+      sandboxState.bossHp = 100;
+      sandboxState.runnerY = 380;
+      sandboxState.runnerVy = 0;
+      sandboxState.isJumping = false;
+      sandboxState.spikes = [{ x: 260 }, { x: 440 }, { x: 620 }];
+      sandboxState.gates = [
+        { y: 120, leftText: '+10', leftVal: 10, leftType: 'add', rightText: '-5', rightVal: 5, rightType: 'sub', passed: false },
+        { y: 280, leftText: 'x2', leftVal: 2, leftType: 'mul', rightText: '+5', rightVal: 5, rightType: 'add', passed: false },
+        { y: 440, leftText: 'x5', leftVal: 5, leftType: 'mul', rightText: '-10', rightVal: 10, rightType: 'sub', passed: false }
+      ];
+
+      startPlayableLoop();
+    }
+
+    function startPlayableLoop() {
+      const canvas = document.getElementById('playableCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let lastTime = performance.now();
+
+      function loop(now) {
+        const dt = Math.min(0.05, (now - lastTime) / 1000);
+        lastTime = now;
+
+        updateSandbox(dt);
+        renderSandbox(ctx, canvas.width, canvas.height);
+
+        if (!sandboxState.gameOver) {
+          sandboxAnimId = requestAnimationFrame(loop);
+        } else {
+          showSandboxEndcard();
+        }
+      }
+
+      sandboxAnimId = requestAnimationFrame(loop);
+    }
+
+    function updateSandbox(dt) {
+      if (sandboxState.gameOver) return;
+
+      if (sandboxState.template === 'gate_multiplier') {
+        sandboxState.distance += 75 * dt;
+        for (let g of sandboxState.gates) {
+          const sy = 460 - (sandboxState.distance * 1.3 - g.y);
+          if (sy > 390 && sy < 430 && !g.passed) {
+            g.passed = true;
+            if (sandboxState.playerX < 158) {
+              if (g.leftType === 'add') sandboxState.playerCount += g.leftVal;
+              else if (g.leftType === 'mul') sandboxState.playerCount *= g.leftVal;
+              else if (g.leftType === 'sub') sandboxState.playerCount -= g.leftVal;
+            } else {
+              if (g.rightType === 'add') sandboxState.playerCount += g.rightVal;
+              else if (g.rightType === 'mul') sandboxState.playerCount *= g.rightVal;
+              else if (g.rightType === 'sub') sandboxState.playerCount -= g.rightVal;
+            }
+          }
+        }
+        if (sandboxState.playerCount <= 0) {
+          sandboxState.gameOver = true;
+          sandboxState.won = false;
+        } else if (sandboxState.distance > 420) {
+          sandboxState.gameOver = true;
+          sandboxState.won = true;
+        }
+      } else if (sandboxState.template === 'pull_the_pin') {
+        if (sandboxState.waterFell && sandboxState.lavaFell) {
+          sandboxState.gameOver = true;
+          sandboxState.won = true;
+        } else if (sandboxState.lavaFell && !sandboxState.waterFell) {
+          sandboxState.gameOver = true;
+          sandboxState.won = false;
+        }
+      } else if (sandboxState.template === 'merge_weapons') {
+        if (sandboxState.bossHp <= 10) {
+          sandboxState.gameOver = true;
+          sandboxState.won = true;
+        }
+      } else if (sandboxState.template === 'tap_to_dodge') {
+        if (sandboxState.isJumping) {
+          sandboxState.runnerVy += 28 * dt;
+          sandboxState.runnerY += sandboxState.runnerVy;
+          if (sandboxState.runnerY >= 380) {
+            sandboxState.runnerY = 380;
+            sandboxState.isJumping = false;
+            sandboxState.runnerVy = 0;
+          }
+        }
+        for (let s of sandboxState.spikes) {
+          s.x -= 160 * dt;
+          if (s.x > 50 && s.x < 95 && sandboxState.runnerY > 350) {
+            sandboxState.gameOver = true;
+            sandboxState.won = false;
+          }
+        }
+        if (sandboxState.spikes[sandboxState.spikes.length - 1].x < 20) {
+          sandboxState.gameOver = true;
+          sandboxState.won = true;
+        }
+      }
+    }
+
+    function renderSandbox(ctx, w, h) {
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, w, h);
+
+      if (sandboxState.template === 'gate_multiplier') {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(20, 0, w - 40, h);
+        ctx.strokeStyle = '#334155';
+        ctx.setLineDash([10, 10]);
+        ctx.beginPath();
+        ctx.moveTo(w / 2, 0);
+        ctx.lineTo(w / 2, h);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        for (let g of sandboxState.gates) {
+          const sy = 460 - (sandboxState.distance * 1.3 - g.y);
+          if (sy > -50 && sy < h + 50) {
+            ctx.fillStyle = g.leftType === 'sub' ? 'rgba(239, 68, 68, 0.85)' : 'rgba(16, 185, 129, 0.85)';
+            ctx.fillRect(24, sy - 20, (w - 48) / 2, 36);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(g.leftText, 24 + (w - 48) / 4, sy + 4);
+
+            ctx.fillStyle = g.rightType === 'sub' ? 'rgba(239, 68, 68, 0.85)' : 'rgba(16, 185, 129, 0.85)';
+            ctx.fillRect(w / 2 + 2, sy - 20, (w - 48) / 2 - 2, 36);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(g.rightText, w / 2 + (w - 48) / 4, sy + 4);
+          }
+        }
+
+        const px = sandboxState.playerX;
+        const py = 410;
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(px, py, 14, 0, Math.PI * 2);
+        ctx.fill();
+
+        const displayFollowers = Math.min(20, Math.max(0, sandboxState.playerCount));
+        ctx.fillStyle = '#7dd3fc';
+        for (let i = 0; i < displayFollowers; i++) {
+          const angle = (i / displayFollowers) * Math.PI * 2;
+          const rad = 14 + (i % 3) * 6;
+          ctx.beginPath();
+          ctx.arc(px + Math.cos(angle) * rad, py + Math.sin(angle) * rad + 10, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(px - 28, py - 40, 56, 18);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`LÍNH: ${Math.max(0, sandboxState.playerCount)}`, px, py - 27);
+
+      } else if (sandboxState.template === 'pull_the_pin') {
+        ctx.fillStyle = '#1e1b4b';
+        ctx.fillRect(40, 40, w - 80, 430);
+
+        ctx.fillStyle = sandboxState.pin1Pulled ? '#0284c7' : '#38bdf8';
+        ctx.fillRect(60, 60, w - 120, 80);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('💧 NƯỚC MÁT', w / 2, 105);
+
+        ctx.fillStyle = sandboxState.pin1Pulled ? '#475569' : '#f59e0b';
+        ctx.fillRect(sandboxState.pin1Pulled ? 180 : 30, 150, w - 60, 14);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(sandboxState.pin1Pulled ? 'ĐÃ RÚT CHỐT 1' : '👉 BẤM ĐỂ RÚT CHỐT NƯỚC', w / 2, 145);
+
+        ctx.fillStyle = sandboxState.lavaFell ? (sandboxState.waterFell ? '#64748b' : '#ef4444') : '#f97316';
+        ctx.fillRect(60, 175, w - 120, 80);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(sandboxState.waterFell ? '🪨 ĐÁ NGUỘI' : '🔥 DUNG NHAM NÓNG', w / 2, 220);
+
+        ctx.fillStyle = sandboxState.pin2Pulled ? '#475569' : '#f59e0b';
+        ctx.fillRect(sandboxState.pin2Pulled ? 180 : 30, 265, w - 60, 14);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(sandboxState.pin2Pulled ? 'ĐÃ RÚT CHỐT 2' : '👉 BẤM ĐỂ RÚT CHỐT LỬA', w / 2, 260);
+
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(60, 370, 45, 50);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('🧙 HERO', 82, 400);
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(w - 110, 380, 45, 40);
+        ctx.fillText('💎 KHO BÁU', w - 88, 405);
+
+      } else if (sandboxState.template === 'merge_weapons') {
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(w / 2 - 50, 60, 100, 90);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('👹 WORLD BOSS', w / 2, 105);
+
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(w / 2 - 70, 165, 140, 12);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(w / 2 - 70, 165, 140 * (sandboxState.bossHp / 100), 12);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText(`HP: ${sandboxState.bossHp}%`, w / 2, 160);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px sans-serif';
+        ctx.fillText('Chạm 2 thanh kiếm cùng cấp để ghép Level!', w / 2, 260);
+
+        const slots = [
+          { x: 50, y: 290, w: 90, h: 70 },
+          { x: 176, y: 290, w: 90, h: 70 },
+          { x: 50, y: 380, w: 90, h: 70 },
+          { x: 176, y: 380, w: 90, h: 70 }
+        ];
+        for (let i = 0; i < slots.length; i++) {
+          const s = slots[i];
+          const val = sandboxState.mergeSlots[i];
+          const isSel = sandboxState.selectedSlot === i;
+          ctx.fillStyle = isSel ? 'rgba(99, 102, 241, 0.4)' : '#1e293b';
+          ctx.strokeStyle = isSel ? '#818cf8' : '#334155';
+          ctx.lineWidth = 2;
+          ctx.fillRect(s.x, s.y, s.w, s.h);
+          ctx.strokeRect(s.x, s.y, s.w, s.h);
+
+          if (val > 0) {
+            ctx.fillStyle = val === 1 ? '#e2e8f0' : (val === 2 ? '#38bdf8' : '#fbbf24');
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(`🗡️ KIẾM Lv.${val}`, s.x + s.w / 2, s.y + s.h / 2 + 4);
+          }
+        }
+
+      } else if (sandboxState.template === 'tap_to_dodge') {
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(0, 410, w, 110);
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(70, sandboxState.runnerY, 26, 30);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('RUN', 83, sandboxState.runnerY + 18);
+
+        for (let s of sandboxState.spikes) {
+          if (s.x > -20 && s.x < w + 20) {
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(s.x, 410);
+            ctx.lineTo(s.x + 12, 382);
+            ctx.lineTo(s.x + 24, 410);
+            ctx.fill();
+          }
+        }
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('Chạm màn hình để nhảy qua chông gai!', w / 2, 200);
+      }
+    }
+
+    function showSandboxEndcard() {
+      const overlay = document.getElementById('canvasEndcardOverlay');
+      const title = document.getElementById('endcardTitle');
+      const desc = document.getElementById('endcardDesc');
+      const cta = document.getElementById('endcardCtaBtn');
+      const customCta = document.getElementById('playableCtaText').value.trim() || 'CHƠI NGAY MIỄN PHÍ';
+
+      if (!overlay) return;
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+
+      if (sandboxState.won) {
+        title.textContent = 'CHIẾN THẮNG TUYỆT ĐỐI!';
+        title.className = 'text-lg font-black text-amber-400 uppercase tracking-wider';
+        desc.textContent = 'Bạn đã vượt qua màn chơi xuất sắc! Tải bản full để mở khóa 100+ ải tiếp theo!';
+      } else {
+        title.textContent = 'THUA RỒI! BẠN CÓ DÁM THỬ LẠI?';
+        title.className = 'text-lg font-black text-rose-500 uppercase tracking-wider';
+        desc.textContent = '99% người chơi không thể vượt qua cạm bẫy này! Cài đặt game để phục thù ngay!';
+      }
+      if (cta) cta.textContent = customCta;
+      lucide.createIcons();
+    }
+
+    function triggerSandboxCta() {
+      const url = document.getElementById('playableStoreUrl').value.trim() || 'https://apps.apple.com';
+      showToast(`[MRAID 2.0] Kích hoạt mraid.open("${url}")`);
+    }
+
+    async function exportMraidBundle() {
+      const templateId = document.getElementById('playableTemplateSelect').value;
+      const gameTitle = document.getElementById('playableGameTitle').value.trim() || 'Stickman War';
+      const ctaText = document.getElementById('playableCtaText').value.trim() || 'PLAY NOW';
+      const storeUrl = document.getElementById('playableStoreUrl').value.trim() || 'https://apps.apple.com';
+
+      try {
+        const res = await fetch('/api/mobile/playable/export-mraid', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            template_id: templateId,
+            game_title: gameTitle,
+            call_to_action: ctaText,
+            store_url: storeUrl
+          })
+        });
+        if (res.ok) {
+          const html = await res.text();
+          const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `${gameTitle.toLowerCase().replace(/[^a-z0-9]/g, '_')}_playable_ad.html`;
+          link.click();
+          showToast('Đã xuất và tải file Playable Ad MRAID 2.0 (.html) thành công!');
+        }
+      } catch (e) {
+        console.error("Error exporting MRAID bundle:", e);
+        showToast('Có lỗi khi xuất file MRAID bundle.');
+      }
+    }
+
+    async function togglePlayableCodeModal() {
+      const modal = document.getElementById('playableCodeModal');
+      if (!modal) return;
+      if (!modal.classList.contains('hidden')) {
+        modal.classList.add('hidden');
+        return;
+      }
+
+      const templateId = document.getElementById('playableTemplateSelect').value;
+      const gameTitle = document.getElementById('playableGameTitle').value.trim() || 'Stickman War';
+      const ctaText = document.getElementById('playableCtaText').value.trim() || 'PLAY NOW';
+      const storeUrl = document.getElementById('playableStoreUrl').value.trim() || 'https://apps.apple.com';
+
+      try {
+        const res = await fetch('/api/mobile/playable/export-mraid', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            template_id: templateId,
+            game_title: gameTitle,
+            call_to_action: ctaText,
+            store_url: storeUrl
+          })
+        });
+        if (res.ok) {
+          const html = await res.text();
+          document.getElementById('playableCodeArea').value = html;
+          modal.classList.remove('hidden');
+          lucide.createIcons();
+        }
+      } catch (e) {
+        console.error("Error loading code preview:", e);
+      }
+    }
+
+    function copyMraidCode() {
+      const area = document.getElementById('playableCodeArea');
+      if (area) {
+        navigator.clipboard.writeText(area.value);
+        showToast('Đã sao chép mã nguồn HTML5 MRAID vào clipboard!');
+      }
+    }
+
+    // --- 2. MULTILINGUAL AD VOICEOVER & AUDIO PREVIEW STUDIO ---
+    let currentVoDuration = 15;
+    let currentVoiceoverData = null;
+
+    function initVoiceoverTab() {
+      if (!currentVoiceoverData) {
+        generateVoiceoverScript();
+      }
+    }
+
+    function setVoDuration(dur) {
+      currentVoDuration = dur;
+      const btn15 = document.getElementById('voBtnDur15');
+      const btn30 = document.getElementById('voBtnDur30');
+      if (dur === 15) {
+        btn15.className = 'py-2 rounded-lg bg-rose-600 text-white font-bold text-xs border border-rose-500';
+        btn30.className = 'py-2 rounded-lg bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 hover:bg-slate-700';
+      } else {
+        btn30.className = 'py-2 rounded-lg bg-rose-600 text-white font-bold text-xs border border-rose-500';
+        btn15.className = 'py-2 rounded-lg bg-slate-800 text-slate-300 font-bold text-xs border border-slate-700 hover:bg-slate-700';
+      }
+      generateVoiceoverScript();
+    }
+
+    async function generateVoiceoverScript() {
+      const title = document.getElementById('voGameTitle').value.trim() || 'Shadow Legends War';
+      const genre = document.getElementById('voGenre').value.trim() || 'Mid-Core RPG';
+      const market = document.getElementById('voTargetMarket').value;
+      const emotion = document.getElementById('voEmotionTone').value;
+
+      try {
+        const res = await fetch('/api/mobile/voiceover/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            game_title: title,
+            genre: genre,
+            target_market: market,
+            emotion_tone: emotion,
+            duration_seconds: currentVoDuration
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          currentVoiceoverData = data;
+          renderVoiceoverScript(data);
+        }
+      } catch (e) {
+        console.error("Error generating voiceover:", e);
+      }
+    }
+
+    function renderVoiceoverScript(data) {
+      const hookAdvice = document.getElementById('voHookAdvice');
+      const bgmAdvice = document.getElementById('voBgmAdvice');
+      const castingAdvice = document.getElementById('voCastingAdvice');
+      if (hookAdvice) hookAdvice.textContent = data.marketing_tactics.hook_tactic;
+      if (bgmAdvice) bgmAdvice.textContent = data.meta.bgm_recommendation;
+      if (castingAdvice) castingAdvice.textContent = data.meta.casting_advice;
+
+      const container = document.getElementById('voTimelineContainer');
+      if (!container) return;
+
+      container.innerHTML = data.timeline.map(line => `
+        <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-2 hover:border-rose-500/30 transition-colors">
+          <div class="flex items-center justify-between text-xs">
+            <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold font-mono text-[11px]">
+              ⏱️ ${line.time}
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
+              ${line.section}
+            </span>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-950 border border-rose-500/20 text-sm font-semibold text-rose-200 leading-relaxed">
+            "${line.voice_text}"
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px] pt-1">
+            <div class="text-slate-400">
+              🎬 <b class="text-slate-300 font-medium">Khung Hình:</b> ${line.screen_direction}
+            </div>
+            <div class="text-amber-400/90 font-mono">
+              🔊 <b class="text-amber-300 font-medium">SFX Cue:</b> ${line.sfx_cue}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function playVoiceoverSpeech() {
+      if (!('speechSynthesis' in window)) {
+        showToast('Trình duyệt của bạn không hỗ trợ Web Speech Synthesis.');
+        return;
+      }
+
+      if (!currentVoiceoverData || !currentVoiceoverData.tts_parameters) return;
+      window.speechSynthesis.cancel();
+
+      const tts = currentVoiceoverData.tts_parameters;
+      const utterance = new SpeechSynthesisUtterance(tts.full_text);
+      utterance.lang = tts.lang;
+      utterance.pitch = tts.pitch;
+      utterance.rate = tts.rate;
+
+      const indicator = document.getElementById('voSpeakingIndicator');
+      if (indicator) indicator.classList.remove('hidden');
+
+      utterance.onend = () => {
+        if (indicator) indicator.classList.add('hidden');
+      };
+      utterance.onerror = () => {
+        if (indicator) indicator.classList.add('hidden');
+      };
+
+      window.speechSynthesis.speak(utterance);
+      showToast(`Đang phát giọng đọc audio (${tts.lang}, tốc độ ${tts.rate}x)`);
+    }
+
+    function stopVoiceoverSpeech() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const indicator = document.getElementById('voSpeakingIndicator');
+        if (indicator) indicator.classList.add('hidden');
+      }
+    }
+
+    function copyFullVoiceoverScript() {
+      if (!currentVoiceoverData) return;
+      let text = `=== KỊCH BẢN LỒNG TIẾNG VIDEO ADS: ${currentVoiceoverData.meta.game_title} ===\n`;
+      text += `Thị Trường: ${currentVoiceoverData.meta.market_name} (${currentVoiceoverData.meta.lang_code})\n`;
+      text += `Tông Cảm Xúc: ${currentVoiceoverData.meta.emotion_name}\n`;
+      text += `BGM Đề Xuất: ${currentVoiceoverData.meta.bgm_recommendation}\n\n`;
+
+      currentVoiceoverData.timeline.forEach(item => {
+        text += `[${item.time}] (${item.section})\n`;
+        text += `Lời Thoại: "${item.voice_text}"\n`;
+        text += `Hình Ảnh: ${item.screen_direction}\n`;
+        text += `Âm Thanh SFX: ${item.sfx_cue}\n\n`;
+      });
+
+      navigator.clipboard.writeText(text);
+      showToast('Đã sao chép toàn bộ kịch bản lồng tiếng vào clipboard!');
+    }
+
+    // --- 3. GAME FEATURE RICE SCORER & PRODUCTION ROADMAP ---
+    let ricePresetsData = [];
+
+    async function initRiceTab() {
+      try {
+        if (!ricePresetsData || ricePresetsData.length === 0) {
+          const res = await fetch('/api/mobile/rice/presets');
+          if (res.ok) {
+            ricePresetsData = await res.json();
+          }
+        }
+        recalculateRiceMatrix();
+      } catch (e) {
+        console.error("Error initializing RICE Scorer:", e);
+      }
+    }
+
+    async function recalculateRiceMatrix() {
+      try {
+        const res = await fetch('/api/mobile/rice/evaluate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            features: ricePresetsData
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          renderRiceResults(data);
+        }
+      } catch (e) {
+        console.error("Error recalculating RICE:", e);
+      }
+    }
+
+    function renderRiceResults(data) {
+      const summary = data.summary;
+      const topFeatEl = document.getElementById('riceTopFeature');
+      const totalFeatEl = document.getElementById('riceTotalFeatures');
+      const totalEffortEl = document.getElementById('riceTotalEffort');
+      const projRevEl = document.getElementById('riceProjectedRev');
+      const projD30El = document.getElementById('riceProjectedD30');
+
+      if (topFeatEl) topFeatEl.textContent = summary.highest_roi_feature;
+      if (totalFeatEl) totalFeatEl.textContent = summary.total_features_evaluated;
+      if (totalEffortEl) totalEffortEl.textContent = `${summary.total_engineering_weeks} wks`;
+      if (projRevEl) projRevEl.textContent = `+${summary.cumulative_top5_rev_lift_pct}%`;
+      if (projD30El) projD30El.textContent = `+${summary.cumulative_top5_d30_lift_pct}%`;
+
+      const tbody = document.getElementById('riceTableBody');
+      if (tbody) {
+        tbody.innerHTML = data.ranked_features.map((feat, idx) => `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <td class="py-3 px-4 font-semibold text-white">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-300 font-bold">
+                  ${idx + 1}
+                </span>
+                <div>
+                  <div class="font-bold text-slate-100">${feat.name}</div>
+                  <div class="text-[10px] text-slate-400 font-normal max-w-sm truncate">${feat.description}</div>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${feat.category.includes('Monetization') ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : (feat.category.includes('Retention') ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-purple-500/20 text-purple-300 border border-purple-500/30')}">
+                ${feat.category}
+              </span>
+            </td>
+            <td class="py-3 px-3 font-mono text-slate-300">${feat.reach.toLocaleString()}</td>
+            <td class="py-3 px-3 font-mono text-slate-300">${feat.impact}x</td>
+            <td class="py-3 px-3 font-mono text-slate-300">${Math.round(feat.confidence * 100)}%</td>
+            <td class="py-3 px-3 font-mono text-amber-300">${feat.effort} w</td>
+            <td class="py-3 px-3">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-black bg-violet-500/20 text-violet-300 border border-violet-500/40">
+                ${feat.rice_score}
+              </span>
+            </td>
+            <td class="py-3 px-3 font-bold text-emerald-400 font-mono">+${feat.projected_revenue_lift_pct}%</td>
+            <td class="py-3 px-3 font-bold text-cyan-400 font-mono">+${feat.projected_d30_retention_lift_pct}%</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${feat.priority_tier.includes('P0') ? 'bg-red-500/20 text-red-400 border border-red-500/30' : (feat.priority_tier.includes('P1') ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-700 text-slate-300')}">
+                ${feat.priority_tier}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      const roadmapGrid = document.getElementById('riceRoadmapGrid');
+      if (roadmapGrid) {
+        roadmapGrid.innerHTML = Object.entries(data.quarterly_roadmap).map(([sprintName, items]) => `
+          <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 bg-slate-900/60">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h5 class="text-xs font-bold text-violet-300 flex items-center gap-1.5">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                ${sprintName}
+              </h5>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                ${items.reduce((acc, i) => acc + i.effort, 0).toFixed(1)} wks
+              </span>
+            </div>
+            <div class="space-y-2">
+              ${items.length === 0 ? '<div class="text-[11px] text-slate-400 py-2">Chưa phân bổ tính năng</div>' : items.map(item => `
+                <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-white text-[11px] truncate max-w-[190px]">${item.name}</span>
+                    <span class="text-[10px] font-black text-violet-400 font-mono">RICE: ${item.rice_score}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-[10px] text-slate-400">
+                    <span class="text-amber-400">${item.effort} tuần</span>
+                    <span>•</span>
+                    <span class="text-emerald-400">+${item.projected_revenue_lift_pct}% Rev</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      lucide.createIcons();
+    }
+
+    // --- 4. UA AD FRAUD & CLICK INJECTION SCANNER ---
+    let fraudSamples = [];
+
+    async function initFraudTab() {
+      try {
+        if (!fraudSamples || fraudSamples.length === 0) {
+          const res = await fetch('/api/mobile/fraud/samples');
+          if (res.ok) {
+            fraudSamples = await res.json();
+          }
+        }
+        auditAdFraud();
+      } catch (e) {
+        console.error("Error initializing Fraud Scanner:", e);
+      }
+    }
+
+    function loadFraudPreset(index) {
+      if (!fraudSamples || !fraudSamples[index]) return;
+      const s = fraudSamples[index];
+      document.getElementById('fraudNetName').value = s.network_name;
+      document.getElementById('fraudInstalls').value = s.total_installs;
+      document.getElementById('fraudSpend').value = s.ad_spend_usd;
+      document.getElementById('fraudMttiUnder10').value = s.mtti_under_10s_pct;
+      document.getElementById('fraudMttiOver24').value = s.mtti_over_24h_pct;
+      document.getElementById('fraudD1Ret').value = s.d1_retention_pct;
+
+      auditAdFraud();
+    }
+
+    async function auditAdFraud() {
+      const netName = document.getElementById('fraudNetName').value.trim() || 'Custom Network';
+      const installs = parseInt(document.getElementById('fraudInstalls').value, 10) || 10000;
+      const spend = parseFloat(document.getElementById('fraudSpend').value) || 10000;
+      const under10 = parseFloat(document.getElementById('fraudMttiUnder10').value) || 0;
+      const over24 = parseFloat(document.getElementById('fraudMttiOver24').value) || 0;
+      const d1 = parseFloat(document.getElementById('fraudD1Ret').value) || 0;
+
+      try {
+        const res = await fetch('/api/mobile/fraud/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            network_name: netName,
+            total_installs: installs,
+            ad_spend_usd: spend,
+            mtti_under_10s_pct: under10,
+            mtti_over_24h_pct: over24,
+            d1_retention_pct: d1
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          renderFraudResults(data);
+        }
+      } catch (e) {
+        console.error("Error auditing fraud:", e);
+      }
+    }
+
+    function renderFraudResults(data) {
+      const verdict = data.audit_verdict;
+      const verdictEl = document.getElementById('fraudVerdictText');
+      const scoreEl = document.getElementById('fraudRiskScore');
+      const clawbackEl = document.getElementById('fraudClawbackUsd');
+      const countEl = document.getElementById('fraudInstallCount');
+      const pctEl = document.getElementById('fraudInstallPct');
+      const safeEl = document.getElementById('fraudSafeSpendUsd');
+
+      if (verdictEl) verdictEl.textContent = verdict.overall_verdict;
+      if (scoreEl) {
+        scoreEl.textContent = `RỦI RO: ${verdict.fraud_score}/100`;
+        scoreEl.className = verdict.fraud_score > 50 ? 'px-3 py-1 rounded-full text-xs font-black bg-red-500/20 text-red-400 border border-red-500/40' : (verdict.fraud_score > 25 ? 'px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/40');
+      }
+      if (clawbackEl) clawbackEl.textContent = `$${verdict.estimated_clawback_usd.toLocaleString()}`;
+      if (countEl) countEl.textContent = `${verdict.fraud_installs_count.toLocaleString()} installs`;
+      if (pctEl) pctEl.textContent = `Chiếm ${verdict.estimated_fraud_pct}% toàn chiến dịch`;
+      if (safeEl) safeEl.textContent = `$${verdict.safe_spend_usd.toLocaleString()}`;
+
+      const barsContainer = document.getElementById('fraudMttiBars');
+      if (barsContainer) {
+        barsContainer.innerHTML = data.mtti_distribution.map(b => {
+          const colorClass = b.status === 'danger' ? 'bg-red-500' : (b.status === 'healthy' ? 'bg-emerald-500' : (b.status === 'warning' ? 'bg-amber-500' : 'bg-slate-600'));
+          const textClass = b.status === 'danger' ? 'text-red-400 font-bold' : (b.status === 'healthy' ? 'text-emerald-400 font-bold' : 'text-slate-300');
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="${textClass}">${b.bucket}</span>
+                <span class="font-mono ${textClass}">${b.pct}%</span>
+              </div>
+              <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden">
+                <div class="${colorClass} h-2.5 rounded-full" style="width: ${Math.min(100, b.pct * 1.5)}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const flagsContainer = document.getElementById('fraudFlagsList');
+      if (flagsContainer) {
+        if (!data.fraud_flags || data.fraud_flags.length === 0) {
+          flagsContainer.innerHTML = `
+            <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+              <span>Không phát hiện dấu hiệu gian lận nghiêm trọng. Phân bổ MTTI đạt chuẩn tự nhiên.</span>
+            </div>
+          `;
+        } else {
+          flagsContainer.innerHTML = data.fraud_flags.map(f => `
+            <div class="p-4 rounded-xl ${f.severity === 'CRITICAL' ? 'bg-red-950/30 border border-red-500/40' : 'bg-amber-950/20 border border-amber-500/30'} space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold ${f.severity === 'CRITICAL' ? 'text-red-400' : 'text-amber-400'} text-xs flex items-center gap-1.5">
+                  <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                  ${f.type}
+                </span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${f.severity === 'CRITICAL' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'}">
+                  ${f.severity}
+                </span>
+              </div>
+              <p class="text-xs text-white font-medium">${f.finding}</p>
+              <div class="text-[11px] text-slate-300 pt-1 border-t border-slate-800">
+                <b class="text-slate-400">Cơ Chế Gian Lận:</b> ${f.mechanism}
+              </div>
+              <div class="text-[11px] text-cyan-300">
+                <b class="text-cyan-400">Biện Pháp Khắc Phục:</b> ${f.action}
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      const afList = document.getElementById('afRulesList');
+      if (afList && data.rulebook.appsflyer_protect360_rules) {
+        afList.innerHTML = data.rulebook.appsflyer_protect360_rules.map(r => `
+          <li><b>${r.rule_name}:</b> If ${r.condition} &rarr; <i>${r.action}</i></li>
+        `).join('');
+      }
+
+      const adjustList = document.getElementById('adjustRulesList');
+      if (adjustList && data.rulebook.adjust_fraud_prevention_suite) {
+        adjustList.innerHTML = data.rulebook.adjust_fraud_prevention_suite.map(r => `
+          <li><b>${r.filter_name}:</b> ${r.threshold} [${r.status}]</li>
+        `).join('');
+      }
+
+      const letterArea = document.getElementById('clawbackLetterText');
+      if (letterArea && data.rulebook.clawback_email_template) {
+        letterArea.value = data.rulebook.clawback_email_template;
+      }
+
+      lucide.createIcons();
+    }
+
+    function copyClawbackLetter() {
+      const area = document.getElementById('clawbackLetterText');
+      if (area) {
+        navigator.clipboard.writeText(area.value);
+        showToast('Đã sao chép thư khiếu nại hoàn tiền Clawback vào clipboard!');
       }
     }
 
