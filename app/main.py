@@ -49,6 +49,10 @@ from app.analytics.playable_ad_generator import PlayableAdGenerator
 from app.analytics.voiceover_studio import VoiceoverStudio
 from app.analytics.feature_rice_scorer import FeatureRICEScorer
 from app.analytics.ad_fraud_scanner import AdFraudScanner
+from app.analytics.mmp_webhook_engine import MMPWebhookEngine
+from app.crawlers.steam_api_connector import SteamAPIConnector
+from app.analytics.gdd_generator import GameDesignDocumentGenerator
+from app.analytics.prereg_wishlist_forecaster import PreRegWishlistForecaster
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -81,6 +85,10 @@ playable_generator = PlayableAdGenerator()
 voiceover_studio = VoiceoverStudio()
 rice_scorer = FeatureRICEScorer()
 ad_fraud_scanner = AdFraudScanner()
+mmp_engine = MMPWebhookEngine()
+steam_connector = SteamAPIConnector()
+gdd_generator = GameDesignDocumentGenerator()
+prereg_forecaster = PreRegWishlistForecaster()
 
 is_crawling = False
 
@@ -875,6 +883,122 @@ async def audit_fraud_api(request: Request):
         d1_retention_pct=float(payload.get("d1_retention_pct", 12.0)),
         ad_spend_usd=float(payload.get("ad_spend_usd", 37500.0)),
         cpi_usd=float(payload.get("cpi_usd", 1.50)) if payload.get("cpi_usd") else None
+    )
+
+# --- Live MMP Webhook Ingestion Engine & Real-Time Fraud Stream Endpoints ---
+@app.post("/api/webhook/mmp/postback")
+async def receive_mmp_postback_api(request: Request):
+    """Real-time webhook receiver for AppsFlyer, Adjust, Singular, and custom attribution postbacks."""
+    payload = await request.json()
+    result = mmp_engine.ingest_postback(payload)
+    # Check if this single postback or rolling traffic needs instant alert
+    if result.get("is_rejected") == 1 and result.get("fraud_score", 0) > 85:
+        # Trigger background webhook bot alert if enabled
+        bot_service.trigger_fraud_alert(
+            network_name=result["network_name"],
+            fraud_rate=result["fraud_score"],
+            fraud_type=result["fraud_verdict"],
+            details=f"IP: {result.get('ip_address')}, Device: {result.get('device_model')}, CTIT: {result.get('ctit_seconds')}s"
+        )
+    return {"status": "success", "processed_event": result}
+
+@app.get("/api/webhook/mmp/recent")
+async def get_recent_mmp_postbacks_api(limit: int = Query(default=50, ge=1, le=200)):
+    """Returns most recent incoming attribution postbacks."""
+    return mmp_engine.get_recent_postbacks(limit=limit)
+
+@app.get("/api/webhook/mmp/stats")
+async def get_mmp_stats_api():
+    """Returns aggregated real-time MMP attribution & fraud statistics."""
+    return mmp_engine.get_mmp_stats()
+
+@app.post("/api/webhook/mmp/simulate")
+async def simulate_mmp_batch_api(request: Request):
+    """Simulates realistic incoming MMP stream (Clean vs Fraudulent networks)."""
+    payload = await request.json()
+    count = int(payload.get("count", 15))
+    batch = mmp_engine.generate_mock_batch(count=count)
+    return {"status": "success", "generated_count": len(batch), "events": batch}
+
+@app.delete("/api/webhook/mmp/clear")
+async def clear_mmp_postbacks_api():
+    """Clears MMP postbacks database table for demo reset."""
+    deleted = mmp_engine.clear_postbacks()
+    return {"status": "success", "deleted_rows": deleted}
+
+# --- Steam Web API & Storefront Connector Endpoints ---
+@app.get("/api/steam/presets")
+async def get_steam_presets_api():
+    """Returns benchmark popular Steam titles for live lookups."""
+    return steam_connector.get_presets()
+
+@app.get("/api/steam/app/{app_id}")
+async def get_steam_live_app_api(app_id: int):
+    """Fetches live CCU, Storefront details, and reviews summary from Steam."""
+    ccu_data = steam_connector.fetch_live_ccu(app_id)
+    details_data = steam_connector.fetch_app_details(app_id)
+    reviews_data = steam_connector.fetch_reviews_summary(app_id)
+    return {
+        "app_id": app_id,
+        "ccu": ccu_data,
+        "details": details_data,
+        "reviews": reviews_data
+    }
+
+@app.post("/api/steam/configure-key")
+async def configure_steam_key_api(request: Request):
+    """Saves user Steam Web API key."""
+    payload = await request.json()
+    key = payload.get("steam_api_key", "")
+    steam_connector.save_api_key(key)
+    return {"status": "success", "message": "Steam API Key đã được lưu thành công!"}
+
+# --- AI Game Concept & 1-Page GDD Generator Endpoints ---
+@app.get("/api/gdd/presets")
+async def get_gdd_presets_api():
+    """Returns production GDD genre presets."""
+    return gdd_generator.get_presets()
+
+@app.post("/api/gdd/generate")
+async def generate_gdd_api(request: Request):
+    """Generates structured 1-Page Game Design Document."""
+    payload = await request.json()
+    return gdd_generator.generate_gdd(
+        title=payload.get("title", "Project Apex Horizon"),
+        genre=payload.get("genre", "Action Roguelike / Survival"),
+        platform=payload.get("platform", "PC Steam & Mobile Cross-Platform"),
+        target_audience=payload.get("target_audience", "Mid-Core Gamers, Fast APM enthusiasts"),
+        art_style=payload.get("art_style", "Stylized Cyberpunk Anime"),
+        monetization_model=payload.get("monetization_model", "Hybrid Free-to-Play")
+    )
+
+# --- Steam Wishlist & Mobile Pre-Registration Velocity Forecaster Endpoints ---
+@app.get("/api/prereg-wishlist/presets")
+async def get_prereg_presets_api():
+    """Returns benchmark launch presets."""
+    return prereg_forecaster.get_presets()
+
+@app.post("/api/prereg-wishlist/forecast-steam")
+async def forecast_steam_api(request: Request):
+    """Calculates Steam launch sales and Day 1 peak CCU."""
+    payload = await request.json()
+    return prereg_forecaster.forecast_steam_launch(
+        current_wishlists=int(payload.get("current_wishlists", 50000)),
+        days_to_launch=int(payload.get("days_to_launch", 30)),
+        retail_price_usd=float(payload.get("retail_price_usd", 19.99)),
+        next_fest_demo_downloads=int(payload.get("next_fest_demo_downloads", 10000)),
+        expected_review_score_pct=float(payload.get("expected_review_score_pct", 88.0))
+    )
+
+@app.post("/api/prereg-wishlist/forecast-mobile")
+async def forecast_mobile_api(request: Request):
+    """Calculates Mobile Pre-registration auto-installs and Month 1 revenue."""
+    payload = await request.json()
+    return prereg_forecaster.forecast_mobile_prereg(
+        current_prereg=int(payload.get("current_prereg", 250000)),
+        days_to_launch=int(payload.get("days_to_launch", 25)),
+        projected_d1_retention=float(payload.get("projected_d1_retention", 40.0)),
+        projected_d30_ltv_usd=float(payload.get("projected_d30_ltv_usd", 2.50))
     )
 
 @app.get("/api/meta")

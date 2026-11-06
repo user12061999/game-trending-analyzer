@@ -230,6 +230,18 @@
       <button onclick="switchTab('fraud')" id="tabBtn-fraud" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> UA Fraud Scanner
       </button>
+      <button onclick="switchTab('mmpstream')" id="tabBtn-mmpstream" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="radio" class="w-4 h-4 text-emerald-400"></i> MMP Live Stream
+      </button>
+      <button onclick="switchTab('gdd')" id="tabBtn-gdd" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="scroll" class="w-4 h-4 text-amber-400"></i> AI 1-Page GDD
+      </button>
+      <button onclick="switchTab('prereg')" id="tabBtn-prereg" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i> Wishlist & Pre-Reg
+      </button>
+      <button onclick="switchTab('steamapi')" id="tabBtn-steamapi" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+        <i data-lucide="monitor" class="w-4 h-4 text-sky-400"></i> Steam Live API
+      </button>
       <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
         <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
       </button>
@@ -2456,6 +2468,36 @@
       </div>
     </div>
 
+    <!-- STEAM API KEY CONFIGURATION MODAL -->
+    <div id="steamApiKeyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div class="glass-card bg-slate-900 rounded-2xl border border-sky-500/40 max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+        <button onclick="toggleSteamApiKeyModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-xl bg-sky-500/20 text-sky-400">
+            <i data-lucide="key" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Cấu Hình Steam Web API Key</h3>
+            <p class="text-xs text-slate-400">Tùy chọn: Dùng để vượt giới hạn rate-limit</p>
+          </div>
+        </div>
+        <div class="space-y-3 text-xs">
+          <p class="text-slate-300">
+            Bạn có thể lấy Web API Key miễn phí tại: <a href="https://steamcommunity.com/dev/apikey" target="_blank" class="text-sky-400 underline">steamcommunity.com/dev/apikey</a>
+          </p>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Steam Web API Key</label>
+            <input type="password" id="inputSteamApiKey" placeholder="Dán API Key tại đây..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono text-xs focus:ring-1 focus:ring-sky-500">
+          </div>
+          <button onclick="saveSteamApiKey()" class="w-full py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-sky-600/30">
+            <i data-lucide="save" class="w-4 h-4"></i> Lưu Khóa API
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB: PLAYABLE AD CANVAS SANDBOX & MRAID EXPORTER -->
     <div id="tabContent-playable" class="hidden space-y-6">
       <div class="glass-card p-6 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -3030,6 +3072,447 @@
               <textarea id="clawbackLetterText" rows="6" readonly class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-300 font-mono text-[11px] focus:outline-none select-all"></textarea>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: MMP REAL-TIME INGESTION & LIVE FRAUD STREAM -->
+    <div id="tabContent-mmpstream" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              REAL-TIME MMP WEBHOOK INGESTION & FRAUD STREAM
+            </span>
+            <span class="text-xs text-slate-400">AppsFlyer • Adjust • Singular • Live Postback Receiver</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="radio" class="w-6 h-6 text-emerald-400"></i>
+            MMP Live Webhook & Real-Time Fraud Stream
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Điểm tiếp nhận Webhook phân bổ cài đặt theo thời gian thực (Real-time Attribution Ingestion).
+            Tự động bóc tách CTIT trong từng microsecond, định danh gian lận Click Injection / Click Flooding / Device Farm ngay khi postback ập đến và kích hoạt chuông cảnh báo tới Discord & Telegram.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="simulateMmpBatch()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            Mô Phỏng 15 Postback Mới
+          </button>
+          <button onclick="loadMmpStatsAndRecent()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Làm Mới
+          </button>
+          <button onclick="clearMmpLogs()" class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-red-950/40 text-slate-400 hover:text-red-300 font-semibold text-xs border border-slate-800 flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Xóa Log
+          </button>
+        </div>
+      </div>
+
+      <!-- Webhook Endpoint URL Display -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 flex items-center justify-between flex-wrap gap-3 bg-slate-900/70">
+        <div class="flex items-center gap-2 text-xs">
+          <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 font-bold font-mono">POST</span>
+          <span class="text-slate-400">Webhook Postback Ingestion Endpoint:</span>
+          <code class="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-emerald-400 font-mono text-xs select-all" id="mmpWebhookUrl">http://127.0.0.1:8000/api/webhook/mmp/postback</code>
+        </div>
+        <button onclick="copyMmpWebhookUrl()" class="text-xs text-slate-300 hover:text-white font-semibold flex items-center gap-1 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i> Sao Chép URL
+        </button>
+      </div>
+
+      <!-- Live Stream KPI Summary Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Tổng Postback Đã Nhận</span>
+          <span class="text-2xl font-black text-white mt-1 block" id="mmpTotalCount">0</span>
+          <span class="text-[10px] text-slate-400">Real-time Attribution stream</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Lượt Cài Đặt Hợp Lệ (Clean)</span>
+          <span class="text-2xl font-black text-emerald-400 mt-1 block" id="mmpCleanCount">0</span>
+          <span class="text-[10px] text-emerald-300/70">Đạt chuẩn thời gian tải thực</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Lượt Gian Lận Bị Chặn (Rejected)</span>
+          <span class="text-2xl font-black text-red-400 mt-1 block" id="mmpRejectedCount">0</span>
+          <span class="text-[10px] text-red-300/70">Click Injection / Flooding</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">Tỷ Lệ Gian Lận Thời Gian Thực</span>
+          <span class="text-2xl font-black text-amber-400 mt-1 block" id="mmpFraudRate">0.0%</span>
+          <span class="text-[10px] text-slate-400">Ngưỡng cảnh báo: &gt; 15%</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-slate-800">
+          <span class="text-[11px] text-slate-400 block font-medium">CTIT Trung Bình (Click-to-Install)</span>
+          <span class="text-2xl font-black text-cyan-400 mt-1 block" id="mmpAvgCtit">0.0s</span>
+          <span class="text-[10px] text-slate-400">Thời gian tải & cài đặt thực</span>
+        </div>
+      </div>
+
+      <!-- Network Breakdown Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="network" class="w-4 h-4 text-emerald-400"></i>
+            Bảng Đánh Giá Mức Độ Rủi Ro Theo Ad Network / Kênh Tiếp Thị
+          </h3>
+          <span class="text-xs text-slate-400">Cập nhật động theo postback mới nhất</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[11px]">
+              <tr>
+                <th class="py-3 px-4">Tên Ad Network / Nguồn</th>
+                <th class="py-3 px-3">Tổng Postback</th>
+                <th class="py-3 px-3 text-red-400">Gian Lận (Rejected)</th>
+                <th class="py-3 px-3 font-bold">Tỷ Lệ Fraud</th>
+                <th class="py-3 px-3">CTIT Trung Bình</th>
+                <th class="py-3 px-4 text-center">Trạng Thái An Toàn</th>
+              </tr>
+            </thead>
+            <tbody id="mmpNetworksTableBody" class="divide-y divide-slate-800/60">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Live Stream Feed Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="activity" class="w-4 h-4 text-emerald-400"></i>
+            Dòng Sự Kiện Cài Đặt Trực Tiếp (Live Ingestion Event Feed)
+          </h3>
+          <span class="text-xs text-slate-400">50 sự kiện gần nhất</span>
+        </div>
+        <div class="overflow-x-auto max-h-[420px]">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px] sticky top-0">
+              <tr>
+                <th class="py-2.5 px-4">Thời Gian</th>
+                <th class="py-2.5 px-3">MMP</th>
+                <th class="py-2.5 px-3">Ad Network</th>
+                <th class="py-2.5 px-3">Chiến Dịch</th>
+                <th class="py-2.5 px-3">Thiết Bị</th>
+                <th class="py-2.5 px-3">CTIT (s)</th>
+                <th class="py-2.5 px-3">Phán Quyết</th>
+                <th class="py-2.5 px-4 text-center">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody id="mmpFeedTableBody" class="divide-y divide-slate-800/60 font-mono text-[11px]">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: AI GAME CONCEPT & 1-PAGE GDD GENERATOR -->
+    <div id="tabContent-gdd" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              PRODUCTION GREENLIGHT PITCH & GDD ARCHITECTURE
+            </span>
+            <span class="text-xs text-slate-400">1-Page Executive Game Design Document</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="scroll" class="w-6 h-6 text-amber-400"></i>
+            AI 1-Page GDD & Game Concept Studio
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Tự động tổng hợp dữ liệu xu hướng thị trường, bóc tách vòng lặp 3 tầng (Minute-Session-Meta Loop),
+            thiết kế 3 điểm khác biệt USP và xây dựng khung kinh tế Monetization hoàn chỉnh trong 1 trang tinh gọn, sẵn sàng cho cuộc họp Greenlight và Publisher Pitch.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyGddMarkdown()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="copy" class="w-4 h-4 text-amber-400"></i>
+            Sao Chép Markdown
+          </button>
+          <button onclick="downloadGddMarkdown()" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-amber-600/30 cursor-pointer">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            Tải File (.md)
+          </button>
+        </div>
+      </div>
+
+      <!-- Presets Row -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+        <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+          <i data-lucide="book-open" class="w-4 h-4 text-amber-400"></i> Mẫu GDD Thể Loại Chuẩn (Production Presets):
+        </span>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="loadGddPreset(0)" class="px-3 py-1.5 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 text-xs font-semibold">
+            ⚔️ Roguelike Survivor (Bullet Heaven)
+          </button>
+          <button onclick="loadGddPreset(1)" class="px-3 py-1.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/40 text-xs font-semibold">
+            🌸 Anime Gacha RPG (Open World)
+          </button>
+          <button onclick="loadGddPreset(2)" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-semibold">
+            🏰 Hybrid 4X Strategy (City Survival)
+          </button>
+          <button onclick="loadGddPreset(3)" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold">
+            ☕ Cozy Merge & Bistro Mystery
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls & Rendered GDD -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Input Form (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+              <i data-lucide="sliders" class="w-4 h-4 text-amber-400"></i>
+              Tham Số Ý Tưởng Game
+            </h3>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tên Tựa Game</label>
+                <input type="text" id="gddTitle" value="Valkyrie Survivor: Ragnarok" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-amber-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Thể Loại & Phân Khúc</label>
+                <input type="text" id="gddGenre" value="Action Roguelike / Bullet Heaven" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-amber-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Nền Tảng Phát Hành (Platform)</label>
+                <select id="gddPlatform" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-amber-500">
+                  <option value="PC Steam & Mobile Hybrid">PC Steam & Mobile Cross-Platform</option>
+                  <option value="Mobile Exclusive (iOS & Android)">Mobile Exclusive (iOS & Android)</option>
+                  <option value="PC Steam Exclusive">PC Steam Exclusive</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tệp Người Chơi Mục Tiêu (Target Audience)</label>
+                <input type="text" id="gddAudience" value="Mid-core gamers, Vampire Survivors fans" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-amber-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Phong Cách Nghệ Thuật (Art Style)</label>
+                <input type="text" id="gddArtStyle" value="Dark Nordic Fantasy, Stylized High-Contrast 2.5D" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-amber-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Mô Hình Kinh Doanh (Monetization)</label>
+                <input type="text" id="gddMonetModel" value="Hybrid F2P (Rewarded Ads + Battle Pass + IAP)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-amber-500">
+              </div>
+
+              <button onclick="generateGddDocument()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-600/30 transition-all cursor-pointer mt-2">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                Tạo Bản Thiết Kế GDD 1-Trang
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rendered Document View (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-5 bg-slate-900/80" id="gddRenderContainer">
+            <!-- Dynamically populated GDD view -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: STEAM WISHLIST & MOBILE PRE-REG FORECASTER -->
+    <div id="tabContent-prereg" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-500 animate-ping"></span>
+              STEAM WISHLIST VELOCITY & MOBILE PRE-REG CONVERSION MODEL
+            </span>
+            <span class="text-xs text-slate-400">D1-D7 Launch Revenue, Peak CCU & Store Auto-Download Forecaster</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-6 h-6 text-cyan-400"></i>
+            Wishlist & Pre-Registration Launch Forecaster
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Dự báo chính xác doanh số tuần đầu phát hành trên Steam và lượt cài đặt tự động trên App Store / Google Play:
+            Tính toán độ tăng tốc khi tham gia Steam Next Fest, tỷ lệ chuyển đổi review tích cực và doanh thu ròng sau thuế nền tảng.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="bg-slate-900 p-1 rounded-xl border border-slate-800 flex items-center">
+            <button onclick="setPreregMode('steam')" id="preregModeBtnSteam" class="px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-bold text-xs flex items-center gap-1.5">
+              <i data-lucide="monitor" class="w-3.5 h-3.5"></i> Steam Wishlist
+            </button>
+            <button onclick="setPreregMode('mobile')" id="preregModeBtnMobile" class="px-3 py-1.5 rounded-lg bg-transparent text-slate-400 hover:text-white font-semibold text-xs flex items-center gap-1.5">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5"></i> Mobile Pre-Reg
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Preset Selector -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+        <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+          <i data-lucide="calculator" class="w-4 h-4 text-cyan-400"></i> Nạp Kịch Bản Phát Hành Mẫu (Launch Presets):
+        </span>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="loadPreregPreset(0)" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-semibold">
+            🚀 Steam Indie Breakout (65k Wishlists)
+          </button>
+          <button onclick="loadPreregPreset(1)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold">
+            🎮 Steam Solo Dev Niche (14k Wishlists)
+          </button>
+          <button onclick="loadPreregPreset(2)" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold">
+            📱 Mobile Mid-Core RPG (420k Pre-regs)
+          </button>
+          <button onclick="loadPreregPreset(3)" class="px-3 py-1.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/40 text-xs font-semibold">
+            🧩 Mobile Casual Puzzle (95k Pre-regs)
+          </button>
+        </div>
+      </div>
+
+      <!-- Forecasting Controls & Results -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Input Form (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3" id="preregFormHeading">
+              <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+              Thông Số Đợt Phát Hành Steam
+            </h3>
+
+            <!-- Steam Inputs -->
+            <div id="steamInputGroup" class="space-y-3 text-xs">
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Số Lượng Wishlists Hiện Tại</label>
+                <input type="number" id="steamWishlists" value="65000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-slate-400 mb-1 font-semibold">Số Ngày Đến Launch</label>
+                  <input type="number" id="steamDaysToLaunch" value="45" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1 font-semibold">Giá Bán ($ USD)</label>
+                  <input type="number" step="0.01" id="steamPrice" value="19.99" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+                </div>
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Lượt Tải Demo Steam Next Fest</label>
+                <input type="number" id="steamDemoDownloads" value="18000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+                <span class="text-[10px] text-slate-400">Trung bình chuyển đổi 35% sang Wishlist</span>
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Điểm Đánh Giá Dự Kiến (%)</label>
+                <input type="number" step="0.1" id="steamReviewScore" value="92.0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+                <span class="text-[10px] text-emerald-400">&gt; 90% (Overwhelmingly Positive)</span>
+              </div>
+              <button onclick="runSteamForecast()" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-600/30 transition-all cursor-pointer mt-2">
+                <i data-lucide="play" class="w-4 h-4"></i>
+                Dự Phóng Doanh Số Steam
+              </button>
+            </div>
+
+            <!-- Mobile Inputs -->
+            <div id="mobileInputGroup" class="space-y-3 text-xs hidden">
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Lượng Đăng Ký Trước (Pre-Registrations)</label>
+                <input type="number" id="mobilePrereg" value="420000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-slate-400 mb-1 font-semibold">Số Ngày Đến Launch</label>
+                  <input type="number" id="mobileDaysToLaunch" value="20" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1 font-semibold">D1 Retention (%)</label>
+                  <input type="number" step="0.1" id="mobileD1Ret" value="44.0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+                </div>
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Dự Phóng D30 LTV ($ USD)</label>
+                <input type="number" step="0.01" id="mobileLtv" value="3.40" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-cyan-500">
+                <span class="text-[10px] text-slate-400">Doanh thu trung bình / user sau 30 ngày</span>
+              </div>
+              <button onclick="runMobileForecast()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer mt-2">
+                <i data-lucide="play" class="w-4 h-4"></i>
+                Dự Phóng Doanh Số Mobile
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Forecasting Results View (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-5 bg-slate-900/80" id="preregResultsContainer">
+            <!-- Dynamically populated projections view -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: STEAM WEB API & STOREFRONT CONNECTOR -->
+    <div id="tabContent-steamapi" class="hidden space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-sky-500/30 bg-gradient-to-br from-sky-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
+              OFFICIAL STEAM WEB API & STOREFRONT CONNECTOR
+            </span>
+            <span class="text-xs text-slate-400">Live CCU, Real-Time Reviews & Steam Store Details</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="monitor" class="w-6 h-6 text-sky-400"></i>
+            Steam Live Storefront & CCU Tracker
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Kết nối trực tiếp tới Steam API chính thức: Kiểm tra số lượng người chơi trực tuyến (Live CCU),
+            tỷ lệ đánh giá tích cực, giá niêm yết và dữ liệu cửa hàng theo thời gian thực cho bất kỳ tựa game Steam nào.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleSteamApiKeyModal()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="key" class="w-4 h-4 text-sky-400"></i>
+            Cấu Hình Steam API Key
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Preset Selector -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+        <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+          <i data-lucide="flame" class="w-4 h-4 text-sky-400"></i> Tựa Game Nổi Bật (Quick Presets):
+        </span>
+        <div class="flex items-center gap-2 flex-wrap" id="steamPresetBtnGroup">
+          <!-- Dynamically populated presets -->
+        </div>
+      </div>
+
+      <!-- Search by App ID & Live Result Grid -->
+      <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="flex-1">
+            <label class="block text-slate-400 mb-1 font-semibold text-xs">Nhập Steam App ID (Ví dụ: 730 cho Counter-Strike 2, 2358720 cho Black Myth: Wukong)</label>
+            <div class="flex gap-2">
+              <input type="number" id="customSteamAppId" value="730" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white font-medium text-xs focus:ring-1 focus:ring-sky-500" placeholder="Nhập App ID...">
+              <button onclick="fetchSteamLiveData()" class="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-sky-600/30 transition-all cursor-pointer">
+                <i data-lucide="search" class="w-4 h-4"></i> Kiểm Tra Trực Tiếp
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Steam Card Display -->
+        <div id="steamLiveResultContainer" class="pt-2">
+          <!-- Dynamically populated -->
         </div>
       </div>
     </div>
@@ -3788,7 +4271,7 @@
 
     // Tab Navigation
     function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'botcenter', 'pitchdeck', 'abtesting', 'mediation', 'playable', 'voiceover', 'rice', 'fraud', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
+      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'botcenter', 'pitchdeck', 'abtesting', 'mediation', 'playable', 'voiceover', 'rice', 'fraud', 'mmpstream', 'gdd', 'prereg', 'steamapi', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tabBtn-${t}`);
         const content = document.getElementById(`tabContent-${t}`);
@@ -3825,6 +4308,10 @@
       if (tabId === 'voiceover') initVoiceoverTab();
       if (tabId === 'rice') initRiceTab();
       if (tabId === 'fraud') initFraudTab();
+      if (tabId === 'mmpstream') initMmpStreamTab();
+      if (tabId === 'gdd') initGddTab();
+      if (tabId === 'prereg') initPreRegTab();
+      if (tabId === 'steamapi') initSteamApiTab();
       if (tabId === 'breakouts') loadBreakoutRadar();
       if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
@@ -8415,6 +8902,779 @@
       if (area) {
         navigator.clipboard.writeText(area.value);
         showToast('Đã sao chép thư khiếu nại hoàn tiền Clawback vào clipboard!');
+      }
+    }
+
+    // --- 5. MMP LIVE WEBHOOK INGESTION & FRAUD STREAM ---
+    async function initMmpStreamTab() {
+      loadMmpStatsAndRecent();
+    }
+
+    async function loadMmpStatsAndRecent() {
+      try {
+        const [statsRes, recentRes] = await Promise.all([
+          fetch('/api/webhook/mmp/stats'),
+          fetch('/api/webhook/mmp/recent?limit=50')
+        ]);
+
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          renderMmpStats(stats);
+        }
+
+        if (recentRes.ok) {
+          const recent = await recentRes.json();
+          renderMmpRecentFeed(recent);
+        }
+      } catch (e) {
+        console.error("Error loading MMP stats:", e);
+      }
+    }
+
+    function renderMmpStats(stats) {
+      const totalEl = document.getElementById('mmpTotalCount');
+      const cleanEl = document.getElementById('mmpCleanCount');
+      const rejEl = document.getElementById('mmpRejectedCount');
+      const rateEl = document.getElementById('mmpFraudRate');
+      const ctitEl = document.getElementById('mmpAvgCtit');
+
+      if (totalEl) totalEl.textContent = stats.total_postbacks.toLocaleString();
+      if (cleanEl) cleanEl.textContent = stats.clean_count.toLocaleString();
+      if (rejEl) rejEl.textContent = stats.rejected_count.toLocaleString();
+      if (rateEl) {
+        rateEl.textContent = `${stats.fraud_rate_pct}%`;
+        rateEl.className = stats.fraud_rate_pct > 25 ? 'text-2xl font-black text-red-400 mt-1 block' : (stats.fraud_rate_pct > 10 ? 'text-2xl font-black text-amber-400 mt-1 block' : 'text-2xl font-black text-emerald-400 mt-1 block');
+      }
+      if (ctitEl) ctitEl.textContent = `${stats.avg_ctit_seconds}s`;
+
+      const tbody = document.getElementById('mmpNetworksTableBody');
+      if (tbody) {
+        if (!stats.networks_breakdown || stats.networks_breakdown.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-500">Chưa có dữ liệu postback. Hãy bấm "Mô Phỏng 15 Postback Mới" để kiểm tra!</td></tr>`;
+        } else {
+          tbody.innerHTML = stats.networks_breakdown.map(n => `
+            <tr class="hover:bg-slate-800/40 transition-colors">
+              <td class="py-3 px-4 font-bold text-white">${n.network_name}</td>
+              <td class="py-3 px-3 font-mono text-slate-300">${n.total_events.toLocaleString()}</td>
+              <td class="py-3 px-3 font-mono font-bold ${n.fraud_events > 0 ? 'text-red-400' : 'text-slate-400'}">${n.fraud_events}</td>
+              <td class="py-3 px-3 font-bold font-mono ${n.fraud_rate_pct > 25 ? 'text-red-400' : (n.fraud_rate_pct > 10 ? 'text-amber-400' : 'text-emerald-400')}">${n.fraud_rate_pct}%</td>
+              <td class="py-3 px-3 font-mono text-slate-300">${n.avg_ctit}s</td>
+              <td class="py-3 px-4 text-center">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${n.status === 'DANGER' ? 'bg-red-500/20 text-red-300 border border-red-500/40' : (n.status === 'WARNING' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40')}">
+                  ${n.status === 'DANGER' ? '🚨 NGUY CƠ CAO' : (n.status === 'WARNING' ? '⚠️ THEO DÕI' : '✅ AN TOÀN')}
+                </span>
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+
+    function renderMmpRecentFeed(items) {
+      const tbody = document.getElementById('mmpFeedTableBody');
+      if (!tbody) return;
+
+      if (!items || items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-500 font-sans">Chưa có sự kiện attribution nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map(item => {
+        let badge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">CLEAN</span>';
+        if (item.fraud_verdict === 'CLICK_INJECTION') {
+          badge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse">CLICK_INJECTION</span>';
+        } else if (item.fraud_verdict === 'CLICK_FLOODING') {
+          badge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40">CLICK_FLOODING</span>';
+        } else if (item.fraud_verdict === 'BOT_EMULATOR') {
+          badge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-400 border border-purple-500/40">BOT_EMULATOR</span>';
+        }
+
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <td class="py-2.5 px-4 text-slate-400">${item.received_at.split(' ')[1] || item.received_at}</td>
+            <td class="py-2.5 px-3 text-slate-300">${item.mmp_provider}</td>
+            <td class="py-2.5 px-3 font-bold text-white">${item.network_name}</td>
+            <td class="py-2.5 px-3 text-slate-400 truncate max-w-[120px]">${item.campaign_name || '--'}</td>
+            <td class="py-2.5 px-3 text-slate-400 truncate max-w-[110px]">${item.device_model}</td>
+            <td class="py-2.5 px-3 font-bold ${item.ctit_seconds < 10 ? 'text-red-400' : 'text-cyan-400'}">${item.ctit_seconds}s</td>
+            <td class="py-2.5 px-3">${badge}</td>
+            <td class="py-2.5 px-4 text-center">
+              <span class="text-[10px] ${item.is_rejected === 1 ? 'text-red-400 font-bold' : 'text-emerald-400 font-semibold'}">
+                ${item.is_rejected === 1 ? 'REJECTED' : 'ATTRIBUTED'}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function simulateMmpBatch() {
+      try {
+        const res = await fetch('/api/webhook/mmp/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ count: 15 })
+        });
+        if (res.ok) {
+          showToast('Đã mô phỏng 15 postback MMP thời gian thực!');
+          loadMmpStatsAndRecent();
+        }
+      } catch (e) {
+        console.error("Error simulating MMP batch:", e);
+      }
+    }
+
+    async function clearMmpLogs() {
+      if (!confirm('Bạn có chắc muốn xóa sạch toàn bộ log MMP postbacks?')) return;
+      try {
+        const res = await fetch('/api/webhook/mmp/clear', { method: 'DELETE' });
+        if (res.ok) {
+          showToast('Đã dọn sạch log MMP.');
+          loadMmpStatsAndRecent();
+        }
+      } catch (e) {
+        console.error("Error clearing MMP logs:", e);
+      }
+    }
+
+    function copyMmpWebhookUrl() {
+      const el = document.getElementById('mmpWebhookUrl');
+      if (el) {
+        navigator.clipboard.writeText(el.textContent.trim());
+        showToast('Đã sao chép Webhook Ingestion URL vào clipboard!');
+      }
+    }
+
+    // --- 6. AI 1-PAGE GDD STUDIO ---
+    let currentGddData = null;
+    let gddPresets = [];
+
+    async function initGddTab() {
+      try {
+        if (!gddPresets || gddPresets.length === 0) {
+          const res = await fetch('/api/gdd/presets');
+          if (res.ok) {
+            gddPresets = await res.json();
+          }
+        }
+        if (!currentGddData) {
+          generateGddDocument();
+        }
+      } catch (e) {
+        console.error("Error initializing GDD Tab:", e);
+      }
+    }
+
+    function loadGddPreset(idx) {
+      if (!gddPresets || !gddPresets[idx]) return;
+      const p = gddPresets[idx];
+      document.getElementById('gddTitle').value = p.title;
+      document.getElementById('gddGenre').value = p.genre;
+      document.getElementById('gddPlatform').value = p.platform;
+      document.getElementById('gddAudience').value = p.target_audience;
+      document.getElementById('gddArtStyle').value = p.art_style;
+      document.getElementById('gddMonetModel').value = p.monetization_model;
+
+      generateGddDocument();
+    }
+
+    async function generateGddDocument() {
+      const title = document.getElementById('gddTitle').value.trim() || 'Project Valkyrie';
+      const genre = document.getElementById('gddGenre').value.trim() || 'Action Roguelike';
+      const platform = document.getElementById('gddPlatform').value;
+      const audience = document.getElementById('gddAudience').value.trim() || 'Mid-Core Gamers';
+      const art = document.getElementById('gddArtStyle').value.trim() || 'Dark Fantasy';
+      const monet = document.getElementById('gddMonetModel').value.trim() || 'Hybrid F2P';
+
+      try {
+        const res = await fetch('/api/gdd/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: title,
+            genre: genre,
+            platform: platform,
+            target_audience: audience,
+            art_style: art,
+            monetization_model: monet
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          currentGddData = data;
+          renderGddView(data);
+        }
+      } catch (e) {
+        console.error("Error generating GDD:", e);
+      }
+    }
+
+    function renderGddView(data) {
+      const container = document.getElementById('gddRenderContainer');
+      if (!container) return;
+
+      const meta = data.metadata;
+      const pitch = data.elevator_pitch;
+      const loops = data.core_gameplay_loops;
+      const usps = data.key_usps;
+      const monet = data.monetization_architecture;
+      const kpis = data.kpi_benchmarks;
+
+      container.innerHTML = `
+        <!-- Header -->
+        <div class="border-b border-slate-800 pb-4 space-y-2">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+              1-PAGE GAME DESIGN DOCUMENT • GREENLIGHT READY
+            </span>
+            <span class="text-xs text-slate-400 font-mono">${meta.platform}</span>
+          </div>
+          <h2 class="text-2xl font-black text-white tracking-tight">${meta.game_title.toUpperCase()}</h2>
+          <div class="flex items-center gap-2 flex-wrap text-xs text-slate-300">
+            <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700">${meta.genre}</span>
+            <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700">${meta.art_style}</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">${meta.monetization_model}</span>
+          </div>
+        </div>
+
+        <!-- High Concept & Hook -->
+        <div class="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-2 text-xs">
+          <div class="font-bold text-amber-300 flex items-center gap-1.5 text-sm">
+            <i data-lucide="zap" class="w-4 h-4"></i> High Concept & 30-Second Hook:
+          </div>
+          <p class="text-white font-medium leading-relaxed">${pitch.high_concept}</p>
+          <p class="text-slate-300 leading-relaxed italic">"${pitch.hook_30s}"</p>
+          <div class="text-[11px] text-amber-400/80 pt-1 border-t border-amber-500/20">
+            <b>Định Vị Thị Trường:</b> ${pitch.market_positioning}
+          </div>
+        </div>
+
+        <!-- 3-Layer Core Gameplay Loops -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-cyan-400"></i>
+            Hệ Thống Vòng Lặp Lối Chơi 3 Tầng (3-Layer Core Gameplay Loops)
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <!-- Minute Loop -->
+            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <span class="font-bold text-cyan-300 block text-xs">${loops.minute_loop.title}</span>
+              <ul class="space-y-1 text-slate-300 text-[11px] list-none">
+                ${loops.minute_loop.steps.map(s => `<li>${s}</li>`).join('')}
+              </ul>
+              <div class="text-[10px] text-cyan-400/80 pt-1 border-t border-slate-800">
+                ⚡ <i>${loops.minute_loop.dopamine_trigger}</i>
+              </div>
+            </div>
+
+            <!-- Session Loop -->
+            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <span class="font-bold text-emerald-300 block text-xs">${loops.session_loop.title}</span>
+              <ul class="space-y-1 text-slate-300 text-[11px] list-none">
+                ${loops.session_loop.steps.map(s => `<li>${s}</li>`).join('')}
+              </ul>
+              <div class="text-[10px] text-emerald-400/80 pt-1 border-t border-slate-800">
+                💎 <i>${loops.session_loop.dopamine_trigger}</i>
+              </div>
+            </div>
+
+            <!-- Meta Loop -->
+            <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <span class="font-bold text-purple-300 block text-xs">${loops.meta_loop.title}</span>
+              <ul class="space-y-1 text-slate-300 text-[11px] list-none">
+                ${loops.meta_loop.steps.map(s => `<li>${s}</li>`).join('')}
+              </ul>
+              <div class="text-[10px] text-purple-400/80 pt-1 border-t border-slate-800">
+                👑 <i>${loops.meta_loop.dopamine_trigger}</i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 USPs -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+            <i data-lucide="award" class="w-4 h-4 text-pink-400"></i>
+            3 Điểm Khác Biệt Độc Nhất (Key Unique Selling Points)
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            ${usps.map((u, i) => `
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                <span class="font-bold text-pink-300 text-xs">USP #${i + 1}: ${u.usp}</span>
+                <p class="text-slate-300 text-[11px] leading-relaxed">${u.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Monetization Architecture -->
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 text-xs">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span class="font-bold text-emerald-400 flex items-center gap-1.5 text-xs">
+              <i data-lucide="dollar-sign" class="w-4 h-4"></i> Kiến Trúc Kinh Tế & Monetization Hooks
+            </span>
+            <span class="text-[11px] text-slate-400">Conversion Baits & Recurring Passes</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+            <div class="space-y-1.5">
+              <span class="text-slate-400 font-semibold block uppercase text-[10px]">Gói Chuyển Đổi Nạp Đầu:</span>
+              ${monet.conversion_baits.map(b => `<div class="text-slate-200">💰 <b>${b.name}:</b> ${b.hook}</div>`).join('')}
+            </div>
+            <div class="space-y-1.5">
+              <span class="text-slate-400 font-semibold block uppercase text-[10px]">Doanh Thu Định Kỳ & Thuê Bao:</span>
+              ${monet.recurring_subscriptions.map(r => `<div class="text-slate-200">⭐ <b>${r.name}:</b> ${r.hook}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI Targets -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs pt-1">
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-400 block font-medium">Mục Tiêu D1 Retention</span>
+            <span class="text-lg font-black text-cyan-400 mt-0.5 block">${kpis.target_d1_retention}</span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-400 block font-medium">Mục Tiêu D7 Retention</span>
+            <span class="text-lg font-black text-emerald-400 mt-0.5 block">${kpis.target_d7_retention}</span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-400 block font-medium">Mục Tiêu D30 Retention</span>
+            <span class="text-lg font-black text-violet-400 mt-0.5 block">${kpis.target_d30_retention}</span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-400 block font-medium">Dự Kiến ARPDAU (Tier 1)</span>
+            <span class="text-lg font-black text-amber-400 mt-0.5 block">${kpis.expected_arpdau}</span>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    function copyGddMarkdown() {
+      if (!currentGddData || !currentGddData.markdown_export) return;
+      navigator.clipboard.writeText(currentGddData.markdown_export);
+      showToast('Đã sao chép tài liệu GDD (Markdown) vào clipboard!');
+    }
+
+    function downloadGddMarkdown() {
+      if (!currentGddData || !currentGddData.markdown_export) return;
+      const title = currentGddData.metadata.game_title.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      const blob = new Blob([currentGddData.markdown_export], { type: 'text/markdown;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${title}_gdd_1page.md`;
+      link.click();
+      showToast('Đã tải file tài liệu GDD (.md) thành công!');
+    }
+
+    // --- 7. STEAM WISHLIST & MOBILE PRE-REG FORECASTER ---
+    let preregMode = 'steam';
+    let preregPresets = [];
+
+    async function initPreRegTab() {
+      try {
+        if (!preregPresets || preregPresets.length === 0) {
+          const res = await fetch('/api/prereg-wishlist/presets');
+          if (res.ok) {
+            preregPresets = await res.json();
+          }
+        }
+        if (preregMode === 'steam') {
+          runSteamForecast();
+        } else {
+          runMobileForecast();
+        }
+      } catch (e) {
+        console.error("Error initializing Pre-reg Tab:", e);
+      }
+    }
+
+    function setPreregMode(mode) {
+      preregMode = mode;
+      const btnSteam = document.getElementById('preregModeBtnSteam');
+      const btnMobile = document.getElementById('preregModeBtnMobile');
+      const steamGroup = document.getElementById('steamInputGroup');
+      const mobileGroup = document.getElementById('mobileInputGroup');
+      const heading = document.getElementById('preregFormHeading');
+
+      if (mode === 'steam') {
+        btnSteam.className = 'px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-bold text-xs flex items-center gap-1.5';
+        btnMobile.className = 'px-3 py-1.5 rounded-lg bg-transparent text-slate-400 hover:text-white font-semibold text-xs flex items-center gap-1.5';
+        steamGroup.classList.remove('hidden');
+        mobileGroup.classList.add('hidden');
+        if (heading) heading.innerHTML = '<i data-lucide="monitor" class="w-4 h-4 text-cyan-400"></i> Thông Số Đợt Phát Hành Steam';
+        runSteamForecast();
+      } else {
+        btnMobile.className = 'px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center gap-1.5';
+        btnSteam.className = 'px-3 py-1.5 rounded-lg bg-transparent text-slate-400 hover:text-white font-semibold text-xs flex items-center gap-1.5';
+        mobileGroup.classList.remove('hidden');
+        steamGroup.classList.add('hidden');
+        if (heading) heading.innerHTML = '<i data-lucide="smartphone" class="w-4 h-4 text-emerald-400"></i> Thông Số Đợt Phát Hành Mobile';
+        runMobileForecast();
+      }
+      lucide.createIcons();
+    }
+
+    function loadPreregPreset(idx) {
+      if (!preregPresets || !preregPresets[idx]) return;
+      const p = preregPresets[idx];
+      if (p.platform === 'Steam') {
+        setPreregMode('steam');
+        document.getElementById('steamWishlists').value = p.current_wishlists;
+        document.getElementById('steamDaysToLaunch').value = p.days_to_launch;
+        document.getElementById('steamPrice').value = p.retail_price_usd;
+        document.getElementById('steamDemoDownloads').value = p.next_fest_demo_downloads;
+        document.getElementById('steamReviewScore').value = p.expected_review_score_pct;
+        runSteamForecast();
+      } else {
+        setPreregMode('mobile');
+        document.getElementById('mobilePrereg').value = p.current_prereg;
+        document.getElementById('mobileDaysToLaunch').value = p.days_to_launch;
+        document.getElementById('mobileD1Ret').value = p.projected_d1_retention;
+        document.getElementById('mobileLtv').value = p.projected_d30_ltv_usd;
+        runMobileForecast();
+      }
+    }
+
+    async function runSteamForecast() {
+      const wishlists = parseInt(document.getElementById('steamWishlists').value, 10) || 50000;
+      const days = parseInt(document.getElementById('steamDaysToLaunch').value, 10) || 30;
+      const price = parseFloat(document.getElementById('steamPrice').value) || 19.99;
+      const demo = parseInt(document.getElementById('steamDemoDownloads').value, 10) || 10000;
+      const score = parseFloat(document.getElementById('steamReviewScore').value) || 88.0;
+
+      try {
+        const res = await fetch('/api/prereg-wishlist/forecast-steam', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            current_wishlists: wishlists,
+            days_to_launch: days,
+            retail_price_usd: price,
+            next_fest_demo_downloads: demo,
+            expected_review_score_pct: score
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          renderSteamForecastResult(data);
+        }
+      } catch (e) {
+        console.error("Error forecasting Steam launch:", e);
+      }
+    }
+
+    function renderSteamForecastResult(data) {
+      const container = document.getElementById('preregResultsContainer');
+      if (!container) return;
+
+      const g = data.wishlist_growth;
+      const s = data.sales_projections;
+
+      container.innerHTML = `
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
+          <div>
+            <span class="text-xs text-slate-400">Phân Hạng Tiềm Năng Thương Mại Steam:</span>
+            <h4 class="text-lg font-black text-white">${g.tier_classification}</h4>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono">
+            PEAK CCU: ${s.day_1_peak_ccu.toLocaleString()} CCU
+          </span>
+        </div>
+
+        <!-- Wishlist Accumulation Funnel -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-400 block font-medium">Wishlist Hiện Tại</span>
+            <span class="text-xl font-bold text-white mt-0.5 block font-mono">${g.base_wishlists.toLocaleString()}</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-cyan-400 block font-medium">Next Fest Demo Lift (+35%)</span>
+            <span class="text-xl font-bold text-cyan-400 mt-0.5 block font-mono">+${g.next_fest_lift.toLocaleString()}</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-emerald-400 block font-medium">Tăng Tốc Trước Launch</span>
+            <span class="text-xl font-bold text-emerald-400 mt-0.5 block font-mono">+${g.velocity_boost.toLocaleString()}</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-cyan-950/30 border border-cyan-500/30">
+            <span class="text-[10px] text-cyan-300 font-bold block uppercase tracking-wider">Wishlists Tại Launch</span>
+            <span class="text-2xl font-black text-cyan-300 mt-0.5 block font-mono">${g.total_launch_wishlists.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <!-- Financial Projections Box -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+            <span class="font-bold text-emerald-400 block text-xs uppercase tracking-wider">Doanh Thu Tuần Đầu Phát Hành (Week 1)</span>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-black text-white font-mono">$${s.week_1_gross_usd.toLocaleString()}</span>
+              <span class="text-xs text-slate-400 font-mono">${s.week_1_units.toLocaleString()} bản bán ra</span>
+            </div>
+            <div class="text-[11px] text-emerald-300 pt-1 border-t border-slate-800">
+              💵 <b>Doanh Thu Ròng Studio (Sau 30% Steam cut):</b> <span class="font-mono font-bold">$${s.week_1_net_steam_usd.toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+            <span class="font-bold text-amber-400 block text-xs uppercase tracking-wider">Dự Phóng Doanh Số Năm Đầu (Year 1)</span>
+            <div class="flex items-baseline justify-between">
+              <span class="text-2xl font-black text-white font-mono">$${s.year_1_gross_usd.toLocaleString()}</span>
+              <span class="text-xs text-slate-400 font-mono">${s.year_1_units.toLocaleString()} bản tổng cộng</span>
+            </div>
+            <div class="text-[11px] text-amber-300 pt-1 border-t border-slate-800">
+              💎 <b>Doanh Thu Ròng Dự Kiến Năm 1:</b> <span class="font-mono font-bold">$${s.year_1_net_steam_usd.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 space-y-1">
+          <div class="font-bold text-cyan-400 flex items-center gap-1.5">
+            <i data-lucide="cpu" class="w-4 h-4"></i> Phản Ứng Thuật Toán Steam:
+          </div>
+          <p class="text-[11px]">${g.algorithm_recommendation}</p>
+          <div class="text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
+            💡 <b>Khuyến Nghị Chiến Lược:</b> ${data.strategic_advice}
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    async function runMobileForecast() {
+      const prereg = parseInt(document.getElementById('mobilePrereg').value, 10) || 250000;
+      const days = parseInt(document.getElementById('mobileDaysToLaunch').value, 10) || 20;
+      const ret = parseFloat(document.getElementById('mobileD1Ret').value) || 40.0;
+      const ltv = parseFloat(document.getElementById('mobileLtv').value) || 2.50;
+
+      try {
+        const res = await fetch('/api/prereg-wishlist/forecast-mobile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            current_prereg: prereg,
+            days_to_launch: days,
+            projected_d1_retention: ret,
+            projected_d30_ltv_usd: ltv
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          renderMobileForecastResult(data);
+        }
+      } catch (e) {
+        console.error("Error forecasting Mobile launch:", e);
+      }
+    }
+
+    function renderMobileForecastResult(data) {
+      const container = document.getElementById('preregResultsContainer');
+      if (!container) return;
+
+      const g = data.prereg_growth;
+      const s = data.install_and_revenue;
+
+      container.innerHTML = `
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
+          <div>
+            <span class="text-xs text-slate-400">Phân Hạng Tiềm Năng Mobile App Store:</span>
+            <h4 class="text-lg font-black text-white">${g.tier_classification}</h4>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
+            D1 ACTIVE: ${s.day_1_active_users_d1.toLocaleString()} DAU
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-slate-400 block font-medium">Pre-Reg Hiện Tại</span>
+            <span class="text-xl font-bold text-white mt-0.5 block font-mono">${g.base_prereg.toLocaleString()}</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+            <span class="text-[10px] text-emerald-400 block font-medium">Tăng Tốc Trước Launch</span>
+            <span class="text-xl font-bold text-emerald-400 mt-0.5 block font-mono">+${g.velocity_boost.toLocaleString()}</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30">
+            <span class="text-[10px] text-emerald-300 font-bold block uppercase tracking-wider">Tổng Pre-Reg Launch</span>
+            <span class="text-2xl font-black text-emerald-300 mt-0.5 block font-mono">${g.total_launch_prereg.toLocaleString()}</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-cyan-950/30 border border-cyan-500/30">
+            <span class="text-[10px] text-cyan-300 font-bold block uppercase tracking-wider">Day 1 Auto-Installs (36%)</span>
+            <span class="text-2xl font-black text-cyan-300 mt-0.5 block font-mono">${s.day_1_auto_installs.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+          <span class="font-bold text-emerald-400 block text-xs uppercase tracking-wider">Dự Phóng Doanh Thu Tháng Đầu (Month 1 Total)</span>
+          <div class="flex items-baseline justify-between">
+            <span class="text-2xl font-black text-white font-mono">$${s.month_1_gross_revenue_usd.toLocaleString()}</span>
+            <span class="text-xs text-slate-400 font-mono">${s.month_1_total_installs.toLocaleString()} lượt cài đặt (kèm Chart Lift)</span>
+          </div>
+          <div class="text-[11px] text-emerald-300 pt-1 border-t border-slate-800">
+            💵 <b>Doanh Thu Ròng Studio (Sau 30% Store Commission):</b> <span class="font-mono font-bold">$${s.month_1_net_revenue_usd.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
+          💡 <b>Khuyến Nghị Chiến Lược UA:</b> ${data.strategic_advice}
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    // --- 8. STEAM LIVE API & STOREFRONT CONNECTOR ---
+    let steamPresets = [];
+
+    async function initSteamApiTab() {
+      try {
+        if (!steamPresets || steamPresets.length === 0) {
+          const res = await fetch('/api/steam/presets');
+          if (res.ok) {
+            steamPresets = await res.json();
+            renderSteamPresets(steamPresets);
+          }
+        }
+        fetchSteamLiveData(730); // Default CS2
+      } catch (e) {
+        console.error("Error initializing Steam API tab:", e);
+      }
+    }
+
+    function renderSteamPresets(presets) {
+      const container = document.getElementById('steamPresetBtnGroup');
+      if (!container) return;
+
+      container.innerHTML = presets.map(p => `
+        <button onclick="fetchSteamLiveData(${p.app_id})" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer">
+          <span>${p.title}</span>
+          <span class="text-[10px] text-sky-400 font-mono">(${p.app_id})</span>
+        </button>
+      `).join('');
+    }
+
+    async function fetchSteamLiveData(appId) {
+      const id = appId || parseInt(document.getElementById('customSteamAppId').value, 10) || 730;
+      document.getElementById('customSteamAppId').value = id;
+
+      const container = document.getElementById('steamLiveResultContainer');
+      if (container) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-400 text-xs"><i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto mb-2 text-sky-400"></i>Đang kết nối Steam Web API & Storefront...</div>`;
+        lucide.createIcons();
+      }
+
+      try {
+        const res = await fetch(`/api/steam/app/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          renderSteamLiveCard(data);
+        }
+      } catch (e) {
+        console.error("Error fetching live steam data:", e);
+      }
+    }
+
+    function renderSteamLiveCard(data) {
+      const container = document.getElementById('steamLiveResultContainer');
+      if (!container) return;
+
+      const d = data.details;
+      const c = data.ccu;
+      const r = data.reviews;
+
+      container.innerHTML = `
+        <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/90">
+          <div class="relative h-48 md:h-64 overflow-hidden bg-slate-950">
+            ${d.header_image ? `<img src="${d.header_image}" class="w-full h-full object-cover opacity-60">` : ''}
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+            <div class="absolute bottom-4 left-6 right-6 flex items-end justify-between flex-wrap gap-4">
+              <div>
+                <span class="text-[11px] font-mono text-sky-400">Steam AppID: ${data.app_id}</span>
+                <h3 class="text-2xl md:text-3xl font-black text-white">${d.title}</h3>
+                <p class="text-xs text-slate-300 mt-1">${(d.developers || []).join(', ')} • ${(d.publishers || []).join(', ')}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <a href="https://store.steampowered.com/app/${data.app_id}" target="_blank" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-sky-600/30">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Mở Trang Steam Store
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-5">
+            <!-- CCU & Sentiment Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Live CCU Counter -->
+              <div class="p-4 rounded-xl bg-sky-950/30 border border-sky-500/30 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs text-sky-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    Người Chơi Online (Live CCU)
+                  </span>
+                  <span class="text-[10px] text-slate-400 font-mono">${c.status}</span>
+                </div>
+                <div class="text-3xl font-black text-white font-mono mt-1">
+                  ${c.live_player_count.toLocaleString()}
+                </div>
+                <span class="text-[10px] text-slate-400">Đang ingame trực tiếp tại thời điểm này</span>
+              </div>
+
+              <!-- Reviews Sentiment -->
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                <span class="text-xs text-slate-400 font-semibold block uppercase tracking-wider">Đánh Giá Người Dùng (Steam Sentiment)</span>
+                <div class="text-xl font-bold ${r.positive_percent >= 80 ? 'text-emerald-400' : 'text-amber-400'}">
+                  ${r.review_score_desc} (${r.positive_percent}%)
+                </div>
+                <span class="text-[10px] text-slate-400">${r.total_reviews.toLocaleString()} đánh giá (${r.total_positive.toLocaleString()} tích cực)</span>
+              </div>
+
+              <!-- Price & Release -->
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                <span class="text-xs text-slate-400 font-semibold block uppercase tracking-wider">Giá Niêm Yết & Ngày Phát Hành</span>
+                <div class="text-xl font-black text-amber-300 font-mono">${d.price}</div>
+                <span class="text-[10px] text-slate-400">Phát hành: ${d.release_date}</span>
+              </div>
+            </div>
+
+            <!-- Description & Genres -->
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+              <span class="font-bold text-slate-300 block">Mô Tả Cửa Hàng:</span>
+              <p class="text-slate-400 leading-relaxed">${d.short_description}</p>
+              <div class="flex items-center gap-1.5 flex-wrap pt-2 border-t border-slate-800">
+                <span class="text-slate-500 font-semibold text-[11px]">Thể Loại:</span>
+                ${(d.genres || []).map(g => `<span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-medium border border-slate-700">${g}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    function toggleSteamApiKeyModal() {
+      const modal = document.getElementById('steamApiKeyModal');
+      if (modal) modal.classList.toggle('hidden');
+    }
+
+    async function saveSteamApiKey() {
+      const key = document.getElementById('inputSteamApiKey').value.trim();
+      try {
+        const res = await fetch('/api/steam/configure-key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ steam_api_key: key })
+        });
+        if (res.ok) {
+          showToast('Đã lưu Steam Web API Key thành công!');
+          toggleSteamApiKeyModal();
+        }
+      } catch (e) {
+        console.error("Error saving Steam API key:", e);
       }
     }
 

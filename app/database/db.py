@@ -128,6 +128,32 @@ def init_db():
     );
     """)
 
+    # MMP Live Webhook Postbacks & Fraud Log
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS mmp_postbacks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        received_at TEXT NOT NULL,
+        mmp_provider TEXT NOT NULL,
+        network_name TEXT NOT NULL,
+        campaign_name TEXT,
+        advertising_id TEXT,
+        ip_address TEXT,
+        click_time TEXT,
+        install_time TEXT,
+        ctit_seconds REAL,
+        country TEXT,
+        device_model TEXT,
+        fraud_verdict TEXT,
+        fraud_score REAL,
+        is_rejected INTEGER DEFAULT 0
+    );
+    """)
+
+    cursor.execute("""
+    CREATE INDEX IF NOT EXISTS idx_mmp_postbacks_time
+    ON mmp_postbacks(received_at, network_name);
+    """)
+
     conn.commit()
     conn.close()
 

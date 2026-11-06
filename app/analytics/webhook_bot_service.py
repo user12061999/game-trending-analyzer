@@ -173,3 +173,15 @@ class WebhookBotService:
             {"name": "💡 Gợi Ý Creative", "value": "Hook 'Level 1 Crook vs Level 100 Boss' đang đạt CVR cao nhất (+32%) trong phân khúc Action.", "inline": False}
         ]
         return self.send_broadcast_alert(title, desc, fields, color=0xF59E0B)
+
+    def trigger_fraud_alert(self, network_name: str, fraud_rate: float, fraud_type: str, details: str) -> Dict[str, Any]:
+        """Dispatches high-priority alert when live MMP stream detects abnormal fraud rates."""
+        title = f"🚨 [CẢNH BÁO GIAN LẬN UA] Phát Hiện Fraud Đột Biến: {network_name}"
+        desc = f"Hệ thống MMP Ingestion vừa phát hiện tỷ lệ gian lận bất thường vượt ngưỡng an toàn từ đối tác <b>{network_name}</b>."
+        fields = [
+            {"name": "Mạng Phân Phối (Network)", "value": network_name, "inline": True},
+            {"name": "Tỷ Lệ Gian Lận", "value": f"<b>{fraud_rate:.1f}%</b> (Ngưỡng: &lt; 5%)", "inline": True},
+            {"name": "Hành Vi Phát Hiện", "value": fraud_type, "inline": True},
+            {"name": "Hành Động Khẩn Cấp", "value": details, "inline": False}
+        ]
+        return self.send_broadcast_alert(title, desc, fields, color=0xEF4444)
