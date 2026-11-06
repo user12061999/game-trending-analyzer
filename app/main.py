@@ -53,6 +53,7 @@ from app.analytics.mmp_webhook_engine import MMPWebhookEngine
 from app.crawlers.steam_api_connector import SteamAPIConnector
 from app.analytics.gdd_generator import GameDesignDocumentGenerator
 from app.analytics.prereg_wishlist_forecaster import PreRegWishlistForecaster
+from app.analytics.game_deconstructor import GameDeconstructor
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -89,6 +90,7 @@ mmp_engine = MMPWebhookEngine()
 steam_connector = SteamAPIConnector()
 gdd_generator = GameDesignDocumentGenerator()
 prereg_forecaster = PreRegWishlistForecaster()
+game_deconstructor = GameDeconstructor()
 
 is_crawling = False
 
@@ -999,6 +1001,32 @@ async def forecast_mobile_api(request: Request):
         days_to_launch=int(payload.get("days_to_launch", 25)),
         projected_d1_retention=float(payload.get("projected_d1_retention", 40.0)),
         projected_d30_ltv_usd=float(payload.get("projected_d30_ltv_usd", 2.50))
+    )
+
+# --- Gameplay Deconstructor & Reverse-Engineering Clone Engine Endpoints ---
+@app.get("/api/deconstruct/presets")
+async def get_deconstruct_presets_api():
+    """Returns benchmark reverse-engineered game blueprints."""
+    return game_deconstructor.get_presets()
+
+@app.post("/api/deconstruct/analyze")
+async def analyze_deconstruct_api(request: Request):
+    """Deconstructs game into reproduction blueprint (Core mechanics, physics, pacing, C# script)."""
+    try:
+        payload = await request.json()
+    except Exception:
+        body = await request.body()
+        try:
+            payload = json.loads(body.decode("utf-8", errors="replace"))
+        except Exception:
+            payload = {}
+
+    return game_deconstructor.deconstruct_game(
+        game_title=payload.get("game_title", "Vampire Survivors"),
+        platform=payload.get("platform", "PC / Mobile"),
+        genre_hint=payload.get("genre_hint", "Action Roguelike"),
+        store_url=payload.get("store_url"),
+        raw_description=payload.get("raw_description")
     )
 
 @app.get("/api/meta")

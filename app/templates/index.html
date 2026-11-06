@@ -155,115 +155,142 @@
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="flex items-center border-b border-slate-800 gap-2 overflow-x-auto pb-1 text-sm font-medium">
-      <button onclick="switchTab('overview')" id="tabBtn-overview" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-indigo-500 text-indigo-400 font-semibold">
-        <i data-lucide="layout-grid" class="w-4 h-4"></i> Tổng Quan
-      </button>
-      <button onclick="switchTab('pc')" id="tabBtn-pc" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="monitor" class="w-4 h-4"></i> PC (Steam)
-      </button>
-      <button onclick="switchTab('mobile')" id="tabBtn-mobile" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="smartphone" class="w-4 h-4"></i> Mobile
-      </button>
-      <button onclick="switchTab('radar')" id="tabBtn-radar" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="crosshair" class="w-4 h-4 text-rose-400"></i> Radar Mobile Sắp Ra Mắt
-        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 animate-pulse">MỚI</span>
-      </button>
-      <button onclick="switchTab('creatives')" id="tabBtn-creatives" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="video" class="w-4 h-4 text-purple-400"></i> Creative Ad Spy
-      </button>
-      <button onclick="switchTab('simulator')" id="tabBtn-simulator" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i> Dự Toán CPI & LTV
-      </button>
-      <button onclick="switchTab('blueocean')" id="tabBtn-blueocean" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="compass" class="w-4 h-4 text-sky-400"></i> Đại Dương Xanh
-      </button>
-      <button onclick="switchTab('asolab')" id="tabBtn-asolab" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="palette" class="w-4 h-4 text-pink-400"></i> ASO Visual Lab
-      </button>
-      <button onclick="switchTab('iapmatrix')" id="tabBtn-iapmatrix" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i> IAP & Giá Nạp
-      </button>
-      <button onclick="switchTab('liveopsradar')" id="tabBtn-liveopsradar" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="calendar-clock" class="w-4 h-4 text-cyan-400"></i> LiveOps & Radar Tránh Đụng Độ
-      </button>
-      <button onclick="switchTab('uapacing')" id="tabBtn-uapacing" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="gauge" class="w-4 h-4 text-violet-400"></i> UA Pacing & ROAS Dayparting
-      </button>
-      <button onclick="switchTab('gachaecon')" id="tabBtn-gachaecon" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="dices" class="w-4 h-4 text-yellow-400"></i> Kinh Tế & Gacha
-      </button>
-      <button onclick="switchTab('pubpitch')" id="tabBtn-pubpitch" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="handshake" class="w-4 h-4 text-emerald-400"></i> Publisher Pitch
-      </button>
-      <button onclick="switchTab('c10nscan')" id="tabBtn-c10nscan" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="shield-check" class="w-4 h-4 text-rose-400"></i> Kiểm Duyệt C10n
-      </button>
-      <button onclick="switchTab('chokepoint')" id="tabBtn-chokepoint" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="git-pull-request" class="w-4 h-4 text-orange-400"></i> Choke-Point Churn
-      </button>
-      <button onclick="switchTab('viralkfactor')" id="tabBtn-viralkfactor" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="flame" class="w-4 h-4 text-pink-400"></i> Viral K-Factor
-      </button>
-      <button onclick="switchTab('botcenter')" id="tabBtn-botcenter" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="bell-ring" class="w-4 h-4 text-emerald-400"></i> Bot Webhook
-      </button>
-      <button onclick="switchTab('pitchdeck')" id="tabBtn-pitchdeck" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="presentation" class="w-4 h-4 text-indigo-400"></i> Pitch Deck PDF
-      </button>
-      <button onclick="switchTab('abtesting')" id="tabBtn-abtesting" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="test-tube-2" class="w-4 h-4 text-cyan-400"></i> A/B Test Soft-Launch
-      </button>
-      <button onclick="switchTab('mediation')" id="tabBtn-mediation" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="split" class="w-4 h-4 text-amber-400"></i> Ad Mediation
-      </button>
-      <button onclick="switchTab('playable')" id="tabBtn-playable" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="gamepad-2" class="w-4 h-4 text-emerald-400"></i> Playable Ad Studio
-      </button>
-      <button onclick="switchTab('voiceover')" id="tabBtn-voiceover" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="mic" class="w-4 h-4 text-rose-400"></i> Voiceover Studio
-      </button>
-      <button onclick="switchTab('rice')" id="tabBtn-rice" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="kanban" class="w-4 h-4 text-violet-400"></i> Feature RICE
-      </button>
-      <button onclick="switchTab('fraud')" id="tabBtn-fraud" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="shield-alert" class="w-4 h-4 text-red-400"></i> UA Fraud Scanner
-      </button>
-      <button onclick="switchTab('mmpstream')" id="tabBtn-mmpstream" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="radio" class="w-4 h-4 text-emerald-400"></i> MMP Live Stream
-      </button>
-      <button onclick="switchTab('gdd')" id="tabBtn-gdd" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="scroll" class="w-4 h-4 text-amber-400"></i> AI 1-Page GDD
-      </button>
-      <button onclick="switchTab('prereg')" id="tabBtn-prereg" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i> Wishlist & Pre-Reg
-      </button>
-      <button onclick="switchTab('steamapi')" id="tabBtn-steamapi" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="monitor" class="w-4 h-4 text-sky-400"></i> Steam Live API
-      </button>
-      <button onclick="switchTab('breakouts')" id="tabBtn-breakouts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="rocket" class="w-4 h-4"></i> Hiện Tượng Bùng Nổ
-      </button>
-      <button onclick="switchTab('watchlist')" id="tabBtn-watchlist" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="star" class="w-4 h-4 text-amber-400"></i> Game Quan Sát (Watchlist)
-      </button>
-      <button onclick="switchTab('compare')" id="tabBtn-compare" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="swords" class="w-4 h-4 text-amber-400"></i> So Sánh Đối Thủ
-      </button>
-      <button onclick="switchTab('alerts')" id="tabBtn-alerts" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="settings" class="w-4 h-4 text-pink-400"></i> Cài Đặt, Bot & AI
-      </button>
-      <button onclick="switchTab('report')" id="tabBtn-report" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="file-text" class="w-4 h-4"></i> Báo Cáo
-      </button>
-      <button onclick="switchTab('logs')" id="tabBtn-logs" class="tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200">
-        <i data-lucide="history" class="w-4 h-4"></i> Lịch Sử
-      </button>
+    <!-- Streamlined 2-Tier Master Navigation -->
+    <div class="space-y-2.5">
+      <!-- Tier 1: Master Category Switcher -->
+      <div class="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 text-xs font-bold overflow-x-auto shadow-inner">
+        <button onclick="switchCategory('clone')" id="catBtn-clone" class="cat-btn flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/40 transition-all cursor-pointer">
+          <i data-lucide="gamepad-2" class="w-4 h-4"></i> 🕹️ Clone Gameplay & Kịch Bản
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-white/20 text-white uppercase tracking-wider">MỚI</span>
+        </button>
+        <button onclick="switchCategory('market')" id="catBtn-market" class="cat-btn flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer">
+          <i data-lucide="layout-grid" class="w-4 h-4 text-indigo-400"></i> 📊 Thị Trường & Game Top
+        </button>
+        <button onclick="switchCategory('growth')" id="catBtn-growth" class="cat-btn flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer">
+          <i data-lucide="video" class="w-4 h-4 text-purple-400"></i> 🚀 Creative & UA Studio
+        </button>
+        <button onclick="switchCategory('economy')" id="catBtn-economy" class="cat-btn flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer">
+          <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i> 💰 Kinh Tế & LiveOps
+        </button>
+        <button onclick="switchCategory('producer')" id="catBtn-producer" class="cat-btn flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer">
+          <i data-lucide="scroll" class="w-4 h-4 text-cyan-400"></i> 📋 Producer & Chiến Lược
+        </button>
+        <button onclick="switchCategory('settings')" id="catBtn-settings" class="cat-btn flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer">
+          <i data-lucide="settings" class="w-4 h-4 text-pink-400"></i> ⚙️ Cài Đặt & Logs
+        </button>
+      </div>
+
+      <!-- Tier 2: Sub-Navigation Pills (Dynamically loaded & filtered) -->
+      <div id="subnavContainer" class="flex items-center gap-1.5 overflow-x-auto pb-1.5 text-xs font-semibold border-b border-slate-800/80">
+        <!-- Rendered dynamically by switchCategory() -->
+      </div>
+    </div>
+
+    <!-- TAB: GAMEPLAY CLONE & REVERSE-ENGINEERING BLUEPRINT STUDIO -->
+    <div id="tabContent-deconstruct" class="space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900/60 to-slate-900/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-1.5 max-w-2xl">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              REVERSE-ENGINEERING & 1:1 GAMEPLAY CLONE BLUEPRINT
+            </span>
+            <span class="text-xs text-slate-400">Bóc Tách Cơ Chế • Kịch Bản Màn Chơi • Mã Nguồn C# Unity</span>
+          </div>
+          <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <i data-lucide="gamepad-2" class="w-6 h-6 text-emerald-400"></i>
+            Gameplay Deconstructor & Clone Studio
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Nhập tên hoặc dán thông tin bất kỳ tựa game nào: Hệ thống sẽ tự động bóc tách **Cơ chế điều khiển & Vật lý (1:1)**, 
+            **Kịch bản phân bổ nhịp độ màn chơi theo từng phút (Pacing)**, **Kịch bản thoại & cốt truyện**, 
+            cung cấp sẵn **Mã nguồn C# Unity Starter** và **Công thức Clone With A Twist** để tạo phiên bản nâng cấp vượt trội hơn bản gốc.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyDeconstructMarkdown()" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="copy" class="w-4 h-4 text-emerald-400"></i>
+            Sao Chép Blueprint (.md)
+          </button>
+          <button onclick="downloadDeconstructMarkdown()" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-600/30 cursor-pointer">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            Tải File (.md)
+          </button>
+        </div>
+      </div>
+
+      <!-- Benchmark Reverse-Engineering Presets -->
+      <div class="glass-card p-4 rounded-xl border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+        <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+          <i data-lucide="cpu" class="w-4 h-4 text-emerald-400"></i> Mẫu Phân Tích Game Chuẩn (Benchmark Clone Recipes):
+        </span>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="loadDeconstructPreset(0)" class="px-3 py-1.5 rounded-lg bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 text-xs font-semibold">
+            🧛 Vampire Survivors / Survivor.io (Bullet Heaven)
+          </button>
+          <button onclick="loadDeconstructPreset(1)" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-semibold">
+            ❄️ Whiteout Survival (City Survival / 4X)
+          </button>
+          <button onclick="loadDeconstructPreset(2)" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold">
+            ☕ Gossip Harbor / Merge Mansion (Merge-2 Story)
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls & Deconstructed Results View -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Input Form (4 cols) -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+              <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
+              Chọn Tựa Game Để Bóc Tách
+            </h3>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Tên Game Mục Tiêu (Target Game)</label>
+                <input type="text" id="deconstructTitle" value="Vampire Survivors" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-emerald-500" placeholder="Nhập tên game...">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Nền Tảng Game</label>
+                <select id="deconstructPlatform" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-emerald-500">
+                  <option value="PC Steam & Mobile">PC Steam & Mobile</option>
+                  <option value="Mobile (iOS & Android)">Mobile (iOS & Android)</option>
+                  <option value="PC Steam">PC Steam Exclusive</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Thể Loại Cơ Bản (Genre Tag)</label>
+                <input type="text" id="deconstructGenre" value="Action Roguelike / Bullet Heaven" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-emerald-500">
+              </div>
+
+              <div>
+                <label class="block text-slate-400 mb-1 font-semibold">Store URL hoặc Ghi Chú Gameplay (Tùy chọn)</label>
+                <textarea id="deconstructNotes" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-medium focus:ring-1 focus:ring-emerald-500 text-[11px]" placeholder="Dán link Steam / Google Play hoặc mô tả cơ chế đặc thù..."></textarea>
+              </div>
+
+              <button onclick="runDeconstruction()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer mt-2">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+                Bóc Tách Gameplay & Kịch Bản Clone 1:1
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deconstructed Blueprint View (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-5 bg-slate-900/80" id="deconstructResultContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- TAB 1: OVERVIEW -->
-    <div id="tabContent-overview" class="space-y-6">
+    <div id="tabContent-overview" class="hidden space-y-6">
       <!-- Section: Breakout Cards -->
       <div>
         <div class="flex items-center justify-between mb-3">
@@ -4269,22 +4296,201 @@
       }, 3500);
     }
 
-    // Tab Navigation
-    function switchTab(tabId) {
-      const tabs = ['overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'botcenter', 'pitchdeck', 'abtesting', 'mediation', 'playable', 'voiceover', 'rice', 'fraud', 'mmpstream', 'gdd', 'prereg', 'steamapi', 'breakouts', 'watchlist', 'compare', 'alerts', 'report', 'logs'];
-      tabs.forEach(t => {
-        const btn = document.getElementById(`tabBtn-${t}`);
+    // ==========================================
+    // 2-TIER STREAMLINED NAVIGATION SYSTEM
+    // ==========================================
+    const CATEGORIES = {
+      clone: {
+        key: 'clone',
+        name: '🕹️ Clone Gameplay & Kịch Bản',
+        activeClass: 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/40',
+        tabs: [
+          { id: 'deconstruct', name: '🕹️ Bóc Tách Gameplay & Kịch Bản Clone', icon: 'gamepad-2', badge: '1:1 CLONE' }
+        ]
+      },
+      market: {
+        key: 'market',
+        name: '📊 Thị Trường & Game Top',
+        activeClass: 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-900/40',
+        tabs: [
+          { id: 'overview', name: 'Tổng Quan Thị Trường', icon: 'layout-grid' },
+          { id: 'pc', name: 'PC Steam Rankings', icon: 'monitor' },
+          { id: 'mobile', name: 'Mobile App Store', icon: 'smartphone' },
+          { id: 'radar', name: 'Radar Sắp Ra Mắt', icon: 'compass' },
+          { id: 'breakouts', name: 'Bứt Phá (Breakouts)', icon: 'flame' },
+          { id: 'watchlist', name: 'Theo Dõi (Watchlist)', icon: 'bookmark' },
+          { id: 'compare', name: 'So Sánh 2 Game', icon: 'arrow-left-right' },
+          { id: 'blueocean', name: 'Thị Trường Ngách (Blue Ocean)', icon: 'anchor' }
+        ]
+      },
+      growth: {
+        key: 'growth',
+        name: '🚀 Creative & UA Studio',
+        activeClass: 'bg-gradient-to-r from-purple-600 to-violet-600 text-white shadow-lg shadow-purple-900/40',
+        tabs: [
+          { id: 'creatives', name: 'Creative Spy & Trend', icon: 'video' },
+          { id: 'playable', name: 'Playable Ad Studio', icon: 'play' },
+          { id: 'voiceover', name: 'AI Voiceover & Script', icon: 'mic' },
+          { id: 'mediation', name: 'Ad Mediation Waterfall', icon: 'layers' },
+          { id: 'uapacing', name: 'UA Budget & ROAS Pacing', icon: 'line-chart' },
+          { id: 'fraud', name: 'Ad Fraud Scanner', icon: 'shield-alert' },
+          { id: 'mmpstream', name: 'MMP Stream Simulation', icon: 'activity' }
+        ]
+      },
+      economy: {
+        key: 'economy',
+        name: '💰 Kinh Tế & LiveOps',
+        activeClass: 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-900/40',
+        tabs: [
+          { id: 'iapmatrix', name: 'IAP & Economy Matrix', icon: 'shopping-cart' },
+          { id: 'gachaecon', name: 'Gacha Pity & Drop Rate', icon: 'sparkles' },
+          { id: 'liveopsradar', name: 'LiveOps & Battle Pass', icon: 'calendar' },
+          { id: 'chokepoint', name: 'Choke Point & Drop-off', icon: 'alert-triangle' },
+          { id: 'viralkfactor', name: 'K-Factor & Viral Loop', icon: 'share-2' },
+          { id: 'asolab', name: 'ASO Visual Lab', icon: 'eye' }
+        ]
+      },
+      producer: {
+        key: 'producer',
+        name: '📋 Producer & Chiến Lược',
+        activeClass: 'bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-900/40',
+        tabs: [
+          { id: 'gdd', name: 'AI GDD Generator', icon: 'file-text' },
+          { id: 'rice', name: 'RICE Feature Matrix', icon: 'check-square' },
+          { id: 'simulator', name: 'Simulator Doanh Thu', icon: 'calculator' },
+          { id: 'pubpitch', name: 'Publisher Pitch Kit', icon: 'briefcase' },
+          { id: 'abtesting', name: 'A/B Test Calculator', icon: 'percent' },
+          { id: 'prereg', name: 'Pre-Registration Tracker', icon: 'bell' },
+          { id: 'steamapi', name: 'Steam API Direct Sync', icon: 'refresh-cw' },
+          { id: 'pitchdeck', name: 'Pitch Deck Generator', icon: 'presentation' },
+          { id: 'c10nscan', name: 'Localization & Cultural Scan', icon: 'globe' }
+        ]
+      },
+      settings: {
+        key: 'settings',
+        name: '⚙️ Cài Đặt & Logs',
+        activeClass: 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-900/40',
+        tabs: [
+          { id: 'report', name: 'Báo Cáo Toàn Diện', icon: 'file-bar-chart' },
+          { id: 'alerts', name: 'Cấu Hình Cảnh Báo', icon: 'bell-ring' },
+          { id: 'botcenter', name: 'Bot Center & Telegram/Discord', icon: 'bot' },
+          { id: 'logs', name: 'Nhật Ký Hệ Thống', icon: 'terminal' }
+        ]
+      }
+    };
+
+    let currentCategoryKey = 'clone';
+    let currentTabId = 'deconstruct';
+
+    function renderSubnav(catKey, activeTabId) {
+      const container = document.getElementById('subnavContainer');
+      if (!container) return;
+      const cat = CATEGORIES[catKey] || CATEGORIES.clone;
+      container.innerHTML = cat.tabs.map(tab => {
+        const isActive = tab.id === activeTabId;
+        const activeClass = isActive 
+          ? 'bg-slate-800 text-white border border-slate-700 shadow-md font-bold'
+          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent font-medium';
+        const iconColor = isActive ? 'text-emerald-400' : 'text-slate-400';
+        const badge = tab.badge ? `<span class="ml-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">${tab.badge}</span>` : '';
+        return `
+          <button onclick="switchTab('${tab.id}')" id="tabBtn-${tab.id}" class="tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all cursor-pointer whitespace-nowrap text-xs ${activeClass}">
+            <i data-lucide="${tab.icon}" class="w-3.5 h-3.5 ${iconColor}"></i>
+            <span>${tab.name}</span>
+            ${badge}
+          </button>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function switchCategory(catKey, targetTabId = null) {
+      if (!CATEGORIES[catKey]) catKey = 'clone';
+      currentCategoryKey = catKey;
+
+      // Update Tier 1 Category buttons styling
+      Object.keys(CATEGORIES).forEach(k => {
+        const btn = document.getElementById(`catBtn-${k}`);
+        if (!btn) return;
+        if (k === catKey) {
+          btn.className = `cat-btn flex items-center gap-2 px-4 py-2.5 rounded-xl ${CATEGORIES[k].activeClass} transition-all cursor-pointer font-bold`;
+        } else {
+          btn.className = `cat-btn flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer font-medium`;
+        }
+      });
+
+      // Target tab
+      const cat = CATEGORIES[catKey];
+      const tabToOpen = targetTabId || cat.tabs[0].id;
+      renderSubnav(catKey, tabToOpen);
+      switchTab(tabToOpen, false);
+    }
+
+    function switchTab(tabId, syncCategory = true) {
+      currentTabId = tabId;
+
+      // Find which category owns this tab
+      if (syncCategory) {
+        let foundCat = 'clone';
+        for (const [k, v] of Object.entries(CATEGORIES)) {
+          if (v.tabs.some(t => t.id === tabId)) {
+            foundCat = k;
+            break;
+          }
+        }
+        if (foundCat !== currentCategoryKey) {
+          currentCategoryKey = foundCat;
+          // Sync Tier 1 buttons
+          Object.keys(CATEGORIES).forEach(k => {
+            const btn = document.getElementById(`catBtn-${k}`);
+            if (!btn) return;
+            if (k === currentCategoryKey) {
+              btn.className = `cat-btn flex items-center gap-2 px-4 py-2.5 rounded-xl ${CATEGORIES[k].activeClass} transition-all cursor-pointer font-bold`;
+            } else {
+              btn.className = `cat-btn flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer font-medium`;
+            }
+          });
+          renderSubnav(currentCategoryKey, tabId);
+        } else {
+          // Just update subnav active button styling
+          const cat = CATEGORIES[currentCategoryKey];
+          if (cat && cat.tabs) {
+            cat.tabs.forEach(t => {
+              const btn = document.getElementById(`tabBtn-${t.id}`);
+              if (!btn) return;
+              if (t.id === tabId) {
+                btn.className = "tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all cursor-pointer whitespace-nowrap text-xs bg-slate-800 text-white border border-slate-700 shadow-md font-bold";
+              } else {
+                btn.className = "tab-btn flex items-center gap-2 px-3.5 py-2 rounded-xl transition-all cursor-pointer whitespace-nowrap text-xs text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent font-medium";
+              }
+            });
+          }
+        }
+      }
+
+      // Hide all 35 tab contents, show only target tab
+      const allTabs = [
+        'deconstruct', 'overview', 'pc', 'mobile', 'radar', 'creatives', 'simulator', 
+        'blueocean', 'asolab', 'iapmatrix', 'liveopsradar', 'uapacing', 'gachaecon', 
+        'pubpitch', 'c10nscan', 'chokepoint', 'viralkfactor', 'botcenter', 'pitchdeck', 
+        'abtesting', 'mediation', 'playable', 'voiceover', 'rice', 'fraud', 'mmpstream', 
+        'gdd', 'prereg', 'steamapi', 'breakouts', 'watchlist', 'compare', 'alerts', 
+        'report', 'logs'
+      ];
+
+      allTabs.forEach(t => {
         const content = document.getElementById(`tabContent-${t}`);
-        if (!btn || !content) return;
+        if (!content) return;
         if (t === tabId) {
-          btn.className = "tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-indigo-500 text-indigo-400 font-semibold";
           content.classList.remove('hidden');
         } else {
-          btn.className = "tab-btn flex items-center gap-2 px-4 py-2.5 rounded-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200";
           content.classList.add('hidden');
         }
       });
 
+      // Trigger data loaders
+      if (tabId === 'deconstruct') initDeconstructTab();
+      if (tabId === 'overview') loadOverview();
       if (tabId === 'pc') loadPCRankings();
       if (tabId === 'mobile') loadMobileRankings();
       if (tabId === 'radar') loadRadarUpcoming();
@@ -4318,6 +4524,373 @@
       if (tabId === 'alerts') loadAlertSettings();
       if (tabId === 'report') loadMarketReport();
       if (tabId === 'logs') loadCrawlLogs();
+    }
+
+    // ==========================================
+    // GAMEPLAY DECONSTRUCTION & CLONE STUDIO
+    // ==========================================
+    let currentDeconstructData = null;
+    let deconstructPresets = [];
+
+    async function initDeconstructTab() {
+      if (!deconstructPresets || deconstructPresets.length === 0) {
+        try {
+          const res = await fetch('/api/deconstruct/presets');
+          deconstructPresets = await res.json();
+        } catch (e) {
+          console.error("Error fetching deconstruct presets:", e);
+        }
+      }
+
+      // If results container is empty or just default placeholder, run preset 0 automatically
+      const container = document.getElementById('deconstructResultContainer');
+      if (container && (!container.innerHTML.trim() || container.children.length === 0)) {
+        loadDeconstructPreset(0);
+      }
+    }
+
+    async function loadDeconstructPreset(idx) {
+      if (!deconstructPresets || deconstructPresets.length === 0) {
+        try {
+          const res = await fetch('/api/deconstruct/presets');
+          deconstructPresets = await res.json();
+        } catch (e) {
+          console.error("Error fetching deconstruct presets:", e);
+        }
+      }
+
+      if (deconstructPresets && deconstructPresets[idx]) {
+        const p = deconstructPresets[idx];
+        document.getElementById('deconstructTitle').value = p.title || '';
+        document.getElementById('deconstructPlatform').value = p.platform || 'PC Steam & Mobile';
+        document.getElementById('deconstructGenre').value = p.genre || '';
+        document.getElementById('deconstructNotes').value = `Benchmark Preset: ${p.title} (${p.genre}). Phân tích chuẩn hóa cơ chế & kịch bản.`;
+      }
+      runDeconstruction();
+    }
+
+    async function runDeconstruction() {
+      const title = document.getElementById('deconstructTitle').value.trim();
+      const platform = document.getElementById('deconstructPlatform').value;
+      const genre = document.getElementById('deconstructGenre').value.trim();
+      const notes = document.getElementById('deconstructNotes').value.trim();
+
+      const container = document.getElementById('deconstructResultContainer');
+      container.innerHTML = `
+        <div class="p-12 text-center space-y-4">
+          <div class="inline-block p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 animate-pulse">
+            <i data-lucide="cpu" class="w-10 h-10 animate-spin"></i>
+          </div>
+          <h4 class="text-base font-bold text-white">Đang Bóc Tách Gameplay & Kịch Bản Cho "${title}"...</h4>
+          <p class="text-xs text-slate-400 max-w-md mx-auto">
+            Phân tích 7 chiều: Physics 1:1, Finite State Machine, Kịch bản Pacing theo phút, Thoại cốt truyện & Code C# Unity...
+          </p>
+        </div>
+      `;
+      lucide.createIcons();
+
+      try {
+        const res = await fetch('/api/deconstruct/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            game_title: title,
+            platform: platform,
+            genre_hint: genre,
+            raw_description: notes
+          })
+        });
+
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        const data = await res.json();
+        currentDeconstructData = data;
+        renderDeconstructResults(data);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-rose-400 space-y-2">
+            <i data-lucide="alert-circle" class="w-8 h-8 mx-auto"></i>
+            <p class="font-bold">Có lỗi xảy ra khi phân tích: ${err.message}</p>
+            <button onclick="runDeconstruction()" class="px-4 py-2 rounded-lg bg-slate-800 text-white text-xs hover:bg-slate-700">Thử Lại</button>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function renderDeconstructResults(data) {
+      const container = document.getElementById('deconstructResultContainer');
+      if (!container) return;
+
+      const pAndM = data.physics_and_movement || {};
+      const fsm = data.core_state_machine || [];
+      const pacing = data.pacing_script || [];
+      const narrative = data.narrative_and_quest_script || {};
+      const assets = data.asset_checklist || {};
+      const twists = data.clone_with_a_twist || [];
+
+      // Escape code
+      const escapedCode = (data.unity_starter_code || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      container.innerHTML = `
+        <!-- Top Info Header -->
+        <div class="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                ${data.genre || 'Action'}
+              </span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                ${data.platform || 'Cross-Platform'}
+              </span>
+              <span class="text-[11px] text-slate-400">Blueprint ID: #${data.id || 'custom'}</span>
+            </div>
+            <h3 class="text-xl font-black text-white flex items-center gap-2">
+              <i data-lucide="gamepad-2" class="w-5 h-5 text-emerald-400"></i>
+              ${data.title}
+            </h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="copyDeconstructMarkdown()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-emerald-400"></i> Sao Chép .MD
+            </button>
+            <button onclick="downloadDeconstructMarkdown()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Tải Blueprint
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. Core Mechanics & 1:1 Physics -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+            <i data-lucide="crosshair" class="w-4 h-4 text-emerald-400"></i>
+            1. Cơ Chế Điều Khiển & Vật Lý 1:1 (Physics & Controls)
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+              <span class="text-slate-400 font-semibold block">Góc Nhìn Camera & Khung Hình:</span>
+              <p class="text-slate-200 font-medium">${data.camera_perspective || 'N/A'}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+              <span class="text-slate-400 font-semibold block">Phương Thức Điều Khiển (Input Scheme):</span>
+              <p class="text-slate-200 font-medium">${data.control_scheme || 'N/A'}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+              <span class="text-slate-400 font-semibold block">Tốc Độ & Gia Tốc Di Chuyển:</span>
+              <p class="text-slate-200 font-medium">${pAndM.movement_speed || 'N/A'}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+              <span class="text-slate-400 font-semibold block">Quy Tắc Va Chạm & Hitbox:</span>
+              <p class="text-slate-200 font-medium">${pAndM.hitbox_rules || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Core Finite State Machine -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+            <i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i>
+            2. Máy Trạng Thái Cốt Lõi (Core State Machine)
+          </h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] tracking-wider font-bold">
+                <tr>
+                  <th class="px-4 py-2.5">Trạng Thái (State)</th>
+                  <th class="px-4 py-2.5">Điều Kiện Kích Hoạt (Trigger)</th>
+                  <th class="px-4 py-2.5">Hành Vi Xử Lý (Game Action)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 bg-slate-900/30 font-medium text-slate-300">
+                ${fsm.map(s => `
+                  <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="px-4 py-2.5 font-bold text-emerald-400 font-mono">${s.state}</td>
+                    <td class="px-4 py-2.5 text-slate-300">${s.trigger}</td>
+                    <td class="px-4 py-2.5 text-slate-200">${s.action}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 3. Minute-by-Minute Pacing Script -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+            <i data-lucide="timer" class="w-4 h-4 text-amber-400"></i>
+            3. Kịch Bản Nhịp Độ Màn Chơi (Minute-by-Minute Wave & Level Pacing)
+          </h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-800">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] tracking-wider font-bold">
+                <tr>
+                  <th class="px-4 py-2.5">Thời Gian</th>
+                  <th class="px-4 py-2.5">Giai Đoạn / Wave</th>
+                  <th class="px-4 py-2.5">Mật Độ Spawn</th>
+                  <th class="px-4 py-2.5">Độ Khó</th>
+                  <th class="px-4 py-2.5">Mục Tiêu & Cơ Chế Áp Lực</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 bg-slate-900/30 font-medium text-slate-300">
+                ${pacing.map(p => `
+                  <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="px-4 py-2.5 font-bold text-amber-400 whitespace-nowrap">${p.timestamp}</td>
+                    <td class="px-4 py-2.5 text-white font-semibold">${p.wave_name}</td>
+                    <td class="px-4 py-2.5 text-slate-300">${p.density}</td>
+                    <td class="px-4 py-2.5">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.difficulty.includes('Boss') || p.difficulty.includes('Ép nạp') ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-slate-800 text-slate-300'}">
+                        ${p.difficulty}
+                      </span>
+                    </td>
+                    <td class="px-4 py-2.5 text-slate-300">${p.objective}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. Narrative, Dialogue & Audio Cues -->
+        <div class="space-y-3">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+            <i data-lucide="message-square" class="w-4 h-4 text-purple-400"></i>
+            4. Kịch Bản Cốt Truyện, Thoại Tutorial & Âm Thanh
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
+              <span class="text-purple-400 font-bold block flex items-center gap-1.5">
+                <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Bối Cảnh Thế Giới:
+              </span>
+              <p class="text-slate-300 leading-relaxed">${narrative.premise || 'N/A'}</p>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
+              <span class="text-emerald-400 font-bold block flex items-center gap-1.5">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Thoại Tutorial Mẫu:
+              </span>
+              <blockquote class="italic text-slate-200 border-l-2 border-emerald-500 pl-2.5 py-1">
+                "${narrative.tutorial_dialogue || 'N/A'}"
+              </blockquote>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
+              <span class="text-cyan-400 font-bold block flex items-center gap-1.5">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Chỉ Dẫn Âm Thanh (Audio Cues):
+              </span>
+              <p class="text-slate-300 leading-relaxed">${narrative.gameplay_audio_cues || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Unity C# Starter Code -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i>
+              5. Mã Nguồn C# Unity Starter Scripts (Sẵn Sàng Gắn Vào Prefab)
+            </h4>
+            <button onclick="copyDeconstructCode()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i data-lucide="copy" class="w-3 h-3 text-emerald-400"></i> Sao Chép C# Code
+            </button>
+          </div>
+          <div class="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-4">
+            <pre class="font-mono text-xs text-emerald-300 leading-relaxed overflow-x-auto max-h-96 scrollbar-thin"><code>${escapedCode}</code></pre>
+          </div>
+        </div>
+
+        <!-- 6. Asset Checklist & Clone With A Twist -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Asset Checklist -->
+          <div class="space-y-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <h4 class="text-xs font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+              <i data-lucide="layers" class="w-4 h-4 text-blue-400"></i>
+              6. Danh Mục Tài Nguyên Sản Xuất (Asset Checklist)
+            </h4>
+            <div class="space-y-2 text-xs text-slate-300">
+              <div>
+                <span class="text-slate-400 font-semibold block mb-1">Sprites / 3D Models:</span>
+                <ul class="list-disc list-inside space-y-0.5 text-slate-300">
+                  ${(assets.sprites || []).map(s => `<li>${s}</li>`).join('')}
+                </ul>
+              </div>
+              <div>
+                <span class="text-slate-400 font-semibold block mb-1 mt-2">UI Canvas & HUD:</span>
+                <ul class="list-disc list-inside space-y-0.5 text-slate-300">
+                  ${(assets.ui_canvas || []).map(u => `<li>${u}</li>`).join('')}
+                </ul>
+              </div>
+              <div>
+                <span class="text-slate-400 font-semibold block mb-1 mt-2">SFX & BGM Audio:</span>
+                <ul class="list-disc list-inside space-y-0.5 text-slate-300">
+                  ${(assets.sfx_list || []).map(s => `<li>${s}</li>`).join('')}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Clone With A Twist -->
+          <div class="space-y-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <h4 class="text-xs font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+              7. Công Thức "Clone With A Twist" (Cải Tiến Để Đánh Bại Bản Gốc)
+            </h4>
+            <div class="space-y-2.5 text-xs">
+              ${twists.map(t => `
+                <div class="p-3 rounded-lg bg-slate-800/50 border border-slate-700/50 space-y-1">
+                  <span class="font-bold text-amber-300 flex items-center gap-1.5">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i> ${t.idea}
+                  </span>
+                  <p class="text-slate-300 text-[11px] leading-relaxed">${t.why}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    function copyDeconstructMarkdown() {
+      if (!currentDeconstructData || !currentDeconstructData.markdown_blueprint) {
+        showToast('Chưa có dữ liệu Blueprint để sao chép.');
+        return;
+      }
+      navigator.clipboard.writeText(currentDeconstructData.markdown_blueprint).then(() => {
+        showToast('Đã sao chép toàn bộ Game Clone Blueprint (.md) vào clipboard!');
+      }).catch(err => {
+        showToast('Lỗi khi sao chép: ' + err);
+      });
+    }
+
+    function downloadDeconstructMarkdown() {
+      if (!currentDeconstructData || !currentDeconstructData.markdown_blueprint) {
+        showToast('Chưa có dữ liệu Blueprint để tải về.');
+        return;
+      }
+      const title = (currentDeconstructData.title || 'Game').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const blob = new Blob([currentDeconstructData.markdown_blueprint], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}_Clone_Blueprint.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Đã tải file Blueprint (.md) về máy thành công!');
+    }
+
+    function copyDeconstructCode() {
+      if (!currentDeconstructData || !currentDeconstructData.unity_starter_code) {
+        showToast('Chưa có mã nguồn C# để sao chép.');
+        return;
+      }
+      navigator.clipboard.writeText(currentDeconstructData.unity_starter_code).then(() => {
+        showToast('Đã sao chép mã nguồn C# Unity vào clipboard!');
+      }).catch(err => {
+        showToast('Lỗi khi sao chép: ' + err);
+      });
     }
 
     // Toggle Export Menu
@@ -9693,7 +10266,7 @@
     // Initial Load
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
-      loadOverview();
+      switchCategory('clone', 'deconstruct');
       document.getElementById('targetDate').addEventListener('change', () => {
         loadOverview();
         loadPCRankings();
