@@ -1026,7 +1026,8 @@ async def analyze_deconstruct_api(request: Request):
         platform=payload.get("platform", "PC / Mobile"),
         genre_hint=payload.get("genre_hint", "Action Roguelike"),
         store_url=payload.get("store_url"),
-        raw_description=payload.get("raw_description")
+        raw_description=payload.get("raw_description"),
+        use_ai_llm=bool(payload.get("use_ai_llm", False))
     )
 
 @app.get("/api/deconstruct/export-unity-zip")

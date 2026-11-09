@@ -3803,6 +3803,9 @@
             </h4>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="loadModalDeconstruct(true, true)" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-amber-600/30 cursor-pointer">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-yellow-200"></i> Phân Tích Sâu Bằng AI (Gemini)
+            </button>
             <button onclick="downloadUnityZipPackage()" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-purple-600/30 cursor-pointer">
               <i data-lucide="package" class="w-3.5 h-3.5"></i> Tải Unity (.zip)
             </button>
@@ -4715,13 +4718,15 @@
     let currentModalDeconstructData = null;
     let currentModalGddData = null;
 
-    async function loadModalDeconstruct(forceReload = false) {
+    let currentSelectedUnityScript = 'PlayerController.cs';
+
+    async function loadModalDeconstruct(forceReload = false, useAiLlm = false) {
       const container = document.getElementById('modalDeconstructContainer');
       if (!container) return;
       const gameId = currentActiveModalGameId;
       const title = currentActiveModalGameTitle || 'Game';
 
-      if (!forceReload && modalDeconstructCache[gameId]) {
+      if (!forceReload && !useAiLlm && modalDeconstructCache[gameId]) {
         currentModalDeconstructData = modalDeconstructCache[gameId];
         renderModalDeconstructResults(currentModalDeconstructData);
         return;
@@ -4729,12 +4734,12 @@
 
       container.innerHTML = `
         <div class="p-10 text-center space-y-4 rounded-2xl bg-slate-950/80 border border-slate-800">
-          <div class="inline-block p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 animate-pulse">
-            <i data-lucide="cpu" class="w-10 h-10 animate-spin"></i>
+          <div class="inline-block p-4 rounded-2xl ${useAiLlm ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400' : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'} animate-pulse">
+            <i data-lucide="${useAiLlm ? 'sparkles' : 'cpu'}" class="w-10 h-10 animate-spin"></i>
           </div>
-          <h4 class="text-base font-bold text-white">Đang Tự Động Bóc Tách Gameplay & Kịch Bản Clone 1:1 Cho "${title}"...</h4>
+          <h4 class="text-base font-bold text-white">${useAiLlm ? 'Đang Kích Hoạt Gemini LLM Phân Tích Sâu Gameplay & Kịch Bản Cho' : 'Đang Tự Động Bóc Tách Gameplay & Kịch Bản Pacing 1:1 Cho'} "${title}"...</h4>
           <p class="text-xs text-slate-400 max-w-md mx-auto">
-            Hệ thống đang quét 7 chiều: Physics 1:1, Finite State Machine, Kịch bản Pacing theo phút, Thoại cốt truyện & Code C# Unity...
+            Hệ thống đang quét toàn diện: Thông số Physics 1:1, FSM đa tầng, Kịch bản Pacing 10 giai đoạn, Cốt truyện 3 hồi & Trọn bộ 5 file C# Unity Starter...
           </p>
         </div>
       `;
@@ -4749,7 +4754,8 @@
             platform: currentActiveModalGamePlatform || 'PC / Mobile',
             genre_hint: currentActiveModalGameGenre || 'Action',
             store_url: currentActiveModalGameStoreUrl || '',
-            raw_description: currentActiveModalGameDesc || ''
+            raw_description: currentActiveModalGameDesc || '',
+            use_ai_llm: useAiLlm
           })
         });
 
@@ -4774,161 +4780,412 @@
       loadModalDeconstruct(true);
     }
 
+    function selectUnityScriptTab(fileName) {
+      currentSelectedUnityScript = fileName;
+      if (!currentModalDeconstructData) return;
+      const scripts = currentModalDeconstructData.unity_scripts || {
+        'PlayerController.cs': currentModalDeconstructData.unity_starter_code || '// Code'
+      };
+      const code = scripts[fileName] || '// Không tìm thấy mã nguồn file này';
+      const display = document.getElementById('modalUnityCodeDisplay');
+      if (display) {
+        display.innerHTML = `<code>${code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>`;
+      }
+
+      const tabs = ['PlayerController.cs', 'WeaponSystem.cs', 'EnemyAI.cs', 'WaveDirector.cs', 'GameEconomyManager.cs'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`scriptTabBtn-${t.replace('.', '_')}`);
+        if (btn) {
+          if (t === fileName) {
+            btn.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-md shadow-emerald-600/30 cursor-pointer border border-emerald-500";
+          } else {
+            btn.className = "px-3 py-1 rounded-lg text-xs font-medium bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800 cursor-pointer";
+          }
+        }
+      });
+    }
+
+    function copyCurrentUnityScript() {
+      if (!currentModalDeconstructData) return;
+      const scripts = currentModalDeconstructData.unity_scripts || {
+        'PlayerController.cs': currentModalDeconstructData.unity_starter_code || ''
+      };
+      const code = scripts[currentSelectedUnityScript] || currentModalDeconstructData.unity_starter_code || '';
+      navigator.clipboard.writeText(code).then(() => {
+        showToast(`Đã sao chép mã nguồn ${currentSelectedUnityScript}!`);
+      });
+    }
+
+    function copyAllUnityScripts() {
+      if (!currentModalDeconstructData) return;
+      const scripts = currentModalDeconstructData.unity_scripts || {};
+      let allCode = `// TRỌN BỘ 5 FILE C# UNITY STARTER - ${currentModalDeconstructData.title}\n// Xuất bởi Game Trending Analyzer 2.0\n\n`;
+      for (const [fname, fcode] of Object.entries(scripts)) {
+        allCode += `// ==========================================\n// FILE: ${fname}\n// ==========================================\n${fcode}\n\n`;
+      }
+      navigator.clipboard.writeText(allCode).then(() => {
+        showToast('Đã sao chép trọn bộ 5 file C# Unity vào clipboard!');
+      });
+    }
+
     function renderModalDeconstructResults(data) {
       const container = document.getElementById('modalDeconstructContainer');
       if (!container) return;
 
       const pAndM = data.physics_and_movement || {};
-      const fsm = data.core_state_machine || [];
+      const fsm = data.core_state_machine || {};
       const pacing = data.pacing_script || [];
       const narrative = data.narrative_and_quest_script || {};
       const assets = data.asset_checklist || {};
       const twists = data.clone_with_a_twist || [];
+      const unityScripts = data.unity_scripts || {
+        'PlayerController.cs': data.unity_starter_code || '// Code'
+      };
 
-      const escapedCode = (data.unity_starter_code || '')
+      const playerFsm = fsm.player_fsm || (Array.isArray(fsm) ? fsm : []);
+      const enemyFsm = fsm.enemy_director_fsm || [];
+      const charProfiles = narrative.character_profiles || {};
+      const dialogues = narrative.scripted_dialogues || {};
+      const quests = narrative.quest_hierarchy || {};
+
+      currentSelectedUnityScript = 'PlayerController.cs';
+      const initialCode = (unityScripts['PlayerController.cs'] || data.unity_starter_code || '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
       container.innerHTML = `
-        <!-- 1. Core Mechanics & 1:1 Physics -->
+        <!-- Header Archetype & Badge Banner -->
+        <div class="glass-card p-4 rounded-xl border border-slate-800 bg-slate-950/70 flex items-center justify-between flex-wrap gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-300 border border-emerald-500/40 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="tag" class="w-3.5 h-3.5"></i> ${data.archetype_name || data.genre || 'Gameplay Archetype'}
+            </span>
+            ${data.is_ai_enhanced ? `
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                <i data-lucide="sparkles" class="w-3 h-3 text-amber-400"></i> AI ENHANCED (GEMINI LLM)
+              </span>
+            ` : ''}
+          </div>
+          <span class="text-xs text-slate-400 font-medium">Bản thiết kế kỹ thuật phục vụ Clone & Nâng Cấp Gameplay 1:1</span>
+        </div>
+
+        <!-- 1. Core Mechanics, 1:1 Physics & Game Feel Spec -->
         <div class="space-y-3">
           <h4 class="text-xs font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
             <i data-lucide="crosshair" class="w-4 h-4 text-emerald-400"></i>
-            1. Cơ Chế Điều Khiển & Vật Lý 1:1 (Physics & Controls)
+            1. Cơ Chế Điều Khiển, Vật Lý 1:1 & Game Feel (Kinematics & Tuning)
           </h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-            <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-              <span class="text-slate-400 font-semibold block text-[11px]">Góc Nhìn Camera:</span>
-              <p class="text-slate-200 font-medium">${data.camera_perspective || 'N/A'}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+              <span class="text-slate-400 font-semibold block text-[11px] flex items-center gap-1">
+                <i data-lucide="video" class="w-3.5 h-3.5 text-indigo-400"></i> Góc Nhìn Camera:
+              </span>
+              <p class="text-slate-200 font-medium text-[11px] leading-relaxed">${data.camera_perspective || 'N/A'}</p>
             </div>
-            <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-              <span class="text-slate-400 font-semibold block text-[11px]">Phương Thức Điều Khiển (Input Scheme):</span>
-              <p class="text-slate-200 font-medium">${data.control_scheme || 'N/A'}</p>
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+              <span class="text-slate-400 font-semibold block text-[11px] flex items-center gap-1">
+                <i data-lucide="gamepad" class="w-3.5 h-3.5 text-teal-400"></i> Phương Thức Điều Khiển:
+              </span>
+              <p class="text-slate-200 font-medium text-[11px] leading-relaxed">${data.control_scheme || 'N/A'}</p>
             </div>
-            <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-              <span class="text-slate-400 font-semibold block text-[11px]">Tốc Độ & Di Chuyển:</span>
-              <p class="text-slate-200 font-medium">${pAndM.movement_speed || 'N/A'}</p>
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+              <span class="text-slate-400 font-semibold block text-[11px] flex items-center gap-1">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Tốc Độ & Gia Tốc:
+              </span>
+              <p class="text-slate-200 font-medium text-[11px] leading-relaxed">${pAndM.movement_speed || 'N/A'}</p>
+              <p class="text-slate-400 text-[10px]">${pAndM.acceleration_and_deceleration || ''}</p>
             </div>
-            <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-              <span class="text-slate-400 font-semibold block text-[11px]">Quy Tắc Va Chạm & Hitbox:</span>
-              <p class="text-slate-200 font-medium">${pAndM.hitbox_rules || 'N/A'}</p>
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+              <span class="text-slate-400 font-semibold block text-[11px] flex items-center gap-1">
+                <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i> Va Chạm & Hitbox:
+              </span>
+              <p class="text-slate-200 font-medium text-[11px] leading-relaxed">${pAndM.collision_and_hitbox || pAndM.hitbox_rules || 'N/A'}</p>
+              <p class="text-slate-400 text-[10px]">${pAndM.coyote_and_buffering || ''}</p>
             </div>
           </div>
+
+          <!-- Game Feel & Damage Formula Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+              <span class="text-amber-400 font-bold block text-[11px] flex items-center gap-1.5">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i> Độ Khựng Đòn Đánh & Game Feel (Hit-Stop & Shake):
+              </span>
+              <p class="text-slate-200 text-[11px] leading-relaxed">${pAndM.game_feel_juice || 'Hit-stop 45ms, camera shake trauma 0.15s'}</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+              <span class="text-cyan-400 font-bold block text-[11px] flex items-center gap-1.5">
+                <i data-lucide="calculator" class="w-3.5 h-3.5 text-cyan-400"></i> Công Thức Tính Sát Thương Thực Tế:
+              </span>
+              <p class="text-cyan-200 font-mono text-[11px] leading-relaxed p-1.5 rounded bg-slate-900 border border-slate-800">${pAndM.damage_formula || 'Damage = (Attack * SkillMult - Defense * 0.3) * Crit'}</p>
+            </div>
+          </div>
+
+          <!-- Synergies Matrix -->
+          ${(pAndM.combat_synergies && pAndM.combat_synergies.length > 0) ? `
+            <div class="p-3.5 rounded-xl bg-gradient-to-r from-purple-950/30 via-slate-950 to-slate-950 border border-purple-500/30 space-y-2">
+              <span class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
+                <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i> Tổ Hợp Kỹ Năng & Công Thức Tiến Hóa Vũ Khí (Combat Synergies):
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                ${pAndM.combat_synergies.map(syn => `
+                  <div class="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800/80 text-slate-200 space-y-1">
+                    <span class="text-purple-300 font-bold block flex items-center gap-1">⚡ Combo</span>
+                    <p class="text-slate-300 leading-relaxed">${syn}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
         </div>
 
-        <!-- 2. Core Finite State Machine -->
-        <div class="space-y-2.5">
+        <!-- 2. Dual Finite State Machine (FSM) -->
+        <div class="space-y-3">
           <h4 class="text-xs font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
             <i data-lucide="git-branch" class="w-4 h-4 text-cyan-400"></i>
-            2. Máy Trạng Thái Cốt Lõi (Core State Machine)
+            2. Hệ Thống Máy Trạng Thái FSM Kép (Player FSM & Enemy Director FSM)
           </h4>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- Player FSM Table -->
+            <div class="space-y-2">
+              <span class="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
+                <i data-lucide="user" class="w-3.5 h-3.5"></i> FSM Nhân Vật Chính (Player State Machine):
+              </span>
+              <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider font-bold">
+                    <tr>
+                      <th class="px-3 py-2">Trạng Thái</th>
+                      <th class="px-3 py-2">Kích Hoạt (Trigger)</th>
+                      <th class="px-3 py-2">Hành Vi & Thoát</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800/80 text-slate-300">
+                    ${playerFsm.map(s => `
+                      <tr class="hover:bg-slate-900/40">
+                        <td class="px-3 py-2 font-bold text-emerald-400 font-mono text-[11px] whitespace-nowrap">${s.state}</td>
+                        <td class="px-3 py-2 text-slate-300 text-[11px]">${s.trigger}</td>
+                        <td class="px-3 py-2 text-slate-200 text-[11px]">
+                          ${s.action}
+                          ${s.exit_condition ? `<div class="text-[10px] text-slate-400 italic mt-0.5">Thoát: ${s.exit_condition}</div>` : ''}
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Enemy FSM Table -->
+            <div class="space-y-2">
+              <span class="text-[11px] font-bold text-rose-400 flex items-center gap-1">
+                <i data-lucide="skull" class="w-3.5 h-3.5"></i> FSM Đạo Diễn AI Quái Vật (Enemy Director FSM):
+              </span>
+              <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider font-bold">
+                    <tr>
+                      <th class="px-3 py-2">Trạng Thái</th>
+                      <th class="px-3 py-2">Điều Kiện (Trigger)</th>
+                      <th class="px-3 py-2">Hành Động Của Quái</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-800/80 text-slate-300">
+                    ${(enemyFsm.length > 0 ? enemyFsm : [
+                      { state: 'SPAWN_OUT_OF_BOUNDS', trigger: 'Timer đếm ngược', action: 'Sinh quái ngoài viền camera' },
+                      { state: 'FLOCKING_CHASE', trigger: 'Quái còn sống', action: 'Đuổi theo Player và tách bầy' },
+                      { state: 'DEATH_DROP', trigger: 'HP về 0', action: 'Rớt ngọc và cộng điểm tiến trình' }
+                    ]).map(s => `
+                      <tr class="hover:bg-slate-900/40">
+                        <td class="px-3 py-2 font-bold text-rose-400 font-mono text-[11px] whitespace-nowrap">${s.state}</td>
+                        <td class="px-3 py-2 text-slate-300 text-[11px]">${s.trigger}</td>
+                        <td class="px-3 py-2 text-slate-200 text-[11px]">${s.action}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Minute-by-Minute Wave Pacing Script & Tension Arc -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-2">
+            <h4 class="text-xs font-bold text-white flex items-center gap-2">
+              <i data-lucide="timer" class="w-4 h-4 text-amber-400"></i>
+              3. Kịch Bản Nhịp Độ Màn Chơi 8-10 Giai Đoạn (Level Pacing & Tension Curve)
+            </h4>
+            <span class="text-[11px] text-amber-400/90 font-medium">Đoạn cong cảm xúc: Nghỉ ngơi ➔ Áp lực ➔ Cao trào Boss ➔ Thỏa mãn</span>
+          </div>
           <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950">
             <table class="w-full text-left text-xs">
               <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider font-bold">
                 <tr>
-                  <th class="px-3.5 py-2">Trạng Thái (State)</th>
-                  <th class="px-3.5 py-2">Điều Kiện Kích Hoạt (Trigger)</th>
-                  <th class="px-3.5 py-2">Hành Vi Xử Lý (Game Action)</th>
+                  <th class="px-3 py-2">Thời Gian</th>
+                  <th class="px-3 py-2">Giai Đoạn / Wave</th>
+                  <th class="px-3 py-2">Căng Thẳng (Tension)</th>
+                  <th class="px-3 py-2">Mật Độ</th>
+                  <th class="px-3 py-2">Mục Tiêu & Tâm Lý Người Chơi</th>
+                  <th class="px-3 py-2">Cơ Chế Rủi Ro & Monetization</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800 text-slate-300">
-                ${fsm.map(s => `
-                  <tr class="hover:bg-slate-900/50">
-                    <td class="px-3.5 py-2 font-bold text-emerald-400 font-mono text-[11px]">${s.state}</td>
-                    <td class="px-3.5 py-2 text-slate-300">${s.trigger}</td>
-                    <td class="px-3.5 py-2 text-slate-200">${s.action}</td>
-                  </tr>
-                `).join('')}
+                ${pacing.map(p => {
+                  const score = p.tension_score || 5;
+                  let barColor = 'bg-emerald-500';
+                  if (score >= 9) barColor = 'bg-rose-500';
+                  else if (score >= 7) barColor = 'bg-orange-500';
+                  else if (score >= 4) barColor = 'bg-amber-500';
+
+                  return `
+                    <tr class="hover:bg-slate-900/50">
+                      <td class="px-3 py-2.5 font-bold text-amber-400 whitespace-nowrap text-[11px]">${p.timestamp}</td>
+                      <td class="px-3 py-2.5 text-white font-semibold text-[11px] whitespace-nowrap">${p.wave_name}</td>
+                      <td class="px-3 py-2.5 whitespace-nowrap">
+                        <div class="flex items-center gap-1.5">
+                          <div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full ${barColor}" style="width: ${score * 10}%;"></div>
+                          </div>
+                          <span class="font-bold text-[10px] ${score >= 8 ? 'text-rose-400' : 'text-slate-300'}">${score}/10</span>
+                        </div>
+                      </td>
+                      <td class="px-3 py-2.5 text-slate-300 text-[11px] whitespace-nowrap">${p.density}</td>
+                      <td class="px-3 py-2.5 text-slate-200 text-[11px]">
+                        <div>${p.objective}</div>
+                        ${p.player_emotion ? `<div class="text-[10px] text-cyan-400/80 italic mt-0.5">Tâm lý: ${p.player_emotion}</div>` : ''}
+                      </td>
+                      <td class="px-3 py-2.5 text-slate-300 text-[11px]">${p.risk_and_monetization || p.difficulty || 'Bình thường'}</td>
+                    </tr>
+                  `;
+                }).join('')}
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- 3. Minute-by-Minute Wave Pacing Script -->
-        <div class="space-y-2.5">
+        <!-- 4. Deep Narrative, 3-Act Dialogues & Quest Architecture -->
+        <div class="space-y-3">
           <h4 class="text-xs font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
-            <i data-lucide="timer" class="w-4 h-4 text-amber-400"></i>
-            3. Kịch Bản Nhịp Độ Màn Chơi (Minute-by-Minute Wave & Level Pacing)
+            <i data-lucide="book-open" class="w-4 h-4 text-purple-400"></i>
+            4. Kịch Bản Cốt Truyện, Hồ Sơ Nhân Vật & Cây Nhiệm Vụ 3 Tầng
           </h4>
-          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider font-bold">
-                <tr>
-                  <th class="px-3.5 py-2">Thời Gian</th>
-                  <th class="px-3.5 py-2">Giai Đoạn / Wave</th>
-                  <th class="px-3.5 py-2">Mật Độ Spawn</th>
-                  <th class="px-3.5 py-2">Độ Khó</th>
-                  <th class="px-3.5 py-2">Mục Tiêu & Cơ Chế Áp Lực</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800 text-slate-300">
-                ${pacing.map(p => `
-                  <tr class="hover:bg-slate-900/50">
-                    <td class="px-3.5 py-2 font-bold text-amber-400 whitespace-nowrap">${p.timestamp}</td>
-                    <td class="px-3.5 py-2 text-white font-semibold">${p.wave_name}</td>
-                    <td class="px-3.5 py-2 text-slate-300">${p.density}</td>
-                    <td class="px-3.5 py-2">
-                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.difficulty.includes('Boss') || p.difficulty.includes('Ép nạp') ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-slate-800 text-slate-300'}">
-                        ${p.difficulty}
-                      </span>
-                    </td>
-                    <td class="px-3.5 py-2 text-slate-300">${p.objective}</td>
-                  </tr>
+
+          <!-- World Premise -->
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <span class="text-purple-400 font-bold block text-[11px] flex items-center gap-1">
+              <i data-lucide="globe" class="w-3.5 h-3.5"></i> Bối Cảnh & Xung Đột Thế Giới:
+            </span>
+            <p class="text-slate-200 leading-relaxed text-[11px]">${narrative.premise || 'N/A'}</p>
+          </div>
+
+          <!-- Character Profiles Grid -->
+          ${Object.keys(charProfiles).length > 0 ? `
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              ${Object.entries(charProfiles).map(([key, prof]) => `
+                <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-white">${prof.name}</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      ${prof.role}
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-400">${prof.archetype || ''}</p>
+                  <blockquote class="italic text-slate-300 border-l-2 border-purple-500 pl-2 text-[11px]">
+                    "${prof.battle_cry || prof.villain_philosophy || prof.guidance_tone || 'Sẵn sàng chiến đấu!'}"
+                  </blockquote>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <!-- Scripted Dialogues 3-Acts -->
+          ${Object.keys(dialogues).length > 0 ? `
+            <div class="space-y-2 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <span class="text-emerald-400 font-bold block text-[11px] flex items-center gap-1.5">
+                <i data-lucide="message-square" class="w-3.5 h-3.5 text-emerald-400"></i> Kịch Bản Thoại Chi Tiết 3 Hồi (Scripted Dialogue):
+              </span>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs">
+                ${Object.entries(dialogues).map(([actKey, dial]) => `
+                  <div class="p-2.5 rounded-lg bg-slate-900/70 border border-slate-800 space-y-1">
+                    <span class="font-bold text-emerald-300 block text-[10px] uppercase tracking-wider">${actKey.replace('_', ' ')}</span>
+                    <pre class="font-sans text-slate-300 text-[11px] whitespace-pre-wrap leading-relaxed">${dial}</pre>
+                  </div>
                 `).join('')}
-              </tbody>
-            </table>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- 3-Tier Quest Architecture -->
+          ${Object.keys(quests).length > 0 ? `
+            <div class="space-y-2 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800">
+              <span class="text-amber-400 font-bold block text-[11px] flex items-center gap-1.5">
+                <i data-lucide="target" class="w-3.5 h-3.5 text-amber-400"></i> Hệ Thống Nhiệm Vụ 3 Tầng Giữ Chân Người Chơi (Quest Architecture):
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                ${Object.entries(quests).map(([qType, qList]) => `
+                  <div class="p-2.5 rounded-lg bg-slate-900/70 border border-slate-800 space-y-1.5">
+                    <span class="font-bold text-amber-300 block text-[10px] uppercase tracking-wider">${qType.replace('_', ' ')}</span>
+                    <div class="space-y-1.5">
+                      ${(qList || []).map(q => `
+                        <div class="border-b border-slate-800/60 pb-1 text-[11px]">
+                          <strong class="text-slate-200 block">${q.title}</strong>
+                          <span class="text-slate-400 block text-[10px]">${q.desc}</span>
+                          <span class="text-emerald-400 text-[10px] font-semibold">🎁 Thưởng: ${q.reward}</span>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Audio Choreography -->
+          <div class="p-3 rounded-lg bg-slate-950/70 border border-slate-800 text-xs text-slate-300 flex items-center gap-2">
+            <i data-lucide="volume-2" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+            <div>
+              <strong class="text-cyan-400 text-[11px]">Chỉ Dẫn m Thanh & Nhạc Nền:</strong>
+              <span class="text-slate-300 text-[11px] ml-1">${narrative.gameplay_audio_cues || 'm thanh hit-stop, âm báo lên cấp và BGM cao trào.'}</span>
+            </div>
           </div>
         </div>
 
-        <!-- 4. Narrative, Dialogue & Audio Cues -->
-        <div class="space-y-2.5">
-          <h4 class="text-xs font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
-            <i data-lucide="message-square" class="w-4 h-4 text-purple-400"></i>
-            4. Kịch Bản Cốt Truyện, Thoại Mở Đầu Tutorial & Chỉ Dẫn Âm Thanh
-          </h4>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1.5">
-              <span class="text-purple-400 font-bold block flex items-center gap-1">
-                <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Bối Cảnh Thế Giới:
-              </span>
-              <p class="text-slate-300 leading-relaxed text-[11px]">${narrative.premise || 'N/A'}</p>
-            </div>
-            <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1.5">
-              <span class="text-emerald-400 font-bold block flex items-center gap-1">
-                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Thoại Tutorial Mẫu:
-              </span>
-              <blockquote class="italic text-slate-200 border-l-2 border-emerald-500 pl-2 py-0.5 text-[11px]">
-                "${narrative.tutorial_dialogue || 'N/A'}"
-              </blockquote>
-            </div>
-            <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1.5">
-              <span class="text-cyan-400 font-bold block flex items-center gap-1">
-                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Chỉ Dẫn Âm Thanh:
-              </span>
-              <p class="text-slate-300 leading-relaxed text-[11px]">${narrative.gameplay_audio_cues || 'N/A'}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. Unity C# Starter Code -->
+        <!-- 5. Multi-Script Unity Starter Code Suite -->
         <div class="space-y-2.5">
           <div class="flex items-center justify-between border-b border-slate-800 pb-2 flex-wrap gap-2">
-            <h4 class="text-xs font-bold text-white flex items-center gap-2">
-              <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i>
-              5. Mã Nguồn C# Unity Starter Scripts (Gắn Trực Tiếp Vào Prefab)
-            </h4>
-            <div class="flex items-center gap-2">
-              <button onclick="downloadUnityZipPackage()" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold flex items-center gap-1 shadow-md shadow-purple-600/30 cursor-pointer">
-                <i data-lucide="package" class="w-3.5 h-3.5"></i> Tải Full Project Unity (.zip)
+            <div class="space-y-0.5">
+              <h4 class="text-xs font-bold text-white flex items-center gap-2">
+                <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i>
+                5. Trọn Bộ 5 File Mã Nguồn C# Unity Starter Suite (Architecture Studio)
+              </h4>
+              <p class="text-[10px] text-slate-400">Kiến trúc Component-Based sạch sẽ, phân tách rõ ràng Controllers, Weapons, AI, Wave Director & Economy</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button onclick="copyCurrentUnityScript()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+                <i data-lucide="copy" class="w-3 h-3 text-emerald-400"></i> Sao Chép File Này
               </button>
-              <button onclick="copyModalDeconstructCode()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
-                <i data-lucide="copy" class="w-3 h-3 text-emerald-400"></i> Sao Chép C# Code
+              <button onclick="copyAllUnityScripts()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+                <i data-lucide="copy-check" class="w-3 h-3 text-cyan-400"></i> Sao Chép Cả 5 File
+              </button>
+              <button onclick="downloadUnityZipPackage()" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold flex items-center gap-1 shadow-md shadow-purple-600/30 cursor-pointer">
+                <i data-lucide="package" class="w-3.5 h-3.5"></i> Tải Full Project (.zip)
               </button>
             </div>
           </div>
+
+          <!-- Script Tabs Navigation -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+            ${Object.keys(unityScripts).map(fname => `
+              <button id="scriptTabBtn-${fname.replace('.', '_')}" onclick="selectUnityScriptTab('${fname}')" class="px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all ${fname === 'PlayerController.cs' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 border border-emerald-500 font-bold' : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'}">
+                ${fname}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- Code Display Container -->
           <div class="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-4">
-            <pre class="font-mono text-[11px] text-emerald-300 leading-relaxed overflow-x-auto max-h-72 scrollbar-thin"><code>${escapedCode}</code></pre>
+            <pre id="modalUnityCodeDisplay" class="font-mono text-[11px] text-emerald-300 leading-relaxed overflow-x-auto max-h-80 scrollbar-thin"><code>${initialCode}</code></pre>
           </div>
         </div>
 
@@ -4941,7 +5198,7 @@
             </h4>
             <div class="space-y-2 text-xs text-slate-300">
               <div>
-                <span class="text-slate-400 font-semibold block text-[11px] mb-1">Sprites / 3D Models:</span>
+                <span class="text-slate-400 font-semibold block text-[11px] mb-1">Sprites & 3D Models:</span>
                 <ul class="list-disc list-inside space-y-0.5 text-slate-300 text-[11px]">
                   ${(assets.sprites || []).map(s => `<li>${s}</li>`).join('')}
                 </ul>
