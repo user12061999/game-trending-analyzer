@@ -54,6 +54,7 @@ from app.crawlers.steam_api_connector import SteamAPIConnector
 from app.analytics.gdd_generator import GameDesignDocumentGenerator
 from app.analytics.prereg_wishlist_forecaster import PreRegWishlistForecaster
 from app.analytics.game_deconstructor import GameDeconstructor
+from app.analytics.rea_integrator import REAIntegrator
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -91,6 +92,7 @@ steam_connector = SteamAPIConnector()
 gdd_generator = GameDesignDocumentGenerator()
 prereg_forecaster = PreRegWishlistForecaster()
 game_deconstructor = GameDeconstructor()
+rea_integrator = REAIntegrator()
 
 is_crawling = False
 
@@ -1103,3 +1105,29 @@ async def get_metadata():
         "ranking_types": RANKING_TYPES,
         "latest_date": analyzer.get_latest_snapshot_date()
     }
+
+# --- REA (Reverse Engineer Anything) Endpoints ---
+@app.get("/api/rea/status")
+async def get_rea_status():
+    """Returns engine availability and capabilities of morluto/rea."""
+    return rea_integrator.get_status()
+
+@app.post("/api/rea/analyze")
+async def analyze_with_rea(request: Request):
+    """Generates an in-depth REA reverse-engineering dossier for a game."""
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+    game_title = payload.get("game_title", "Game Project")
+    genre = payload.get("genre", "Action Roguelike")
+    platform = payload.get("platform", "PC / Mobile")
+    game_id = payload.get("game_id", "custom")
+    artifact_path = payload.get("artifact_path", None)
+    return rea_integrator.generate_rea_dossier(
+        game_title=game_title,
+        genre=genre,
+        platform=platform,
+        game_id=game_id,
+        artifact_path=artifact_path
+    )

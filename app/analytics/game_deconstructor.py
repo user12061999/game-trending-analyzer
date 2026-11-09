@@ -13,6 +13,8 @@ import urllib.request
 import io
 import zipfile
 
+from app.analytics.rea_integrator import REAIntegrator
+
 logger = logging.getLogger(__name__)
 
 
@@ -502,6 +504,18 @@ class GameDeconstructor:
             "clone_with_a_twist": twists,
             "is_ai_enhanced": False
         }
+
+        # Integrate morluto/rea binary reverse-engineering intelligence
+        try:
+            rea_integrator = REAIntegrator()
+            blueprint["rea_dossier"] = rea_integrator.generate_rea_dossier(
+                game_title=game_title,
+                genre=genre_hint,
+                platform=platform,
+                game_id=blueprint["id"]
+            )
+        except Exception as e:
+            logger.warning(f"Failed to generate REA dossier: {e}")
 
         # Check if user requested AI LLM or Gemini API key is available
         if use_ai_llm:
@@ -1073,6 +1087,35 @@ public class GameEconomyManager : MonoBehaviour {{
 """
         for t in twists:
             md += f"- 💡 **{t.get('idea')}:** {t.get('why')}\n"
+
+        rea = data.get("rea_dossier", {})
+        if rea:
+            md += f"""
+---
+
+## 🔬 8. BÁO CÁO REA BINARY & DECOMPILATION DOSSIER (MORLUTO/REA)
+- **Engine Nhận Diện:** `{rea.get('engine_fingerprint', 'Unity IL2CPP')}`
+- **Công Cụ Bóc Tách:** [morluto/rea](https://github.com/morluto/rea) *(Reverse Engineer Anything - 175 CLI commands & 229 MCP tools)*
+
+### Danh Mục C# / .NET Classes & Methods Bóc Tách:
+"""
+            for cls in rea.get("decompiled_classes", []):
+                md += f"- **`{cls.get('namespace')}.{cls.get('class_name')}`** (Base: `{cls.get('base_type')}`)\n"
+                for m in cls.get("methods", []):
+                    md += f"  - `{m.get('visibility')} {m.get('return_type')} {m.get('name')}`: *{m.get('desc', '')}*\n"
+
+            md += "\n### Các Hằng Số & Biến Cân Bằng Gameplay Nhúng Trong Binary:\n"
+            for c in rea.get("internal_constants", []):
+                md += f"- `{c.get('name')}` = **{c.get('value')}** ({c.get('desc')})\n"
+
+            md += "\n### Thư Viện SDK & Công Nghệ Ngầm Phát Hiện Được:\n"
+            for s in rea.get("detected_sdks", []):
+                md += f"- **{s.get('name')}** ({s.get('category')}): {s.get('purpose')}\n"
+
+            md += "\n### Lệnh REA CLI Trích Xuất Trực Tiếp Trên Terminal:\n```bash\n"
+            for cmd in rea.get("rea_cli_commands", []):
+                md += f"{cmd}\n"
+            md += "```\n"
 
         md += """
 ---

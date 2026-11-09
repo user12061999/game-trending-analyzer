@@ -5235,6 +5235,116 @@
             </div>
           </div>
         </div>
+
+        <!-- 8. REA (Reverse Engineer Anything - morluto/rea) Binary & Decompilation Dossier -->
+        ${data.rea_dossier ? `
+          <div class="p-4 rounded-xl bg-gradient-to-b from-indigo-950/30 via-slate-950 to-slate-950 border border-indigo-500/30 space-y-3.5">
+            <div class="flex items-center justify-between flex-wrap gap-2 border-b border-indigo-900/40 pb-2.5">
+              <div class="flex items-center gap-2">
+                <span class="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/40">
+                  <i data-lucide="cpu" class="w-4 h-4"></i>
+                </span>
+                <div>
+                  <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                    8. Báo Cáo Reverse Engineering Binary & Mã Máy (Tích hợp morluto/rea)
+                  </h4>
+                  <p class="text-[10px] text-slate-400">
+                    Bóc tách sâu .NET Assemblies, Android APK Dex & Ký hiệu bộ nhớ với <a href="https://github.com/morluto/rea" target="_blank" class="text-indigo-400 underline hover:text-indigo-300">morluto/rea v6.8.0</a>
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                  <i data-lucide="check-circle" class="w-3 h-3 text-emerald-400"></i> REA Engine Sẵn Sàng (175 Tools)
+                </span>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-300 border border-purple-500/30">
+                  ${data.rea_dossier.engine_fingerprint || 'Unity Engine IL2CPP'}
+                </span>
+              </div>
+            </div>
+
+            <!-- REA 4-Card Analysis Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 text-xs">
+              <!-- Card A: Decompiled Classes & Methods -->
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                  <i data-lucide="code-2" class="w-3.5 h-3.5 text-indigo-400"></i> Ký Hiệu Lớp & Hàm Trích Xuất (Assembly Classes):
+                </span>
+                <div class="space-y-2 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
+                  ${(data.rea_dossier.decompiled_classes || []).map(cls => `
+                    <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                      <div class="flex items-center justify-between">
+                        <span class="font-mono font-bold text-white text-[11px]">${cls.class_name}</span>
+                        <span class="text-[9px] text-slate-500 font-mono">${cls.namespace}</span>
+                      </div>
+                      <div class="space-y-0.5 text-[10px] font-mono text-slate-300">
+                        ${cls.methods.map(m => `
+                          <div class="text-slate-400">
+                            <span class="text-indigo-400">${m.visibility}</span> <span class="text-emerald-400">${m.return_type}</span> <span class="text-slate-200">${m.name}</span>
+                            ${m.desc ? `<span class="text-[9px] text-slate-500 italic block font-sans">${m.desc}</span>` : ''}
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Card B: SDKs & Engine Footprint -->
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span class="text-xs font-bold text-teal-300 flex items-center gap-1.5">
+                  <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-400"></i> Thư Viện SDK & Công Nghệ Ngầm (Footprint):
+                </span>
+                <div class="space-y-1.5 max-h-56 overflow-y-auto pr-1 scrollbar-thin">
+                  ${(data.rea_dossier.detected_sdks || []).map(sdk => `
+                    <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 flex items-center justify-between text-[11px]">
+                      <div>
+                        <span class="font-bold text-white block">${sdk.name}</span>
+                        <span class="text-[10px] text-slate-400">${sdk.purpose}</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded text-[9px] font-semibold bg-slate-800 text-slate-300 border border-slate-700 whitespace-nowrap">
+                        ${sdk.category}
+                      </span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Card C: Internal Constants & Balancing Floats -->
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <i data-lucide="hash" class="w-3.5 h-3.5 text-amber-400"></i> Hằng Số Cân Bằng Gameplay Nhúng Trong Binary:
+                </span>
+                <div class="space-y-1 text-[11px]">
+                  ${(data.rea_dossier.internal_constants || []).map(c => `
+                    <div class="p-1.5 rounded bg-slate-900/80 border border-slate-800/80 flex items-center justify-between gap-2">
+                      <span class="font-mono text-amber-300 text-[10px]">${c.name}</span>
+                      <span class="font-mono font-bold text-white text-[10px]">${c.value}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Card D: Network Telemetry & REA Commands -->
+              <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span class="text-xs font-bold text-pink-300 flex items-center gap-1.5">
+                  <i data-lucide="terminal" class="w-3.5 h-3.5 text-pink-400"></i> Lệnh REA CLI Trích Xuất Trên Máy Của Bạn:
+                </span>
+                <div class="space-y-1.5 text-[10px] font-mono">
+                  ${(data.rea_dossier.rea_cli_commands || []).map(cmd => `
+                    <div class="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-between gap-2">
+                      <span class="truncate text-pink-300">${cmd}</span>
+                      <button onclick="copyTextToClipboard('${cmd.replace(/'/g, "\\'")}', 'Đã sao chép lệnh REA!')" class="px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 cursor-pointer text-[9px] whitespace-nowrap">
+                        Copy
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
       `;
 
       lucide.createIcons();
