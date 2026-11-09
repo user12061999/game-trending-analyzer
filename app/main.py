@@ -1029,6 +1029,71 @@ async def analyze_deconstruct_api(request: Request):
         raw_description=payload.get("raw_description")
     )
 
+@app.get("/api/deconstruct/export-unity-zip")
+@app.post("/api/deconstruct/export-unity-zip")
+async def export_unity_zip_api(
+    request: Request,
+    title: Optional[str] = Query(None),
+    platform: Optional[str] = Query(None),
+    genre: Optional[str] = Query(None)
+):
+    """Generates and downloads a complete Unity Starter Prototype Project (.zip)."""
+    game_title = title or "GamePrototype"
+    plat = platform or "PC / Mobile"
+    gen = genre or "Action Roguelike"
+
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            game_title = body.get("game_title") or game_title
+            plat = body.get("platform") or plat
+            gen = body.get("genre_hint") or body.get("genre") or gen
+        except Exception:
+            pass
+
+    data = game_deconstructor.deconstruct_game(game_title=game_title, platform=plat, genre_hint=gen)
+    zip_bytes = game_deconstructor.generate_unity_zip_package(data)
+    clean_title = "".join(c for c in game_title if c.isalnum() or c in ("_", "-")).strip() or "Prototype"
+    filename = f"{clean_title}_Unity_Starter.zip"
+
+    return Response(
+        content=zip_bytes,
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        }
+    )
+
+@app.post("/api/deconstruct/art-prompts")
+async def get_art_prompts_api(request: Request):
+    """Generates comprehensive Midjourney / Stable Diffusion prompts for game assets."""
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    game_title = payload.get("game_title", "Vampire Survivors")
+    art_style = payload.get("art_style", "Pixel Art 16-bit")
+    genre = payload.get("genre_hint", "Action Roguelike")
+
+    data = game_deconstructor.deconstruct_game(game_title=game_title, platform="PC / Mobile", genre_hint=genre)
+    return game_deconstructor.generate_ai_art_prompts(data, art_style=art_style)
+
+@app.post("/api/deconstruct/video-ad-script")
+async def get_video_ad_script_api(request: Request):
+    """Generates a viral 30-second TikTok / Facebook UA video ad script with storyboard."""
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    game_title = payload.get("game_title", "Vampire Survivors")
+    genre = payload.get("genre_hint", "Action Roguelike")
+
+    data = game_deconstructor.deconstruct_game(game_title=game_title, platform="PC / Mobile", genre_hint=genre)
+    return game_deconstructor.generate_video_ad_script(data)
+
 @app.get("/api/meta")
 async def get_metadata():
     return {

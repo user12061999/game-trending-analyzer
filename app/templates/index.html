@@ -3746,30 +3746,43 @@
 
       <!-- Modal Sub-Tabs Navigation -->
       <div class="flex items-center gap-2 border-b border-slate-800 pb-2 text-xs font-semibold overflow-x-auto">
-        <button onclick="switchModalSubTab('deconstruct')" id="modalSubTabBtn-deconstruct" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-emerald-900/40">
+        <button onclick="switchModalSubTab('deconstruct')" id="modalSubTabBtn-deconstruct" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-emerald-900/40 shrink-0">
           <i data-lucide="gamepad-2" class="w-4 h-4"></i>
-          <span>🕹️ Bóc Tách Gameplay & Kịch Bản Clone</span>
+          <span>🕹️ Bóc Tách Gameplay</span>
           <span class="px-1.5 py-0.5 rounded text-[9px] bg-white/20 text-white font-black uppercase tracking-wider">TỰ ĐỘNG</span>
         </button>
-        <button onclick="switchModalSubTab('gdd')" id="modalSubTabBtn-gdd" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer">
-          <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
-          <span>📋 Xuất GDD Game 1-Page</span>
-          <span class="px-1.5 py-0.5 rounded text-[9px] bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/30">AI</span>
+        <button onclick="switchModalSubTab('playprototype')" id="modalSubTabBtn-playprototype" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer font-semibold shrink-0">
+          <i data-lucide="play-circle" class="w-4 h-4 text-violet-400"></i>
+          <span>🎮 Chơi Thử Prototype Live</span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] bg-violet-500/20 text-violet-400 font-bold border border-violet-500/30">CANVAS 60FPS</span>
         </button>
-        <button onclick="switchModalSubTab('overview')" id="modalSubTabBtn-overview" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer">
+        <button onclick="switchModalSubTab('artprompts')" id="modalSubTabBtn-artprompts" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer font-semibold shrink-0">
+          <i data-lucide="palette" class="w-4 h-4 text-fuchsia-400"></i>
+          <span>🎨 Prompt AI Vẽ Assets</span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] bg-fuchsia-500/20 text-fuchsia-400 font-bold border border-fuchsia-500/30">MIDJOURNEY</span>
+        </button>
+        <button onclick="switchModalSubTab('adscript')" id="modalSubTabBtn-adscript" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer font-semibold shrink-0">
+          <i data-lucide="clapperboard" class="w-4 h-4 text-rose-400"></i>
+          <span>🎬 Kịch Bản Video UA Ads 30s</span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] bg-rose-500/20 text-rose-400 font-bold border border-rose-500/30">TIKTOK/FB</span>
+        </button>
+        <button onclick="switchModalSubTab('gdd')" id="modalSubTabBtn-gdd" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
+          <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
+          <span>📋 Xuất GDD 1-Page</span>
+        </button>
+        <button onclick="switchModalSubTab('overview')" id="modalSubTabBtn-overview" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
           <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
           <span>📊 Doanh Thu & Xếp Hạng</span>
         </button>
-        <button onclick="switchModalSubTab('reviews')" id="modalSubTabBtn-reviews" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer">
+        <button onclick="switchModalSubTab('reviews')" id="modalSubTabBtn-reviews" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
           <i data-lucide="message-square-quote" class="w-4 h-4 text-pink-400"></i>
-          <span>💀 Review & Tử Huyệt Bỏ Game</span>
-          <span class="px-1.5 py-0.5 rounded text-[9px] bg-pink-500/20 text-pink-400 font-bold border border-pink-500/30">MỚI</span>
+          <span>💀 Review & Tử Huyệt</span>
         </button>
-        <button onclick="switchModalSubTab('aso')" id="modalSubTabBtn-aso" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer">
+        <button onclick="switchModalSubTab('aso')" id="modalSubTabBtn-aso" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
           <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
-          <span>🔍 Gián Điệp ASO & Từ Khóa</span>
+          <span>🔍 Gián Điệp ASO</span>
         </button>
-        <button onclick="switchModalSubTab('liveops')" id="modalSubTabBtn-liveops" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer">
+        <button onclick="switchModalSubTab('liveops')" id="modalSubTabBtn-liveops" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
           <i data-lucide="calendar" class="w-4 h-4 text-amber-400"></i>
           <span>📅 LiveOps & Sự Kiện</span>
         </button>
@@ -3789,7 +3802,10 @@
               Báo Cáo Bóc Tách Gameplay, Kịch Bản Pacing & Mã Nguồn Unity
             </h4>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="downloadUnityZipPackage()" class="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-purple-600/30 cursor-pointer">
+              <i data-lucide="package" class="w-3.5 h-3.5"></i> Tải Unity (.zip)
+            </button>
             <button onclick="reloadModalDeconstruct()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Phân Tích Lại
             </button>
@@ -3805,6 +3821,194 @@
         <!-- Result Container -->
         <div id="modalDeconstructContainer" class="space-y-4">
           <!-- Dynamically populated by loadModalDeconstruct() -->
+        </div>
+      </div>
+
+      <!-- SUB-TAB 0.2: HTML5 CANVAS LIVE GAMEPLAY PROTOTYPE SIMULATOR -->
+      <div id="modalSubTabContent-playprototype" class="hidden space-y-4">
+        <!-- Control Header & Stats -->
+        <div class="glass-card p-4 rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-950/40 via-slate-900 to-indigo-950/40 flex items-center justify-between flex-wrap gap-3">
+          <div class="space-y-1">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-violet-500/20 text-violet-300 border border-violet-500/30 uppercase tracking-wider flex items-center gap-1.5 w-fit">
+              <span class="w-2 h-2 rounded-full bg-violet-400 animate-ping"></span>
+              HTML5 CANVAS 60 FPS LIVE SIMULATOR
+            </span>
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="play-circle" class="w-4 h-4 text-violet-400"></i>
+              Mô Phỏng Trực Tiếp Cơ Chế Gameplay (WASD / Phím Mũi Tên)
+            </h4>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button id="protoPlayBtn" onclick="togglePrototypePlay()" class="px-3.5 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-violet-600/30 cursor-pointer">
+              <i id="protoPlayIcon" data-lucide="play" class="w-3.5 h-3.5"></i> <span id="protoPlayText">Bắt Đầu Chơi</span>
+            </button>
+            <button onclick="resetPrototypeGame()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset
+            </button>
+            <button id="protoSpeedBtn" onclick="togglePrototypeSpeed()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> <span id="protoSpeedText">Tốc độ x1</span>
+            </button>
+            <button id="protoAutopilotBtn" onclick="togglePrototypeAutopilot()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i data-lucide="bot" class="w-3.5 h-3.5 text-cyan-400"></i> <span id="protoAutopilotText">Auto-Pilot: OFF</span>
+            </button>
+            <button id="protoAudioBtn" onclick="togglePrototypeAudio()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i id="protoAudioIcon" data-lucide="volume-2" class="w-3.5 h-3.5 text-emerald-400"></i> <span id="protoAudioText">SFX: Bật</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- HUD Bar -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+            <span class="text-slate-400 text-[11px] font-semibold">Cấp Độ (LV):</span>
+            <span id="protoHudLevel" class="font-bold text-amber-400 text-sm">1</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+            <span class="text-slate-400 text-[11px] font-semibold">Máu (HP):</span>
+            <div class="flex items-center gap-2">
+              <div class="w-16 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div id="protoHpBar" class="h-full bg-emerald-500 rounded-full transition-all duration-150" style="width: 100%;"></div>
+              </div>
+              <span id="protoHudHp" class="font-bold text-emerald-400 text-[11px]">100/100</span>
+            </div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+            <span class="text-slate-400 text-[11px] font-semibold">Đợt Quái:</span>
+            <span id="protoHudWave" class="font-bold text-violet-400 text-sm">Wave 1</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+            <span class="text-slate-400 text-[11px] font-semibold">Đã Diệt (Kills):</span>
+            <span id="protoHudKills" class="font-bold text-rose-400 text-sm">0</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between col-span-2 sm:col-span-1">
+            <span class="text-slate-400 text-[11px] font-semibold">Thời Gian:</span>
+            <span id="protoHudTimer" class="font-bold text-cyan-400 font-mono text-sm">00:00</span>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl flex flex-col items-center justify-center min-h-[420px]">
+          <canvas id="prototypeCanvas" width="900" height="420" class="w-full h-[420px] block cursor-crosshair"></canvas>
+          
+          <!-- Overlay notification / level up choice -->
+          <div id="protoUpgradeOverlay" class="absolute inset-0 bg-slate-950/85 backdrop-blur-sm hidden flex-col items-center justify-center p-6 space-y-4 z-20">
+            <div class="text-center space-y-1">
+              <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-400 border border-amber-500/40 uppercase tracking-widest animate-bounce inline-block">
+                ★ LEVEL UP! CHỌN NÂNG CẤP ★
+              </span>
+              <h3 class="text-base font-bold text-white">Cường Hóa Chỉ Số Nhân Vật</h3>
+              <p class="text-xs text-slate-400">Chọn 1 trong các thẻ nâng cấp bên dưới để áp dụng ngay:</p>
+            </div>
+            <div id="protoUpgradeCards" class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl">
+              <!-- Dynamically populated cards -->
+            </div>
+          </div>
+
+          <!-- Game Over Overlay -->
+          <div id="protoGameOverOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-sm hidden flex-col items-center justify-center p-6 space-y-3 z-20 text-center">
+            <div class="p-3 rounded-2xl bg-rose-500/20 border border-rose-500/30 text-rose-400">
+              <i data-lucide="skull" class="w-10 h-10 mx-auto"></i>
+            </div>
+            <h3 class="text-lg font-bold text-rose-400">BẠN ĐÃ HY SINH!</h3>
+            <p id="protoGameOverSummary" class="text-xs text-slate-300">Sống sót được 00:00 và tiêu diệt 0 quái.</p>
+            <button onclick="resetPrototypeGame(true)" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold shadow-lg shadow-violet-600/30 cursor-pointer flex items-center gap-1.5">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Thử Lại Ván Mới
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls Guide -->
+        <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs text-slate-400 flex-wrap gap-2">
+          <div class="flex items-center gap-3">
+            <span class="flex items-center gap-1 font-semibold text-slate-300">
+              <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-white">W</kbd>
+              <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-white">A</kbd>
+              <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-white">S</kbd>
+              <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-white">D</kbd>
+              <span class="ml-1 text-[11px]">hoặc Mũi Tên: Di chuyển</span>
+            </span>
+            <span class="hidden sm:inline text-slate-600">•</span>
+            <span class="hidden sm:inline text-[11px]">Vũ khí tự động ngắm quái gần nhất</span>
+            <span class="hidden sm:inline text-slate-600">•</span>
+            <span class="hidden sm:inline text-[11px]">Hút ngọc EXP xanh lá để lên cấp</span>
+          </div>
+          <div class="text-[11px] text-cyan-400 font-medium">
+            💡 Hỗ trợ kéo chuột/cảm ứng hoặc kích hoạt Auto-Pilot
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 0.3: AI VISUAL ASSET PROMPT GENERATOR & MOODBOARD STUDIO -->
+      <div id="modalSubTabContent-artprompts" class="hidden space-y-4">
+        <!-- Top Filter & Actions -->
+        <div class="glass-card p-4 rounded-2xl border border-fuchsia-500/30 bg-gradient-to-r from-fuchsia-950/40 via-slate-900 to-pink-950/40 flex items-center justify-between flex-wrap gap-3">
+          <div class="space-y-1">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 uppercase tracking-wider flex items-center gap-1.5 w-fit">
+              <i data-lucide="palette" class="w-3 h-3"></i> AI ART GENERATOR & MOODBOARD PROMPTS
+            </span>
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="brush" class="w-4 h-4 text-fuchsia-400"></i>
+              Bộ Prompt Midjourney / Stable Diffusion Sẵn Sàng Tạo Asset
+            </h4>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-1.5 bg-slate-950/80 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
+              <span class="text-slate-400 font-medium text-[11px]">Phong Cách:</span>
+              <select id="modalArtStyleSelect" onchange="onArtStyleChanged()" class="bg-transparent text-white font-semibold text-xs outline-none cursor-pointer">
+                <option value="Pixel Art 16-bit (Retro Nostalgic)" class="bg-slate-900">Pixel Art 16-bit</option>
+                <option value="Stylized 3D Anime (Genshin / Honkai Style)" selected class="bg-slate-900">Stylized 3D Anime</option>
+                <option value="Dark Fantasy Gritty (Diablo / Dark Souls)" class="bg-slate-900">Dark Fantasy Gritty</option>
+                <option value="Low-Poly Vibrant (Hypercasual / Roblox)" class="bg-slate-900">Low-Poly Vibrant</option>
+                <option value="Casual Cartoon Flat (Archero / Survivor.io)" class="bg-slate-900">Casual Cartoon Flat</option>
+              </select>
+            </div>
+            <button onclick="reloadModalArtPrompts()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sinh Lại
+            </button>
+            <button onclick="copyAllArtPrompts()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-fuchsia-400"></i> Sao Chép Toàn Bộ
+            </button>
+            <button onclick="downloadAllArtPromptsText()" class="px-3.5 py-1.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold flex items-center gap-1 shadow-lg shadow-fuchsia-600/30 cursor-pointer">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Tải Prompts (.txt)
+            </button>
+          </div>
+        </div>
+
+        <!-- Prompts Result Container -->
+        <div id="modalArtPromptsContainer" class="space-y-4">
+          <!-- Dynamically populated by loadModalArtPrompts() -->
+        </div>
+      </div>
+
+      <!-- SUB-TAB 0.4: AI COMPETITOR AD CREATIVE VIDEO SCRIPT & STORYBOARD -->
+      <div id="modalSubTabContent-adscript" class="hidden space-y-4">
+        <!-- Top Header & Metrics -->
+        <div class="glass-card p-4 rounded-2xl border border-rose-500/30 bg-gradient-to-r from-rose-950/40 via-slate-900 to-amber-950/40 flex items-center justify-between flex-wrap gap-3">
+          <div class="space-y-1">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/30 uppercase tracking-wider flex items-center gap-1.5 w-fit">
+              <i data-lucide="clapperboard" class="w-3 h-3"></i> 30-SECOND VIRAL UA VIDEO AD STORYBOARD
+            </span>
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="video" class="w-4 h-4 text-rose-400"></i>
+              Kịch Bản Video Quảng Cáo TikTok / Facebook Ads Kéo CPI Cực Thấp
+            </h4>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="reloadModalAdScript()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Biên Soạn Lại
+            </button>
+            <button onclick="copyAdScriptText()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-rose-400"></i> Sao Chép Script
+            </button>
+            <button onclick="downloadAdScriptMarkdown()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold flex items-center gap-1 shadow-lg shadow-rose-600/30 cursor-pointer">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Tải Kịch Bản (.md)
+            </button>
+          </div>
+        </div>
+
+        <!-- Storyboard Result Container -->
+        <div id="modalAdScriptContainer" class="space-y-4">
+          <!-- Dynamically populated by loadModalAdScript() -->
         </div>
       </div>
 
@@ -4709,14 +4913,19 @@
 
         <!-- 5. Unity C# Starter Code -->
         <div class="space-y-2.5">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2 flex-wrap gap-2">
             <h4 class="text-xs font-bold text-white flex items-center gap-2">
               <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i>
               5. Mã Nguồn C# Unity Starter Scripts (Gắn Trực Tiếp Vào Prefab)
             </h4>
-            <button onclick="copyModalDeconstructCode()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
-              <i data-lucide="copy" class="w-3 h-3 text-emerald-400"></i> Sao Chép C# Code
-            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="downloadUnityZipPackage()" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-[11px] font-bold flex items-center gap-1 shadow-md shadow-purple-600/30 cursor-pointer">
+                <i data-lucide="package" class="w-3.5 h-3.5"></i> Tải Full Project Unity (.zip)
+              </button>
+              <button onclick="copyModalDeconstructCode()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer">
+                <i data-lucide="copy" class="w-3 h-3 text-emerald-400"></i> Sao Chép C# Code
+              </button>
+            </div>
           </div>
           <div class="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-4">
             <pre class="font-mono text-[11px] text-emerald-300 leading-relaxed overflow-x-auto max-h-72 scrollbar-thin"><code>${escapedCode}</code></pre>
@@ -4814,6 +5023,1249 @@
       }).catch(err => {
         showToast('Lỗi khi sao chép: ' + err);
       });
+    }
+
+    function downloadUnityZipPackage() {
+      const title = currentActiveModalGameTitle || 'Game';
+      const platform = currentActiveModalGamePlatform || 'PC / Mobile';
+      const genre = currentActiveModalGameGenre || 'Action';
+      const storeUrl = currentActiveModalGameStoreUrl || '';
+      const desc = currentActiveModalGameDesc || '';
+      showToast(`Đang đóng gói Starter Project Unity (.zip) cho ${title}...`);
+      const url = `/api/deconstruct/export-unity-zip?title=${encodeURIComponent(title)}&platform=${encodeURIComponent(platform)}&genre=${encodeURIComponent(genre)}&store_url=${encodeURIComponent(storeUrl)}&desc=${encodeURIComponent(desc)}`;
+      window.location.href = url;
+    }
+
+    function copyTextToClipboard(text, msg) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(msg || 'Đã sao chép vào clipboard!');
+      }).catch(err => {
+        showToast('Lỗi khi sao chép: ' + err);
+      });
+    }
+
+    // --- HTML5 CANVAS 60 FPS PROTOTYPE SIMULATOR ---
+    let protoCanvas = null;
+    let protoCtx = null;
+    let isProtoRunning = false;
+    let protoAnimId = null;
+    let protoSpeed = 1;
+    let protoAutopilot = false;
+    let protoAudioEnabled = true;
+    let protoAudioCtx = null;
+    let protoLastTime = 0;
+    let protoKeys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+    let protoTouch = { active: false, x: 0, y: 0 };
+    let protoEventsBound = false;
+
+    let protoState = {
+      player: {
+        x: 450, y: 210, radius: 14,
+        hp: 100, maxHp: 100,
+        speed: 3.8,
+        fireInterval: 320,
+        lastFire: 0,
+        bulletSpeed: 8,
+        damage: 30,
+        multishot: 1,
+        magnet: 130,
+        level: 1,
+        exp: 0,
+        expNext: 60,
+        kills: 0,
+        facingAngle: 0
+      },
+      enemies: [],
+      bullets: [],
+      gems: [],
+      particles: [],
+      floatingTexts: [],
+      wave: 1,
+      startTime: 0,
+      elapsedTime: 0,
+      spawnTimer: 0,
+      spawnInterval: 1100,
+      isGameOver: false,
+      isLevelingUp: false
+    };
+
+    function playProtoSound(type) {
+      if (!protoAudioEnabled) return;
+      try {
+        if (!protoAudioCtx) {
+          protoAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (protoAudioCtx.state === 'suspended') {
+          protoAudioCtx.resume();
+        }
+        const osc = protoAudioCtx.createOscillator();
+        const gain = protoAudioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(protoAudioCtx.destination);
+        const now = protoAudioCtx.currentTime;
+
+        if (type === 'shoot') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.07);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.07);
+          osc.start(now);
+          osc.stop(now + 0.07);
+        } else if (type === 'hit') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(160, now);
+          osc.frequency.exponentialRampToValueAtTime(40, now + 0.09);
+          gain.gain.setValueAtTime(0.09, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.09);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } else if (type === 'gem') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(659, now);
+          osc.frequency.setValueAtTime(987, now + 0.05);
+          gain.gain.setValueAtTime(0.07, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } else if (type === 'levelup') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(554, now + 0.08);
+          osc.frequency.setValueAtTime(659, now + 0.16);
+          osc.frequency.setValueAtTime(880, now + 0.24);
+          gain.gain.setValueAtTime(0.09, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'gameover') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(55, now + 0.35);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        }
+      } catch (e) {}
+    }
+
+    function initPrototypeGame() {
+      protoCanvas = document.getElementById('prototypeCanvas');
+      if (!protoCanvas) return;
+      protoCtx = protoCanvas.getContext('2d');
+
+      const rect = protoCanvas.getBoundingClientRect();
+      if (rect.width > 0) {
+        protoCanvas.width = rect.width;
+        protoCanvas.height = 420;
+      }
+
+      if (!protoEventsBound) {
+        window.addEventListener('keydown', (e) => {
+          if (['w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            protoKeys[e.key] = true;
+          }
+        });
+        window.addEventListener('keyup', (e) => {
+          if (['w', 'a', 's', 'd', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            protoKeys[e.key] = false;
+          }
+        });
+
+        const handlePointer = (clientX, clientY, active) => {
+          if (!protoCanvas) return;
+          const r = protoCanvas.getBoundingClientRect();
+          protoTouch.active = active;
+          protoTouch.x = clientX - r.left;
+          protoTouch.y = clientY - r.top;
+        };
+
+        protoCanvas.addEventListener('mousedown', (e) => handlePointer(e.clientX, e.clientY, true));
+        window.addEventListener('mousemove', (e) => {
+          if (protoTouch.active) handlePointer(e.clientX, e.clientY, true);
+        });
+        window.addEventListener('mouseup', () => { protoTouch.active = false; });
+
+        protoCanvas.addEventListener('touchstart', (e) => {
+          if (e.touches && e.touches.length > 0) handlePointer(e.touches[0].clientX, e.touches[0].clientY, true);
+        }, { passive: true });
+        protoCanvas.addEventListener('touchmove', (e) => {
+          if (e.touches && e.touches.length > 0) handlePointer(e.touches[0].clientX, e.touches[0].clientY, true);
+        }, { passive: true });
+        protoCanvas.addEventListener('touchend', () => { protoTouch.active = false; });
+
+        protoEventsBound = true;
+      }
+
+      resetPrototypeGame(false);
+    }
+
+    function resetPrototypeGame(autoStart = false) {
+      const w = (protoCanvas && protoCanvas.width) || 900;
+      const h = (protoCanvas && protoCanvas.height) || 420;
+
+      protoState = {
+        player: {
+          x: w / 2, y: h / 2, radius: 14,
+          hp: 100, maxHp: 100,
+          speed: 3.8,
+          fireInterval: 320,
+          lastFire: 0,
+          bulletSpeed: 8,
+          damage: 30,
+          multishot: 1,
+          magnet: 130,
+          level: 1,
+          exp: 0,
+          expNext: 60,
+          kills: 0,
+          facingAngle: 0
+        },
+        enemies: [],
+        bullets: [],
+        gems: [],
+        particles: [],
+        floatingTexts: [],
+        wave: 1,
+        startTime: Date.now(),
+        elapsedTime: 0,
+        spawnTimer: 0,
+        spawnInterval: 1000,
+        isGameOver: false,
+        isLevelingUp: false
+      };
+
+      const upOverlay = document.getElementById('protoUpgradeOverlay');
+      if (upOverlay) { upOverlay.classList.add('hidden'); upOverlay.classList.remove('flex'); }
+      const goOverlay = document.getElementById('protoGameOverOverlay');
+      if (goOverlay) { goOverlay.classList.add('hidden'); goOverlay.classList.remove('flex'); }
+
+      updatePrototypeHUD();
+
+      if (autoStart) {
+        startPrototypeGame();
+      } else {
+        renderPrototypeStaticFrame();
+      }
+    }
+
+    function togglePrototypePlay() {
+      if (isProtoRunning) {
+        pausePrototypeGame();
+      } else {
+        startPrototypeGame();
+      }
+    }
+
+    function startPrototypeGame() {
+      if (!protoCanvas) initPrototypeGame();
+      if (protoState.isGameOver) {
+        resetPrototypeGame(true);
+        return;
+      }
+      isProtoRunning = true;
+      protoLastTime = performance.now();
+      const btn = document.getElementById('protoPlayBtn');
+      if (btn) {
+        btn.className = "px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-amber-600/30 cursor-pointer";
+        const txt = document.getElementById('protoPlayText');
+        if (txt) txt.innerText = "Tạm Dừng";
+        const icon = document.getElementById('protoPlayIcon');
+        if (icon) icon.setAttribute('data-lucide', 'pause');
+        lucide.createIcons();
+      }
+      cancelAnimationFrame(protoAnimId);
+      protoAnimId = requestAnimationFrame(prototypeGameLoop);
+    }
+
+    function pausePrototypeGame() {
+      isProtoRunning = false;
+      cancelAnimationFrame(protoAnimId);
+      const btn = document.getElementById('protoPlayBtn');
+      if (btn) {
+        btn.className = "px-3.5 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-violet-600/30 cursor-pointer";
+        const txt = document.getElementById('protoPlayText');
+        if (txt) txt.innerText = "Tiếp Tục Chơi";
+        const icon = document.getElementById('protoPlayIcon');
+        if (icon) icon.setAttribute('data-lucide', 'play');
+        lucide.createIcons();
+      }
+    }
+
+    function togglePrototypeSpeed() {
+      protoSpeed = (protoSpeed === 1) ? 2 : 1;
+      const text = document.getElementById('protoSpeedText');
+      if (text) text.innerText = `Tốc độ x${protoSpeed}`;
+      const btn = document.getElementById('protoSpeedBtn');
+      if (btn) {
+        if (protoSpeed === 2) {
+          btn.className = "px-3.5 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-bold border border-amber-500 flex items-center gap-1 cursor-pointer";
+        } else {
+          btn.className = "px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer";
+        }
+      }
+    }
+
+    function togglePrototypeAutopilot() {
+      protoAutopilot = !protoAutopilot;
+      const text = document.getElementById('protoAutopilotText');
+      if (text) text.innerText = `Auto-Pilot: ${protoAutopilot ? 'ON 🤖' : 'OFF'}`;
+      const btn = document.getElementById('protoAutopilotBtn');
+      if (btn) {
+        if (protoAutopilot) {
+          btn.className = "px-3.5 py-1.5 rounded-xl bg-cyan-600 text-white text-xs font-bold border border-cyan-400 flex items-center gap-1 cursor-pointer shadow-lg shadow-cyan-600/30";
+        } else {
+          btn.className = "px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer";
+        }
+      }
+    }
+
+    function togglePrototypeAudio() {
+      protoAudioEnabled = !protoAudioEnabled;
+      const text = document.getElementById('protoAudioText');
+      if (text) text.innerText = `SFX: ${protoAudioEnabled ? 'Bật' : 'Tắt'}`;
+      const btn = document.getElementById('protoAudioBtn');
+      if (btn) {
+        if (protoAudioEnabled) {
+          btn.className = "px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 flex items-center gap-1 cursor-pointer";
+        } else {
+          btn.className = "px-3.5 py-1.5 rounded-xl bg-slate-800 text-slate-500 text-xs font-semibold border border-slate-800 flex items-center gap-1 cursor-pointer";
+        }
+      }
+    }
+
+    function updatePrototypeHUD() {
+      const p = protoState.player;
+      const lvl = document.getElementById('protoHudLevel');
+      if (lvl) lvl.innerText = p.level;
+
+      const hpTxt = document.getElementById('protoHudHp');
+      if (hpTxt) hpTxt.innerText = `${Math.max(0, Math.round(p.hp))}/${p.maxHp}`;
+
+      const hpBar = document.getElementById('protoHpBar');
+      if (hpBar) {
+        const pct = Math.max(0, Math.min(100, (p.hp / p.maxHp) * 100));
+        hpBar.style.width = `${pct}%`;
+        if (pct > 50) hpBar.className = "h-full bg-emerald-500 rounded-full transition-all duration-150";
+        else if (pct > 25) hpBar.className = "h-full bg-amber-500 rounded-full transition-all duration-150";
+        else hpBar.className = "h-full bg-rose-500 rounded-full transition-all duration-150";
+      }
+
+      const waveTxt = document.getElementById('protoHudWave');
+      if (waveTxt) waveTxt.innerText = `Wave ${protoState.wave}`;
+
+      const killsTxt = document.getElementById('protoHudKills');
+      if (killsTxt) killsTxt.innerText = p.kills;
+
+      const timerTxt = document.getElementById('protoHudTimer');
+      if (timerTxt) {
+        const s = Math.floor(protoState.elapsedTime / 1000);
+        const mm = String(Math.floor(s / 60)).padStart(2, '0');
+        const ss = String(s % 60).padStart(2, '0');
+        timerTxt.innerText = `${mm}:${ss}`;
+      }
+    }
+
+    function prototypeGameLoop(timestamp) {
+      if (!isProtoRunning) return;
+      const rawDelta = Math.min(timestamp - protoLastTime, 100);
+      protoLastTime = timestamp;
+      const dt = (rawDelta / 16.666) * protoSpeed;
+
+      protoState.elapsedTime += rawDelta * protoSpeed;
+      const w = protoCanvas.width;
+      const h = protoCanvas.height;
+      const p = protoState.player;
+
+      // 1. Move Player
+      let dx = 0;
+      let dy = 0;
+      if (protoAutopilot) {
+        let threat = null;
+        let threatDist = 120;
+        protoState.enemies.forEach(e => {
+          const d = Math.hypot(e.x - p.x, e.y - p.y);
+          if (d < threatDist) {
+            threat = e;
+            threatDist = d;
+          }
+        });
+
+        if (threat) {
+          dx = p.x - threat.x;
+          dy = p.y - threat.y;
+        } else if (protoState.gems.length > 0) {
+          let closestGem = protoState.gems[0];
+          let minDist = 9999;
+          protoState.gems.forEach(g => {
+            const d = Math.hypot(g.x - p.x, g.y - p.y);
+            if (d < minDist) {
+              minDist = d;
+              closestGem = g;
+            }
+          });
+          dx = closestGem.x - p.x;
+          dy = closestGem.y - p.y;
+        } else if (protoState.enemies.length > 0) {
+          const target = protoState.enemies[0];
+          const dist = Math.hypot(target.x - p.x, target.y - p.y);
+          if (dist > 180) {
+            dx = target.x - p.x;
+            dy = target.y - p.y;
+          } else if (dist < 130) {
+            dx = p.x - target.x;
+            dy = p.y - target.y;
+          }
+        }
+      } else if (protoTouch.active) {
+        dx = protoTouch.x - p.x;
+        dy = protoTouch.y - p.y;
+        if (Math.hypot(dx, dy) < 10) { dx = 0; dy = 0; }
+      } else {
+        if (protoKeys.w || protoKeys.ArrowUp) dy -= 1;
+        if (protoKeys.s || protoKeys.ArrowDown) dy += 1;
+        if (protoKeys.a || protoKeys.ArrowLeft) dx -= 1;
+        if (protoKeys.d || protoKeys.ArrowRight) dx += 1;
+      }
+
+      if (dx !== 0 || dy !== 0) {
+        const len = Math.hypot(dx, dy);
+        p.x += (dx / len) * p.speed * dt;
+        p.y += (dy / len) * p.speed * dt;
+        p.facingAngle = Math.atan2(dy, dx);
+      }
+
+      p.x = Math.max(p.radius + 5, Math.min(w - p.radius - 5, p.x));
+      p.y = Math.max(p.radius + 5, Math.min(h - p.radius - 5, p.y));
+
+      // 2. Auto-Target Weapon
+      if (timestamp - p.lastFire > p.fireInterval) {
+        let nearestEnemy = null;
+        let minRange = 400;
+        protoState.enemies.forEach(e => {
+          const dist = Math.hypot(e.x - p.x, e.y - p.y);
+          if (dist < minRange) {
+            minRange = dist;
+            nearestEnemy = e;
+          }
+        });
+
+        if (nearestEnemy) {
+          p.lastFire = timestamp;
+          const baseAngle = Math.atan2(nearestEnemy.y - p.y, nearestEnemy.x - p.x);
+          p.facingAngle = baseAngle;
+
+          const shots = p.multishot;
+          const spread = 0.22;
+          for (let i = 0; i < shots; i++) {
+            const offset = (shots > 1) ? (i - (shots - 1) / 2) * spread : 0;
+            const angle = baseAngle + offset;
+            protoState.bullets.push({
+              x: p.x + Math.cos(angle) * (p.radius + 4),
+              y: p.y + Math.sin(angle) * (p.radius + 4),
+              vx: Math.cos(angle) * p.bulletSpeed,
+              vy: Math.sin(angle) * p.bulletSpeed,
+              radius: 4.5,
+              damage: p.damage,
+              life: 55
+            });
+          }
+          playProtoSound('shoot');
+        }
+      }
+
+      // 3. Update Bullets
+      for (let i = protoState.bullets.length - 1; i >= 0; i--) {
+        const b = protoState.bullets[i];
+        b.x += b.vx * dt;
+        b.y += b.vy * dt;
+        b.life -= dt;
+
+        let hit = false;
+        for (let j = protoState.enemies.length - 1; j >= 0; j--) {
+          const e = protoState.enemies[j];
+          const dist = Math.hypot(e.x - b.x, e.y - b.y);
+          if (dist < e.radius + b.radius) {
+            hit = true;
+            const isCrit = Math.random() < 0.25;
+            const dmg = isCrit ? Math.round(b.damage * 1.8) : b.damage;
+            e.hp -= dmg;
+
+            protoState.floatingTexts.push({
+              x: e.x + (Math.random() - 0.5) * 16,
+              y: e.y - 12,
+              text: isCrit ? `CRIT! ${dmg}` : `${dmg}`,
+              color: isCrit ? '#f59e0b' : '#38bdf8',
+              life: 30,
+              size: isCrit ? 13 : 11
+            });
+
+            for (let k = 0; k < 4; k++) {
+              protoState.particles.push({
+                x: b.x, y: b.y,
+                vx: (Math.random() - 0.5) * 5,
+                vy: (Math.random() - 0.5) * 5,
+                color: isCrit ? '#f59e0b' : '#38bdf8',
+                radius: Math.random() * 2.5 + 1,
+                life: 15, maxLife: 15
+              });
+            }
+
+            playProtoSound('hit');
+
+            if (e.hp <= 0) {
+              p.kills++;
+              protoState.gems.push({
+                x: e.x, y: e.y,
+                value: e.expVal,
+                radius: 5
+              });
+              for (let k = 0; k < 8; k++) {
+                protoState.particles.push({
+                  x: e.x, y: e.y,
+                  vx: (Math.random() - 0.5) * 6,
+                  vy: (Math.random() - 0.5) * 6,
+                  color: e.color,
+                  radius: Math.random() * 3.5 + 1.5,
+                  life: 22, maxLife: 22
+                });
+              }
+              protoState.enemies.splice(j, 1);
+            }
+            break;
+          }
+        }
+
+        if (hit || b.life <= 0 || b.x < 0 || b.x > w || b.y < 0 || b.y > h) {
+          protoState.bullets.splice(i, 1);
+        }
+      }
+
+      // 4. Enemy Spawner & Waves
+      protoState.spawnTimer += rawDelta * protoSpeed;
+      const currentSeconds = Math.floor(protoState.elapsedTime / 1000);
+      protoState.wave = Math.floor(currentSeconds / 20) + 1;
+      protoState.spawnInterval = Math.max(380, 1050 - (protoState.wave * 80));
+
+      if (protoState.spawnTimer > protoState.spawnInterval && protoState.enemies.length < 50) {
+        protoState.spawnTimer = 0;
+        let sx, sy;
+        const side = Math.floor(Math.random() * 4);
+        if (side === 0) { sx = Math.random() * w; sy = -15; }
+        else if (side === 1) { sx = w + 15; sy = Math.random() * h; }
+        else if (side === 2) { sx = Math.random() * w; sy = h + 15; }
+        else { sx = -15; sy = Math.random() * h; }
+
+        const rType = Math.random();
+        let eType = { radius: 11, hp: 45 + protoState.wave * 12, maxHp: 45 + protoState.wave * 12, speed: 1.7 + (protoState.wave * 0.1), color: '#ef4444', expVal: 15 };
+        if (rType > 0.8) {
+          eType = { radius: 18, hp: 140 + protoState.wave * 35, maxHp: 140 + protoState.wave * 35, speed: 1.1, color: '#a855f7', expVal: 35 };
+        } else if (rType > 0.6) {
+          eType = { radius: 9, hp: 30 + protoState.wave * 8, maxHp: 30 + protoState.wave * 8, speed: 2.8, color: '#f97316', expVal: 20 };
+        }
+
+        protoState.enemies.push({
+          x: sx, y: sy,
+          radius: eType.radius,
+          hp: eType.hp,
+          maxHp: eType.maxHp,
+          speed: eType.speed,
+          color: eType.color,
+          expVal: eType.expVal
+        });
+      }
+
+      // 5. Update Enemies
+      for (let i = protoState.enemies.length - 1; i >= 0; i--) {
+        const e = protoState.enemies[i];
+        const angle = Math.atan2(p.y - e.y, p.x - e.x);
+        e.x += Math.cos(angle) * e.speed * dt;
+        e.y += Math.sin(angle) * e.speed * dt;
+
+        const dist = Math.hypot(p.x - e.x, p.y - e.y);
+        if (dist < p.radius + e.radius) {
+          p.hp -= 0.35 * dt;
+          if (Math.random() < 0.15) {
+            playProtoSound('hit');
+          }
+          if (p.hp <= 0) {
+            p.hp = 0;
+            triggerPrototypeGameOver();
+            return;
+          }
+        }
+      }
+
+      // 6. Update Gems & Vacuum Attraction
+      for (let i = protoState.gems.length - 1; i >= 0; i--) {
+        const g = protoState.gems[i];
+        const dist = Math.hypot(p.x - g.x, p.y - g.y);
+        if (dist < p.magnet) {
+          const pullSpeed = Math.max(5, (p.magnet - dist) * 0.15);
+          const angle = Math.atan2(p.y - g.y, p.x - g.x);
+          g.x += Math.cos(angle) * pullSpeed * dt;
+          g.y += Math.sin(angle) * pullSpeed * dt;
+        }
+
+        if (dist < p.radius + g.radius + 3) {
+          p.exp += g.value;
+          playProtoSound('gem');
+          protoState.gems.splice(i, 1);
+
+          if (p.exp >= p.expNext) {
+            triggerPrototypeLevelUp();
+            return;
+          }
+        }
+      }
+
+      // 7. Update Particles
+      for (let i = protoState.particles.length - 1; i >= 0; i--) {
+        const pt = protoState.particles[i];
+        pt.x += pt.vx * dt;
+        pt.y += pt.vy * dt;
+        pt.life -= dt;
+        if (pt.life <= 0) protoState.particles.splice(i, 1);
+      }
+
+      // 8. Update Floating Texts
+      for (let i = protoState.floatingTexts.length - 1; i >= 0; i--) {
+        const ft = protoState.floatingTexts[i];
+        ft.y -= 0.6 * dt;
+        ft.life -= dt;
+        if (ft.life <= 0) protoState.floatingTexts.splice(i, 1);
+      }
+
+      // 9. Render Frame
+      renderPrototypeFrame();
+      updatePrototypeHUD();
+
+      protoAnimId = requestAnimationFrame(prototypeGameLoop);
+    }
+
+    function renderPrototypeFrame() {
+      if (!protoCtx || !protoCanvas) return;
+      const ctx = protoCtx;
+      const w = protoCanvas.width;
+      const h = protoCanvas.height;
+      const p = protoState.player;
+
+      ctx.fillStyle = '#060913';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+      ctx.lineWidth = 1;
+      const gridSize = 40;
+      for (let x = 0; x < w; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+      for (let y = 0; y < h; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // Magnet vacuum aura
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.magnet, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.03)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+      ctx.setLineDash([4, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Gems
+      protoState.gems.forEach(g => {
+        ctx.save();
+        ctx.translate(g.x, g.y);
+        ctx.fillStyle = '#10b981';
+        ctx.shadowColor = '#10b981';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(0, -g.radius);
+        ctx.lineTo(g.radius, 0);
+        ctx.lineTo(0, g.radius);
+        ctx.lineTo(-g.radius, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Enemies
+      protoState.enemies.forEach(e => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+        ctx.fillStyle = e.color;
+        ctx.shadowColor = e.color;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.radius * 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.fill();
+
+        if (e.hp < e.maxHp) {
+          const barW = e.radius * 2.2;
+          const barH = 3;
+          const pct = Math.max(0, e.hp / e.maxHp);
+          ctx.fillStyle = 'rgba(0,0,0,0.6)';
+          ctx.fillRect(e.x - barW / 2, e.y - e.radius - 7, barW, barH);
+          ctx.fillStyle = '#ef4444';
+          ctx.fillRect(e.x - barW / 2, e.y - e.radius - 7, barW * pct, barH);
+        }
+        ctx.restore();
+      });
+
+      // Bullets
+      protoState.bullets.forEach(b => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#38bdf8';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Particles
+      protoState.particles.forEach(pt => {
+        const alpha = Math.max(0, pt.life / pt.maxLife);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.radius, 0, Math.PI * 2);
+        ctx.fillStyle = pt.color;
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Player
+      ctx.save();
+      ctx.shadowColor = '#8b5cf6';
+      ctx.shadowBlur = 16;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#8b5cf6';
+      ctx.fill();
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#c4b5fd';
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + Math.cos(p.facingAngle) * (p.radius + 7), p.y + Math.sin(p.facingAngle) * (p.radius + 7));
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#f8fafc';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      ctx.restore();
+
+      // Floating Texts
+      protoState.floatingTexts.forEach(ft => {
+        ctx.save();
+        ctx.font = `bold ${ft.size || 11}px sans-serif`;
+        ctx.fillStyle = ft.color;
+        ctx.shadowColor = '#000';
+        ctx.shadowBlur = 4;
+        ctx.textAlign = 'center';
+        ctx.fillText(ft.text, ft.x, ft.y);
+        ctx.restore();
+      });
+    }
+
+    function renderPrototypeStaticFrame() {
+      if (!protoCanvas) initPrototypeGame();
+      renderPrototypeFrame();
+    }
+
+    function triggerPrototypeLevelUp() {
+      pausePrototypeGame();
+      protoState.isLevelingUp = true;
+      const p = protoState.player;
+      p.level++;
+      p.exp -= p.expNext;
+      p.expNext = Math.round(p.expNext * 1.45);
+      playProtoSound('levelup');
+
+      const pool = [
+        { id: 'firerate', title: '⚡ Bắn Cực Nhanh', desc: 'Tăng 30% tốc độ xả đạn của vũ khí.' },
+        { id: 'damage', title: '💥 Đạn Công Phá', desc: 'Tăng 40% sát thương cơ bản mỗi phát bắn.' },
+        { id: 'multishot', title: '🌟 Bắn Phân Thân', desc: 'Bắn thêm +1 viên đạn nan quạt.' },
+        { id: 'speed', title: '👟 Gia Tốc Lướt', desc: 'Tăng 25% tốc độ di chuyển né đòn.' },
+        { id: 'magnet', title: '🧲 Siêu Nam Châm', desc: 'Tăng 60% bán kính hút ngọc EXP.' },
+        { id: 'heal', title: '💖 Trị Liệu & Tăng Máu', desc: 'Hồi phục +50 HP và tăng +30 Max HP vĩnh viễn.' }
+      ];
+
+      const shuffled = pool.sort(() => 0.5 - Math.random()).slice(0, 3);
+      const container = document.getElementById('protoUpgradeCards');
+      if (container) {
+        container.innerHTML = shuffled.map(up => `
+          <button onclick="applyPrototypeUpgrade('${up.id}')" class="p-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-violet-500/30 hover:border-violet-400 text-left transition-all hover:scale-105 cursor-pointer shadow-lg space-y-1 group">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-violet-500/20 text-violet-300 font-bold flex items-center justify-center text-xs group-hover:bg-violet-500 group-hover:text-white transition-colors">
+                ★
+              </span>
+              <h4 class="text-xs font-bold text-white">${up.title}</h4>
+            </div>
+            <p class="text-[11px] text-slate-300">${up.desc}</p>
+          </button>
+        `).join('');
+      }
+
+      const overlay = document.getElementById('protoUpgradeOverlay');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+      }
+      lucide.createIcons();
+    }
+
+    function applyPrototypeUpgrade(type) {
+      const p = protoState.player;
+      if (type === 'firerate') p.fireInterval = Math.max(100, Math.round(p.fireInterval * 0.72));
+      else if (type === 'damage') p.damage = Math.round(p.damage * 1.4);
+      else if (type === 'multishot') p.multishot += 1;
+      else if (type === 'speed') p.speed *= 1.25;
+      else if (type === 'magnet') p.magnet *= 1.6;
+      else if (type === 'heal') {
+        p.maxHp += 30;
+        p.hp = Math.min(p.maxHp, p.hp + 50);
+      }
+
+      protoState.isLevelingUp = false;
+      const overlay = document.getElementById('protoUpgradeOverlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+      }
+      startPrototypeGame();
+    }
+
+    function triggerPrototypeGameOver() {
+      pausePrototypeGame();
+      protoState.isGameOver = true;
+      playProtoSound('gameover');
+
+      const s = Math.floor(protoState.elapsedTime / 1000);
+      const mm = String(Math.floor(s / 60)).padStart(2, '0');
+      const ss = String(s % 60).padStart(2, '0');
+      const sum = document.getElementById('protoGameOverSummary');
+      if (sum) {
+        sum.innerText = `Sống sót được ${mm}:${ss} (Wave ${protoState.wave}) và tiêu diệt ${protoState.player.kills} quái.`;
+      }
+
+      const overlay = document.getElementById('protoGameOverOverlay');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+      }
+      lucide.createIcons();
+    }
+
+    function initOrResumePrototype() {
+      if (!protoCanvas) {
+        setTimeout(initPrototypeGame, 50);
+      } else {
+        renderPrototypeStaticFrame();
+      }
+    }
+
+    // --- AI VISUAL ASSET PROMPT GENERATOR & MOODBOARD STUDIO ---
+    let modalArtPromptsCache = {};
+    let currentModalArtPromptsData = null;
+
+    async function loadModalArtPrompts(forceReload = false) {
+      const container = document.getElementById('modalArtPromptsContainer');
+      if (!container) return;
+      const title = currentActiveModalGameTitle || 'Game';
+      const style = document.getElementById('modalArtStyleSelect')?.value || 'Stylized 3D Anime (Genshin / Honkai Style)';
+      const cacheKey = `${currentActiveModalGameId}_${style}`;
+
+      if (!forceReload && modalArtPromptsCache[cacheKey]) {
+        currentModalArtPromptsData = modalArtPromptsCache[cacheKey];
+        renderModalArtPrompts(currentModalArtPromptsData);
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="p-10 text-center space-y-4 rounded-2xl bg-slate-950/80 border border-slate-800">
+          <div class="inline-block p-4 rounded-2xl bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 animate-pulse">
+            <i data-lucide="palette" class="w-10 h-10 animate-spin"></i>
+          </div>
+          <h4 class="text-base font-bold text-white">Đang Khởi Tạo Bộ Prompt AI Assets Cho "${title}"...</h4>
+          <p class="text-xs text-slate-400 max-w-md mx-auto">
+            Hệ thống đang chuyển hóa danh mục Asset Checklist thành Prompt Midjourney / Stable Diffusion theo phong cách "${style}"...
+          </p>
+        </div>
+      `;
+      lucide.createIcons();
+
+      try {
+        const res = await fetch('/api/deconstruct/art-prompts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            game_title: title,
+            platform: currentActiveModalGamePlatform || 'PC / Mobile',
+            genre: currentActiveModalGameGenre || 'Action',
+            art_style: style,
+            asset_checklist: (currentModalDeconstructData && currentModalDeconstructData.asset_checklist) || {}
+          })
+        });
+
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        const data = await res.json();
+        modalArtPromptsCache[cacheKey] = data;
+        currentModalArtPromptsData = data;
+        renderModalArtPrompts(data);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-rose-400 space-y-2 rounded-2xl bg-slate-950 border border-slate-800">
+            <i data-lucide="alert-circle" class="w-8 h-8 mx-auto"></i>
+            <p class="font-bold text-xs">Lỗi khi tạo prompt visual: ${err.message}</p>
+            <button onclick="loadModalArtPrompts(true)" class="px-4 py-2 rounded-lg bg-slate-800 text-white text-xs hover:bg-slate-700 cursor-pointer">Thử Lại</button>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function reloadModalArtPrompts() {
+      loadModalArtPrompts(true);
+    }
+
+    function onArtStyleChanged() {
+      loadModalArtPrompts(true);
+    }
+
+    function renderModalArtPrompts(data) {
+      const container = document.getElementById('modalArtPromptsContainer');
+      if (!container) return;
+
+      const palette = data.moodboard_palette || ['#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#3b82f6'];
+      const prompts = data.prompts || [];
+
+      container.innerHTML = `
+        <!-- Moodboard Color Palette -->
+        <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="swatch-book" class="w-4 h-4 text-fuchsia-400"></i>
+              Bảng Màu Chủ Đạo Moodboard (Color Palette):
+            </span>
+            <span class="text-[11px] text-slate-400 font-medium">Bấm vào mã màu để sao chép Hex</span>
+          </div>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            ${palette.map(color => `
+              <div onclick="copyTextToClipboard('${color}', 'Đã sao chép mã màu ${color}!')" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-slate-500 cursor-pointer transition-all hover:scale-105">
+                <span class="w-4 h-4 rounded-lg shadow-inner" style="background-color: ${color};"></span>
+                <span class="font-mono text-xs font-semibold text-slate-200">${color}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Prompts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${prompts.map((p, idx) => `
+            <div class="glass-card p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between hover:border-fuchsia-500/40 transition-all">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 uppercase tracking-wider">
+                    ${p.category || 'Asset'}
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700">
+                    --ar ${p.aspect_ratio || '1:1'}
+                  </span>
+                </div>
+                <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-fuchsia-400"></i>
+                  ${p.subject || 'Visual Subject'}
+                </h4>
+                <div class="p-3 rounded-lg bg-slate-950/80 border border-slate-800/80 text-xs font-mono text-fuchsia-200 leading-relaxed select-all">
+                  ${p.prompt}
+                </div>
+                ${p.negative_prompt ? `
+                  <div class="p-2 rounded-lg bg-rose-950/20 border border-rose-900/30 text-[11px] text-rose-300">
+                    <span class="font-semibold text-rose-400 block text-[10px]">Negative Prompt:</span>
+                    ${p.negative_prompt}
+                  </div>
+                ` : ''}
+              </div>
+              <button onclick="copyTextToClipboard('${p.prompt.replace(/'/g, "\\'")}', 'Đã sao chép prompt Midjourney!')" class="w-full mt-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-700 flex items-center justify-center gap-1.5 cursor-pointer">
+                <i data-lucide="copy" class="w-3.5 h-3.5 text-fuchsia-400"></i> Sao Chép Prompt Này
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function copyAllArtPrompts() {
+      if (!currentModalArtPromptsData || !currentModalArtPromptsData.prompts) {
+        showToast('Chưa có dữ liệu prompt để sao chép.');
+        return;
+      }
+      const lines = currentModalArtPromptsData.prompts.map(p => `### [${p.category}] ${p.subject}\nPrompt:\n${p.prompt}\n\nNegative:\n${p.negative_prompt || 'None'}\n-----------------------------------\n`).join('\n');
+      navigator.clipboard.writeText(lines).then(() => {
+        showToast('Đã sao chép toàn bộ bộ prompt vào clipboard!');
+      });
+    }
+
+    function downloadAllArtPromptsText() {
+      if (!currentModalArtPromptsData || !currentModalArtPromptsData.prompts) {
+        showToast('Chưa có dữ liệu prompt để tải.');
+        return;
+      }
+      const title = (currentActiveModalGameTitle || 'Game').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const lines = currentModalArtPromptsData.prompts.map(p => `### [${p.category}] ${p.subject}\nPrompt:\n${p.prompt}\n\nNegative:\n${p.negative_prompt || 'None'}\n-----------------------------------\n`).join('\n');
+      const blob = new Blob([lines], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}_AI_Art_Prompts.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Đã tải file Prompts (.txt) thành công!');
+    }
+
+    // --- AI COMPETITOR AD CREATIVE VIDEO SCRIPT & STORYBOARD ---
+    let modalAdScriptCache = {};
+    let currentModalAdScriptData = null;
+
+    async function loadModalAdScript(forceReload = false) {
+      const container = document.getElementById('modalAdScriptContainer');
+      if (!container) return;
+      const gameId = currentActiveModalGameId;
+      const title = currentActiveModalGameTitle || 'Game';
+
+      if (!forceReload && modalAdScriptCache[gameId]) {
+        currentModalAdScriptData = modalAdScriptCache[gameId];
+        renderModalAdScript(currentModalAdScriptData);
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="p-10 text-center space-y-4 rounded-2xl bg-slate-950/80 border border-slate-800">
+          <div class="inline-block p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 animate-pulse">
+            <i data-lucide="clapperboard" class="w-10 h-10 animate-spin"></i>
+          </div>
+          <h4 class="text-base font-bold text-white">Đang Biên Soạn Kịch Bản Video Quảng Cáo UA 30s Cho "${title}"...</h4>
+          <p class="text-xs text-slate-400 max-w-md mx-auto">
+            Hệ thống phân tích cơ chế gây nghiện, xây dựng kịch bản 4 hồi: Hook 3s, Nỗi đau Noob fail, Thỏa mãn Pro wipeout & Kêu gọi CTA...
+          </p>
+        </div>
+      `;
+      lucide.createIcons();
+
+      try {
+        const res = await fetch('/api/deconstruct/video-ad-script', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            game_title: title,
+            platform: currentActiveModalGamePlatform || 'PC / Mobile',
+            genre: currentActiveModalGameGenre || 'Action',
+            core_hook: (currentModalDeconstructData && currentModalDeconstructData.physics_and_movement && currentModalDeconstructData.physics_and_movement.movement_type) || '',
+            target_audience: 'Mobile Gamers aged 18-35',
+            pacing_script: (currentModalDeconstructData && currentModalDeconstructData.pacing_script) || []
+          })
+        });
+
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        const data = await res.json();
+        modalAdScriptCache[gameId] = data;
+        currentModalAdScriptData = data;
+        renderModalAdScript(data);
+      } catch (err) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-rose-400 space-y-2 rounded-2xl bg-slate-950 border border-slate-800">
+            <i data-lucide="alert-circle" class="w-8 h-8 mx-auto"></i>
+            <p class="font-bold text-xs">Lỗi khi biên soạn video ad script: ${err.message}</p>
+            <button onclick="loadModalAdScript(true)" class="px-4 py-2 rounded-lg bg-slate-800 text-white text-xs hover:bg-slate-700 cursor-pointer">Thử Lại</button>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    function reloadModalAdScript() {
+      loadModalAdScript(true);
+    }
+
+    function renderModalAdScript(data) {
+      const container = document.getElementById('modalAdScriptContainer');
+      if (!container) return;
+
+      const scenes = data.scenes || [];
+      const bgm = data.bgm_recommendation || {};
+
+      container.innerHTML = `
+        <!-- Metadata Header -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <span class="text-[10px] text-slate-400 font-semibold uppercase">Định Dạng Video:</span>
+            <p class="text-xs font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-rose-400"></i> ${data.aspect_ratio || '9:16 Vertical (TikTok/Reels)'}
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <span class="text-[10px] text-slate-400 font-semibold uppercase">Thời Lượng Chuẩn:</span>
+            <p class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${data.target_duration || '30 Giây Tối Ưu'}
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+            <span class="text-[10px] text-slate-400 font-semibold uppercase">Góc Tiếp Cận Hook:</span>
+            <p class="text-xs font-bold text-emerald-400 flex items-center gap-1.5 truncate">
+              <i data-lucide="target" class="w-3.5 h-3.5"></i> ${data.hook_angle || 'Challenge / Skill Test'}
+            </p>
+          </div>
+        </div>
+
+        <!-- 4-Phase Storyboard Timeline -->
+        <div class="space-y-3.5">
+          <h4 class="text-xs font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-2">
+            <i data-lucide="film" class="w-4 h-4 text-rose-400"></i>
+            Phân Cảnh Chi Tiết Kịch Bản 4 Hồi (Storyboard 4-Phases)
+          </h4>
+
+          <div class="space-y-3">
+            ${scenes.map((s, idx) => `
+              <div class="glass-card p-4 rounded-xl border border-slate-800/80 hover:border-rose-500/30 transition-all space-y-3">
+                <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800/60 pb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 text-xs font-black flex items-center justify-center">
+                      ${idx + 1}
+                    </span>
+                    <h5 class="text-xs font-bold text-white">${s.phase}</h5>
+                  </div>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                    ⏱️ ${s.timecode}
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div class="space-y-1 p-3 rounded-lg bg-slate-950/60 border border-slate-800/60">
+                    <span class="text-[11px] font-bold text-rose-400 flex items-center gap-1">
+                      <i data-lucide="video" class="w-3.5 h-3.5"></i> Hành Động Thị Giác (Visual Cue):
+                    </span>
+                    <p class="text-slate-200 leading-relaxed text-[11px]">${s.visual_action}</p>
+                  </div>
+
+                  <div class="space-y-1 p-3 rounded-lg bg-slate-950/60 border border-slate-800/60">
+                    <span class="text-[11px] font-bold text-cyan-400 flex items-center gap-1">
+                      <i data-lucide="type" class="w-3.5 h-3.5"></i> Chữ Đè Màn Hình (On-Screen Text):
+                    </span>
+                    <p class="text-slate-100 font-semibold text-[11px]">${s.on_screen_text}</p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div class="space-y-1 p-3 rounded-lg bg-slate-950/60 border border-slate-800/60">
+                    <span class="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
+                      <i data-lucide="mic" class="w-3.5 h-3.5"></i> Lời Bình Tiếng Việt (Voiceover VI):
+                    </span>
+                    <p class="text-slate-200 italic leading-relaxed text-[11px]">"${s.voiceover_vi}"</p>
+                  </div>
+
+                  <div class="space-y-1 p-3 rounded-lg bg-slate-950/60 border border-slate-800/60">
+                    <span class="text-[11px] font-bold text-indigo-400 flex items-center gap-1">
+                      <i data-lucide="globe" class="w-3.5 h-3.5"></i> Voiceover Tiếng Anh (EN Global):
+                    </span>
+                    <p class="text-slate-200 italic leading-relaxed text-[11px]">"${s.voiceover_en}"</p>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center justify-between text-[11px] text-slate-300 flex-wrap gap-2">
+                  <span class="flex items-center gap-1 text-slate-400 font-medium">
+                    <i data-lucide="volume-2" class="w-3.5 h-3.5 text-amber-400"></i> SFX: <strong class="text-slate-200">${s.sfx || 'Game audio'}</strong>
+                  </span>
+                  <span class="text-slate-400 font-medium">
+                    Nhạc nền: <strong class="text-slate-200">${s.bgm_cue || 'Upbeat'}</strong>
+                  </span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- BGM Recommendations -->
+        <div class="p-4 rounded-xl bg-gradient-to-r from-amber-950/30 via-slate-900 to-slate-900 border border-amber-500/30 space-y-2">
+          <h4 class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+            <i data-lucide="music" class="w-4 h-4 text-amber-400"></i>
+            Khuyến Nghị Nhạc Nền (BGM & Viral Audio Cue):
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div><span class="text-slate-400 text-[11px]">Thể Loại:</span> <strong class="text-slate-200 block">${bgm.genre || 'Phonk / Electronic'}</strong></div>
+            <div><span class="text-slate-400 text-[11px]">Nhịp Độ (BPM):</span> <strong class="text-amber-400 block">${bgm.tempo_bpm || '135-145 BPM'}</strong></div>
+            <div><span class="text-slate-400 text-[11px]">Âm Hưởng Tương Tự:</span> <strong class="text-slate-200 block">${bgm.sound_similar_to || 'Trending TikTok Viral Sound'}</strong></div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function copyAdScriptText() {
+      if (!currentModalAdScriptData || !currentModalAdScriptData.scenes) {
+        showToast('Chưa có dữ liệu kịch bản để sao chép.');
+        return;
+      }
+      const data = currentModalAdScriptData;
+      let md = `# KỊCH BẢN VIDEO QUẢNG CÁO 30S - ${data.title || currentActiveModalGameTitle}\n`;
+      md += `Thời lượng: ${data.target_duration} | Khung hình: ${data.aspect_ratio}\n\n`;
+      data.scenes.forEach(s => {
+        md += `## [${s.timecode}] ${s.phase}\n`;
+        md += `- Visual: ${s.visual_action}\n`;
+        md += `- Text Overlay: ${s.on_screen_text}\n`;
+        md += `- Voiceover VI: "${s.voiceover_vi}"\n`;
+        md += `- Voiceover EN: "${s.voiceover_en}"\n`;
+        md += `- SFX: ${s.sfx}\n\n`;
+      });
+      navigator.clipboard.writeText(md).then(() => {
+        showToast('Đã sao chép kịch bản video ad vào clipboard!');
+      });
+    }
+
+    function downloadAdScriptMarkdown() {
+      if (!currentModalAdScriptData || !currentModalAdScriptData.scenes) {
+        showToast('Chưa có dữ liệu kịch bản để tải.');
+        return;
+      }
+      const title = (currentActiveModalGameTitle || 'Game').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const data = currentModalAdScriptData;
+      let md = `# KỊCH BẢN VIDEO QUẢNG CÁO 30S - ${data.title || currentActiveModalGameTitle}\n`;
+      md += `Thời lượng: ${data.target_duration} | Khung hình: ${data.aspect_ratio}\n\n`;
+      data.scenes.forEach(s => {
+        md += `## [${s.timecode}] ${s.phase}\n`;
+        md += `- Visual: ${s.visual_action}\n`;
+        md += `- Text Overlay: ${s.on_screen_text}\n`;
+        md += `- Voiceover VI: "${s.voiceover_vi}"\n`;
+        md += `- Voiceover EN: "${s.voiceover_en}"\n`;
+        md += `- SFX: ${s.sfx}\n\n`;
+      });
+      const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}_Video_UA_Ads_Script.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Đã tải file kịch bản (.md) thành công!');
     }
 
     // --- AUTOMATIC GDD (GAME DESIGN DOCUMENT) ENGINE ---
@@ -5847,7 +7299,6 @@
 
     // --- MODAL SUB-TABS NAVIGATION & MOBILE SPECIALIZATION ---
     let currentActiveModalGame = null;
-    let currentActiveModalGameId = "";
     let currentActiveModalGameTitle = "";
     let currentActiveModalGamePlatform = "mobile";
     let currentActiveModalGameGenre = "RPG";
@@ -5858,33 +7309,46 @@
 
     function switchModalSubTab(tabName) {
       currentModalSubTab = tabName;
-      const subTabs = ['deconstruct', 'gdd', 'overview', 'reviews', 'aso', 'liveops'];
+      const subTabs = ['deconstruct', 'playprototype', 'artprompts', 'adscript', 'gdd', 'overview', 'reviews', 'aso', 'liveops'];
       subTabs.forEach(t => {
         const btn = document.getElementById(`modalSubTabBtn-${t}`);
         const content = document.getElementById(`modalSubTabContent-${t}`);
         if (!btn || !content) return;
         if (t === tabName) {
           if (t === 'deconstruct') {
-            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-emerald-900/40";
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-emerald-900/40 shrink-0";
+          } else if (t === 'playprototype') {
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-violet-900/40 shrink-0";
+          } else if (t === 'artprompts') {
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-fuchsia-900/40 shrink-0";
+          } else if (t === 'adscript') {
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-orange-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-rose-900/40 shrink-0";
           } else if (t === 'gdd') {
-            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-cyan-900/40";
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-cyan-900/40 shrink-0";
           } else if (t === 'overview') {
-            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-indigo-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md";
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-indigo-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md shrink-0";
           } else if (t === 'reviews') {
-            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-pink-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md";
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-pink-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md shrink-0";
           } else if (t === 'aso') {
-            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-emerald-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md";
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-emerald-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md shrink-0";
           } else if (t === 'liveops') {
-            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-amber-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md";
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-amber-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md shrink-0";
           }
           content.classList.remove('hidden');
         } else {
-          btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer font-medium";
+          btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer font-semibold shrink-0";
           content.classList.add('hidden');
         }
       });
 
+      if (tabName !== 'playprototype' && typeof pausePrototypeGame === 'function') {
+        pausePrototypeGame();
+      }
+
       if (tabName === 'deconstruct') loadModalDeconstruct();
+      if (tabName === 'playprototype') initOrResumePrototype();
+      if (tabName === 'artprompts') loadModalArtPrompts();
+      if (tabName === 'adscript') loadModalAdScript();
       if (tabName === 'gdd') loadModalGDD();
       if (tabName === 'reviews') loadModalReviews(currentActiveModalGameId, currentActiveModalGameTitle, currentActiveModalGamePlatform);
       if (tabName === 'aso') loadModalASO(currentActiveModalGameId, currentActiveModalGameTitle, currentActiveModalGameGenre);
@@ -6159,6 +7623,9 @@
 
     function closeGameModal() {
       document.getElementById('gameDetailModal').classList.add('hidden');
+      if (typeof pausePrototypeGame === 'function') {
+        pausePrototypeGame();
+      }
     }
 
     function toggleAiCard() {

@@ -437,5 +437,340 @@ public class GenericCloneController : MonoBehaviour {
 """
         return md
 
+    def generate_unity_zip_package(self, data: Dict[str, Any]) -> bytes:
+        """Packages a production-grade Unity project starter kit into a zip archive in memory."""
+        import io
+        import zipfile
+        import json
+
+        title = data.get("title", "GamePrototype")
+        clean_name = "".join(c for c in title if c.isalnum() or c in ("_", "-")).strip() or "Prototype"
+        code = data.get("unity_starter_code", "// Starter code")
+
+        # Additional complementary Unity scripts
+        enemy_code = """// EnemyController.cs - Auto-Navigation & Contact Damage
+using UnityEngine;
+
+public class EnemyController : MonoBehaviour {
+    [Header("Enemy Stats")]
+    public float moveSpeed = 2.5f;
+    public float maxHealth = 20f;
+    public float currentHealth;
+    public float contactDamage = 10f;
+    public GameObject expGemPrefab;
+
+    private Transform playerTransform;
+
+    void Start() {
+        currentHealth = maxHealth;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null) playerTransform = player.transform;
+    }
+
+    void Update() {
+        if (playerTransform == null) return;
+        Vector2 dir = (playerTransform.position - transform.position).normalized;
+        transform.position += (Vector3)(dir * moveSpeed * Time.deltaTime);
+    }
+
+    public void TakeDamage(float amount) {
+        currentHealth -= amount;
+        if (currentHealth <= 0) {
+            Die();
+        }
+    }
+
+    void Die() {
+        if (expGemPrefab != null) {
+            Instantiate(expGemPrefab, transform.position, Quaternion.identity);
+        }
+        Destroy(gameObject);
+    }
+
+    void OnTriggerEnter2D(Collider2D other) {
+        if (other.CompareTag("Player")) {
+            Debug.Log($"Enemy hit player for {contactDamage} dmg");
+        }
+    }
+}
+"""
+
+        spawner_code = """// WaveSpawner.cs - Scripted Timeline Spawner
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class WaveSpawner : MonoBehaviour {
+    [Header("Spawn Settings")]
+    public GameObject enemyPrefab;
+    public float spawnInterval = 1.0f;
+    public float spawnRadius = 12.0f;
+    public Transform playerTransform;
+
+    private float timer = 0f;
+    public int currentWave = 1;
+
+    void Update() {
+        if (playerTransform == null) return;
+
+        timer += Time.deltaTime;
+        if (timer >= spawnInterval) {
+            SpawnEnemyAroundPlayer();
+            timer = 0f;
+        }
+    }
+
+    void SpawnEnemyAroundPlayer() {
+        Vector2 randomCircle = Random.insideUnitCircle.normalized * spawnRadius;
+        Vector3 spawnPos = playerTransform.position + new Vector3(randomCircle.x, randomCircle.y, 0);
+        Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+    }
+}
+"""
+
+        gem_code = """// ExpGem.cs - Vacuum Magnet Pickup
+using UnityEngine;
+
+public class ExpGem : MonoBehaviour {
+    public int expValue = 10;
+    public float vacuumSpeed = 8f;
+    private Transform player;
+    private bool isBeingPulled = false;
+
+    void Update() {
+        if (isBeingPulled && player != null) {
+            transform.position = Vector3.MoveTowards(transform.position, player.position, vacuumSpeed * Time.deltaTime);
+            if (Vector3.Distance(transform.position, player.position) < 0.3f) {
+                Destroy(gameObject);
+            }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other) {
+        if (other.CompareTag("Player")) {
+            player = other.transform;
+            isBeingPulled = true;
+        }
+    }
+}
+"""
+
+        readme_content = f"""# 🎮 {title} - Unity Starter Prototype Package
+*Tự động sinh bởi Game Trending Analyzer 2.0*
+
+## 📁 Cấu Trúc Gói Dự Án
+- `Assets/Scripts/Controllers/PlayerController.cs`: Bộ điều khiển di chuyển 8 hướng & tự động bắn vũ khí.
+- `Assets/Scripts/Controllers/EnemyController.cs`: AI quái vật bám đuổi nhân vật & rớt ngọc kinh nghiệm.
+- `Assets/Scripts/Systems/WaveSpawner.cs`: Hệ thống sinh quái vật theo kịch bản thời gian.
+- `Assets/Scripts/Pickups/ExpGem.cs`: Cơ chế ngọc kinh nghiệm nam châm hút về nhân vật.
+- `Assets/Config/GamePacingConfig.json`: Bảng nhịp độ và chỉ số quái theo kịch bản 1:1.
+
+## 🚀 Hướng Dẫn Cài Đặt Trong 30 Giây
+1. Mở **Unity Hub** và tạo dự án 2D mới (Unity 2021.3, 2022.3 LTS hoặc mới hơn).
+2. Kéo toàn bộ thư mục `Assets/` từ file zip này vào cửa sổ `Project` của Unity.
+3. Tạo 1 GameObject hình tròn đặt tên `Player` (Gán Tag `Player` & Collider2D). Gắn script `PlayerController.cs`.
+4. Tạo 1 GameObject hình vuông đặt tên `Enemy` (Gán Collider2D trigger). Gắn script `EnemyController.cs`.
+5. Bấm nút **Play** trên Unity Editor để trải nghiệm ngay cơ chế prototype!
+"""
+
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            zip_file.writestr(f"{clean_name}_UnityStarter/Assets/Scripts/Controllers/PlayerController.cs", code)
+            zip_file.writestr(f"{clean_name}_UnityStarter/Assets/Scripts/Controllers/EnemyController.cs", enemy_code)
+            zip_file.writestr(f"{clean_name}_UnityStarter/Assets/Scripts/Systems/WaveSpawner.cs", spawner_code)
+            zip_file.writestr(f"{clean_name}_UnityStarter/Assets/Scripts/Pickups/ExpGem.cs", gem_code)
+            zip_file.writestr(f"{clean_name}_UnityStarter/Assets/Config/GamePacingConfig.json", json.dumps(data.get("pacing_script", []), indent=2, ensure_ascii=False))
+            zip_file.writestr(f"{clean_name}_UnityStarter/ProjectSettings/ProjectVersion.txt", "m_EditorVersion: 2022.3.20f1\nm_StandardAssetsVersion: 0\n")
+            zip_file.writestr(f"{clean_name}_UnityStarter/README_SETUP.md", readme_content)
+
+        buffer.seek(0)
+        return buffer.getvalue()
+
+    def generate_ai_art_prompts(self, data: Dict[str, Any], art_style: str = "Pixel Art 16-bit") -> Dict[str, Any]:
+        """Generates comprehensive Midjourney / Stable Diffusion prompts for all required game assets."""
+        title = data.get("title", "Game")
+        genre = data.get("genre", "Action")
+
+        style_modifiers = {
+            "Pixel Art 16-bit": "16-bit pixel art, retro video game aesthetic, clean crisp outlines, vibrant indexed color palette, sprite sheet ready, flat black background --ar 16:9 --v 6.0",
+            "Stylized 3D Anime": "Genshin-style cel-shaded 3D anime character design, clean topology, vibrant soft lighting, Unreal Engine 5 render, highly detailed, clean solid background --ar 16:9 --v 6.0",
+            "Dark Fantasy Gritty": "Dark fantasy gothic aesthetic, Diablo 4 style, grimdark atmospheric lighting, high fidelity textures, dramatic shadows, hyper-detailed --ar 16:9 --v 6.0",
+            "Low-Poly Vibrant": "Charming low-poly 3D art style, pastel gradient lighting, clean polygonal geometry, mobile casual game aesthetic, isometric view --ar 16:9 --v 6.0",
+            "Casual Cartoon Flat": "Cute casual cartoon flat vector art, bold outlines, saturated friendly colors, Supercell / Brawl Stars art style, mobile UI ready --ar 16:9 --v 6.0"
+        }
+
+        matched_key = "Pixel Art 16-bit"
+        for k in style_modifiers:
+            if k.lower() in art_style.lower():
+                matched_key = k
+                break
+        modifier = style_modifiers[matched_key]
+
+        palettes = {
+            "Pixel Art 16-bit": ["#1e1b4b", "#4338ca", "#06b6d4", "#10b981", "#f59e0b"],
+            "Stylized 3D Anime": ["#312e81", "#6366f1", "#ec4899", "#38bdf8", "#facc15"],
+            "Dark Fantasy Gritty": ["#0f172a", "#7f1d1d", "#991b1b", "#d97706", "#475569"],
+            "Low-Poly Vibrant": ["#0284c7", "#10b981", "#84cc16", "#eab308", "#f97316"],
+            "Casual Cartoon Flat": ["#2563eb", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6"]
+        }
+        chosen_palette = palettes.get(matched_key, ["#6366f1", "#a855f7", "#ec4899", "#f43f5e", "#3b82f6"])
+
+        categories = [
+            {
+                "category_name": "Nhân Vật Chính (Main Protagonist & Hero Sprites)",
+                "icon": "user",
+                "prompts": [
+                    {
+                        "name": "Bảng Di Chuyển 4 Hướng (Character Walk Cycle Spritesheet)",
+                        "prompt": f"Hero protagonist character sheet for {genre} game named {title}, full body 4-directional walk cycle (front, back, left, right), weapon holstered, action pose, {modifier}"
+                    },
+                    {
+                        "name": "Avatar Chân Dung Đối Thoại (Dialogue Portrait)",
+                        "prompt": f"Close-up expressive portrait of the hero protagonist, heroic determined expression, dialogue bust shot, game UI avatar, {modifier}"
+                    }
+                ]
+            },
+            {
+                "category_name": "Quái Vật & Trùm (Monsters & Boss Hierarchy)",
+                "icon": "skull",
+                "prompts": [
+                    {
+                        "name": "Quái Thường Bầy Đàn (Fodder Swarm Minions)",
+                        "prompt": f"Set of 4 distinct swarm enemy monster sprites, bat creature, skeleton warrior, zombie grunt, crawler, menacing video game foes, {modifier}"
+                    },
+                    {
+                        "name": "Quái Tinh Anh Giáp Dày (Elite Armored Brute)",
+                        "prompt": f"Heavy armored minotaur brute monster, glowing red demonic eyes, massive spiked club, boss minion, {modifier}"
+                    },
+                    {
+                        "name": "Trùm Màn Cuối (Stage Final Boss)",
+                        "prompt": f"Epic menacing vampire overlord final boss, shadowy wings, dark purple spell aura, intimidation posture, cinematic boss splash art, {modifier}"
+                    }
+                ]
+            },
+            {
+                "category_name": "Giao Diện UI & Icons Kỹ Năng (HUD & Canvas Icons)",
+                "icon": "layout",
+                "prompts": [
+                    {
+                        "name": "Bộ 12 Icons Vũ Khí & Phép Thuật (Weapon Skill Icons)",
+                        "prompt": f"Grid of 12 distinct game ability icons, magic wand, spiked whip, garlic shield, holy bible, lightning strike, golden chalice, game UI icon pack on dark background, {modifier}"
+                    },
+                    {
+                        "name": "Ngọc Kinh Nghiệm & Rương Báu (Pickup Items)",
+                        "prompt": f"Set of glowing magical crystal gems (blue, emerald, ruby) and ornate golden treasure chest with radiant light, game item pickups, {modifier}"
+                    }
+                ]
+            },
+            {
+                "category_name": "Môi Trường & Bản Đồ (Environment Tileset & Background)",
+                "icon": "map",
+                "prompts": [
+                    {
+                        "name": "Bản Đồ Nền Lặp Liền Mạch (Seamless Looping Tileset)",
+                        "prompt": f"Top-down orthographic terrain tileset for gothic graveyard battlefield, dark stone pavement, dead trees, weathered tombstones, seamless repeating game texture, {modifier}"
+                    }
+                ]
+            }
+        ]
+
+        flattened_prompts = []
+        for cat in categories:
+            cat_name = cat.get("category_name", "Asset")
+            for p in cat.get("prompts", []):
+                flattened_prompts.append({
+                    "category": cat_name,
+                    "subject": p.get("name", "Asset Item"),
+                    "prompt": p.get("prompt", ""),
+                    "negative_prompt": "ugly, deformed, blurry, low quality, artifacts, watermark, text, out of frame",
+                    "aspect_ratio": "16:9" if "Environment" in cat_name else "1:1"
+                })
+
+        prompts_output = {
+            "art_style": art_style,
+            "game_title": title,
+            "moodboard_palette": chosen_palette,
+            "categories": categories,
+            "prompts": flattened_prompts
+        }
+        return prompts_output
+
+    def generate_video_ad_script(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Generates a viral 30-second TikTok / Facebook UA video ad script with storyboard."""
+        title = data.get("title", "Game")
+        genre = data.get("genre", "Action Roguelike")
+        twist = (data.get("clone_with_a_twist") or [{}])[0].get("idea", "Tiến hóa vũ khí Thần Thoại")
+
+        script_payload = {
+            "title": title,
+            "campaign_goal": "Max CTR & High CVR (User Acquisition)",
+            "target_format": "TikTok / Facebook Reels / YouTube Shorts (9:16 Vertical Video)",
+            "aspect_ratio": "9:16 Vertical (TikTok/Shorts/Reels)",
+            "duration_seconds": 30,
+            "target_duration": "30 Giây (Chuẩn TikTok/Reels)",
+            "core_hook_angle": "Ego Bait & Satisfying ASMR Screen Wipe",
+            "hook_angle": "Ego Bait & Thỏa Mãn ASMR Quét Bản Đồ",
+            "scenes": [
+                {
+                    "scene_index": 1,
+                    "timecode": "00:00 - 00:03",
+                    "phase": "🔥 THE HOOK (Giữ Chân 3s Đầu)",
+                    "visual_action": "Màn hình rung lắc dữ dội, viền đỏ nhấp nháy báo động tử thần. 1000 quái vật vây nghẹt chỉ còn 1 chấm tròn nhỏ xung quanh nhân vật. Máu tụt về 5%.",
+                    "on_screen_text": "🚨 99% NGƯỜI CHƠI CHẾT Ở ĐÂY!",
+                    "voiceover_vi": "Đừng chớp mắt! 99% người chơi đều bó tay trước ải này!",
+                    "voiceover_en": "Don't blink! 99% of players fail this exact wave!",
+                    "sfx": "Tiếng còi hú khẩn cấp (Siren) + Nhịp tim đập thình thịch",
+                    "sfx_cue": "Tiếng còi hú khẩn cấp (Siren alarm) + Nhịp tim đập thình thịch cực mạnh.",
+                    "bgm_cue": "Nhạc căng thẳng đếm ngược (Suspense Ticking)"
+                },
+                {
+                    "scene_index": 2,
+                    "timecode": "00:03 - 00:11",
+                    "phase": "🤦 AGITATION / FAIL PLAYSTICK (Nỗi Đau Ức Chế)",
+                    "visual_action": "Tay giả lập bấm chọn nhầm vũ khí cấp thấp. Nhân vật bị dồn vào góc tường, bắn từng viên đạn yếu ớt. Quái vật tràn vào ép sát.",
+                    "on_screen_text": "Chọn nhầm kỹ năng là toang...",
+                    "voiceover_vi": "Tôi tưởng nâng cây Roi thường là gánh được, ai ngờ toang thật sự...",
+                    "voiceover_en": "I thought the basic whip was enough... big mistake!",
+                    "sfx": "Tiếng đạn bắn lẹt đẹt + Quái vật gầm gừ",
+                    "sfx_cue": "Âm thanh đạn bắn lẹt đẹt + Tiếng quái vật gầm gừ vây kín.",
+                    "bgm_cue": "Nhịp trống dồn dập lo âu"
+                },
+                {
+                    "scene_index": 3,
+                    "timecode": "00:11 - 00:22",
+                    "phase": "⚡ SATISFYING PAYOFF (Lật Kèo Quét Bản Đồ)",
+                    "visual_action": f"Bấm mở rương vàng 5 tia sáng. Kích hoạt tính năng: '{twist}'. Nhân vật phóng luồng kiếm thần thoại xoay tròn toàn màn hình, 1000 quái phát nổ thành biển ngọc kinh nghiệm. Màn hình sáng bừng rực rỡ.",
+                    "on_screen_text": "💥 COMBO TIẾN HÓA CẤP THẦN!",
+                    "voiceover_vi": "Nhưng khi kết hợp combo Thần Thoại này... CẢ BẢN ĐỒ BỐC HƠI!",
+                    "voiceover_en": "Until I triggered this Mythic Evolution... ENTIRE SCREEN WIPED!",
+                    "sfx": "Sấm sét nổ vang + Chuông vàng giòn tan (ASMR gems)",
+                    "sfx_cue": "Tiếng sấm sét rền vang, chuông vàng nổ giòn tan vui tai, ngọc bay vèo vèo (ASMR gem pickup).",
+                    "bgm_cue": "Phonk Beat Bass Drop bùng nổ cực căng"
+                },
+                {
+                    "scene_index": 4,
+                    "timecode": "00:22 - 00:30",
+                    "phase": "🎁 CALL TO ACTION (Kêu Gọi Tải Ngay)",
+                    "visual_action": "Ngón tay chỉ vào nút TẢI NGAY ở góc dưới. Mã code VIP phát sáng giữa màn hình cùng rương kho báu vàng.",
+                    "on_screen_text": "NHẬP CODE: VIP999 ĐỂ NHẬN 1000 LƯỢT QUAY",
+                    "voiceover_vi": f"Tải {title} ngay hôm nay để nhận 1000 lượt quay miễn phí!",
+                    "voiceover_en": f"Download {title} now to claim 1,000 free spins!",
+                    "sfx": "Victory fanfare + Ting nút bấm nhận quà",
+                    "sfx_cue": "Nhạc nền chiến thắng sôi động (Victory fanfare) + Tiếng 'Ting' nút bấm.",
+                    "bgm_cue": "Outro sảng khoái kích thích"
+                }
+            ],
+            "recommended_bgm": "Phonk Beat / Fast-paced Electronic Bass Drop (135-145 BPM)",
+            "bgm_recommendation": {
+                "genre": "Drift Phonk / Hyper-Electronic",
+                "tempo_bpm": "138-142 BPM",
+                "sound_similar_to": "Trending TikTok Phonk Audio (Kordhell / DVRST style)"
+            },
+            "production_notes": "Nên dùng giọng đọc AI trầm ấm nam tính hoặc giọng đọc nữ nhanh TikTok để giữ chân người xem tốt nhất."
+        }
+        return script_payload
+        return script_payload
+
 game_deconstructor = GameDeconstructor()
+
 
