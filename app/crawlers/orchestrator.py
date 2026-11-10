@@ -35,6 +35,11 @@ class CrawlerOrchestrator:
         yesterday_str = (today - timedelta(days=1)).isoformat()
         last_week_str = (today - timedelta(days=7)).isoformat()
 
+        # Find most recent previous snapshot date to accurately compute deltas
+        cursor.execute("SELECT DISTINCT snapshot_date FROM snapshots WHERE snapshot_date < ? ORDER BY snapshot_date DESC LIMIT 1", (today.isoformat(),))
+        prev_row = cursor.fetchone()
+        prev_date_str = prev_row["snapshot_date"] if prev_row else yesterday_str
+
         for rec in records:
             platform = rec["platform"]
             country = rec["country"]
@@ -42,12 +47,12 @@ class CrawlerOrchestrator:
             game_id = rec["game_id"]
             current_rank = rec["rank"]
 
-            # 1. Day-over-Day delta
+            # 1. Day-over-Day delta (against previous snapshot date)
             cursor.execute("""
             SELECT rank FROM snapshots
             WHERE snapshot_date = ? AND platform = ? AND country = ? AND ranking_type = ? AND game_id = ?
             LIMIT 1
-            """, (yesterday_str, platform, country, ranking_type, game_id))
+            """, (prev_date_str, platform, country, ranking_type, game_id))
             row_yesterday = cursor.fetchone()
 
             if row_yesterday:

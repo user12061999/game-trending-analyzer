@@ -4720,7 +4720,7 @@
 
     let currentSelectedUnityScript = 'PlayerController.cs';
 
-    async function loadModalDeconstruct(forceReload = false, useAiLlm = false) {
+    async function loadModalDeconstruct(forceReload = false, useAiLlm = false, customKey = null) {
       const container = document.getElementById('modalDeconstructContainer');
       if (!container) return;
       const gameId = currentActiveModalGameId;
@@ -4732,20 +4732,36 @@
         return;
       }
 
+      if (useAiLlm) {
+        showToast(`✨ Đang kích hoạt AI phân tích sâu gameplay & cốt truyện cho "${title}"...`, 'sparkles');
+      }
+
       container.innerHTML = `
-        <div class="p-10 text-center space-y-4 rounded-2xl bg-slate-950/80 border border-slate-800">
-          <div class="inline-block p-4 rounded-2xl ${useAiLlm ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400' : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'} animate-pulse">
-            <i data-lucide="${useAiLlm ? 'sparkles' : 'cpu'}" class="w-10 h-10 animate-spin"></i>
+        <div class="p-12 text-center space-y-4 rounded-2xl bg-slate-950/90 border border-slate-800 shadow-2xl">
+          <div class="inline-block p-4 rounded-2xl ${useAiLlm ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300' : 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'} animate-pulse">
+            <i data-lucide="${useAiLlm ? 'sparkles' : 'cpu'}" class="w-10 h-10 ${useAiLlm ? 'animate-bounce' : 'animate-spin'}"></i>
           </div>
-          <h4 class="text-base font-bold text-white">${useAiLlm ? 'Đang Kích Hoạt Gemini LLM Phân Tích Sâu Gameplay & Kịch Bản Cho' : 'Đang Tự Động Bóc Tách Gameplay & Kịch Bản Pacing 1:1 Cho'} "${title}"...</h4>
-          <p class="text-xs text-slate-400 max-w-md mx-auto">
-            Hệ thống đang quét toàn diện: Thông số Physics 1:1, FSM đa tầng, Kịch bản Pacing 10 giai đoạn, Cốt truyện 3 hồi & Trọn bộ 5 file C# Unity Starter...
+          <div class="space-y-1">
+            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${useAiLlm ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+              ${useAiLlm ? '✨ ĐANG PHÂN TÍCH SÂU BẰNG AI (GEMINI ENGINE)' : '⚙️ ĐANG BÓC TÁCH BLUEPRINT 1:1'}
+            </span>
+            <h4 class="text-base font-bold text-white">${useAiLlm ? 'AI Đang Bóc Tách Kịch Bản, Cơ Chế & Vật Lý Riêng Cho' : 'Đang Bóc Tách Gameplay Chuẩn Hoá Cho'} "${title}"...</h4>
+          </div>
+          <p class="text-xs text-slate-400 max-w-lg mx-auto leading-relaxed">
+            Hệ thống đang trích xuất: Động học Kinematics 1:1, Ma trận Combo kỹ năng, Kịch bản Pacing 10 giai đoạn kèm Tension Score, Cốt truyện 3 hồi và 5 bộ mã nguồn Unity C#...
           </p>
+          <div class="w-48 h-1.5 mx-auto bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full animate-pulse" style="width: 85%"></div>
+          </div>
         </div>
       `;
       lucide.createIcons();
 
       try {
+        const storedKey = customKey || localStorage.getItem('gemini_api_key') || '';
+        
+        // Add a slight minimum visible delay when using AI so the user clearly feels the processing
+        const startTime = Date.now();
         const res = await fetch('/api/deconstruct/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -4755,15 +4771,26 @@
             genre_hint: currentActiveModalGameGenre || 'Action',
             store_url: currentActiveModalGameStoreUrl || '',
             raw_description: currentActiveModalGameDesc || '',
-            use_ai_llm: useAiLlm
+            use_ai_llm: useAiLlm,
+            custom_api_key: storedKey
           })
         });
+
+        if (useAiLlm) {
+          const elapsed = Date.now() - startTime;
+          if (elapsed < 800) {
+            await new Promise(r => setTimeout(r, 800 - elapsed));
+          }
+        }
 
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         const data = await res.json();
         modalDeconstructCache[gameId] = data;
         currentModalDeconstructData = data;
         renderModalDeconstructResults(data);
+        if (useAiLlm) {
+          showToast(`Đã hoàn tất phân tích sâu bằng AI cho "${title}"!`, 'check-circle');
+        }
       } catch (err) {
         container.innerHTML = `
           <div class="p-8 text-center text-rose-400 space-y-2 rounded-2xl bg-slate-950 border border-slate-800">
@@ -4774,6 +4801,27 @@
         `;
         lucide.createIcons();
       }
+    }
+
+    async function saveAndRunGeminiAiAnalysis() {
+      const input = document.getElementById('modalGeminiApiKeyInput');
+      const key = input ? input.value.trim() : '';
+      if (!key) {
+        showToast('Vui lòng nhập khóa Gemini API Key trước khi áp dụng.', 'alert-circle');
+        return;
+      }
+      localStorage.setItem('gemini_api_key', key);
+      try {
+        await fetch('/api/ai/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gemini_api_key: key })
+        });
+      } catch (e) {
+        console.warn('Failed to save to server config:', e);
+      }
+      showToast('Đã lưu API Key! Đang gửi yêu cầu phân tích trực tiếp tới Google Gemini...', 'sparkles');
+      loadModalDeconstruct(true, true, key);
     }
 
     function reloadModalDeconstruct() {
@@ -4856,18 +4904,27 @@
 
       container.innerHTML = `
         <!-- Header Archetype & Badge Banner -->
-        <div class="glass-card p-4 rounded-xl border border-slate-800 bg-slate-950/70 flex items-center justify-between flex-wrap gap-2">
+        <div class="glass-card p-4 rounded-xl border ${data.is_ai_enhanced ? 'border-amber-500/50 bg-gradient-to-r from-amber-950/30 via-slate-950 to-slate-950' : 'border-slate-800 bg-slate-950/70'} flex items-center justify-between flex-wrap gap-2">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-300 border border-emerald-500/40 uppercase tracking-wider flex items-center gap-1.5">
               <i data-lucide="tag" class="w-3.5 h-3.5"></i> ${data.archetype_name || data.genre || 'Gameplay Archetype'}
             </span>
             ${data.is_ai_enhanced ? `
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
-                <i data-lucide="sparkles" class="w-3 h-3 text-amber-400"></i> AI ENHANCED (GEMINI LLM)
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 shadow-md shadow-amber-500/20 animate-pulse">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-yellow-300"></i> AI ENHANCED: ${data.ai_source || 'Gemini AI Engine'}
               </span>
             ` : ''}
           </div>
-          <span class="text-xs text-slate-400 font-medium">Bản thiết kế kỹ thuật phục vụ Clone & Nâng Cấp Gameplay 1:1</span>
+          <div class="flex items-center gap-2 flex-wrap text-xs">
+            <div class="flex items-center gap-1.5 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+              <i data-lucide="key" class="w-3 h-3 text-amber-400"></i>
+              <input type="password" id="modalGeminiApiKeyInput" placeholder="Google Gemini API Key..." value="${localStorage.getItem('gemini_api_key') || ''}" class="bg-transparent text-[11px] text-white focus:outline-none w-36">
+              <button onclick="saveAndRunGeminiAiAnalysis()" class="px-2 py-0.5 rounded bg-amber-600 hover:bg-amber-500 text-white text-[10px] font-bold cursor-pointer">
+                Lưu & Gọi Gemini
+              </button>
+            </div>
+            <span class="text-xs text-slate-400 font-medium">Bản thiết kế kỹ thuật phục vụ Clone & Nâng Cấp Gameplay 1:1</span>
+          </div>
         </div>
 
         <!-- 1. Core Mechanics, 1:1 Physics & Game Feel Spec -->

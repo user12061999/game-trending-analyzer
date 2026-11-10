@@ -8,7 +8,6 @@ from datetime import datetime, date
 import httpx
 
 from app.config import DATA_DIR
-from app.analytics.trend_analyzer import TrendAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,14 @@ DEFAULT_CONFIG = {
 
 class AlertNotifier:
     def __init__(self):
-        self.analyzer = TrendAnalyzer()
+        self._analyzer = None
+
+    @property
+    def analyzer(self):
+        if self._analyzer is None:
+            from app.analytics.trend_analyzer import TrendAnalyzer
+            self._analyzer = TrendAnalyzer()
+        return self._analyzer
 
     def get_config(self) -> Dict[str, Any]:
         """Loads alerts configuration or returns defaults."""
