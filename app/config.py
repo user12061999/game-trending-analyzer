@@ -9,6 +9,10 @@ DATA_DIR.mkdir(exist_ok=True)
 
 DB_PATH = DATA_DIR / "game_trends.db"
 
+# Server Network Settings
+PORT = int(os.getenv("PORT", "8888"))
+HOST = os.getenv("HOST", "127.0.0.1")
+
 # Supported target countries for mobile markets
 SUPPORTED_COUNTRIES = [
     {"code": "global", "name": "Global / Worldwide", "flag": "🌐"},

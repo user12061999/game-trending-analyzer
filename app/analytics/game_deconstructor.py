@@ -1193,10 +1193,10 @@ Yêu cầu trả về JSON với các trường:
 }}
 Chỉ trả về JSON thuần túy, không có thẻ markdown.
 """
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={key}"
             payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode("utf-8")
             req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=25) as resp:
                 res_json = json.loads(resp.read().decode("utf-8"))
                 text = res_json["candidates"][0]["content"]["parts"][0]["text"]
                 cleaned = text.strip()

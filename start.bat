@@ -15,6 +15,6 @@ if not exist ".venv\Scripts\python.exe" (
     .\.venv\Scripts\pip.exe install -r requirements.txt
 )
 
-echo [3/3] Starting Web Server at http://127.0.0.1:8000 ...
+echo [3/3] Starting Web Server at http://127.0.0.1:8888 ...
 .\.venv\Scripts\python.exe run.py
 pause
