@@ -55,6 +55,7 @@ from app.analytics.gdd_generator import GameDesignDocumentGenerator
 from app.analytics.prereg_wishlist_forecaster import PreRegWishlistForecaster
 from app.analytics.game_deconstructor import GameDeconstructor
 from app.analytics.rea_integrator import REAIntegrator
+from app.analytics.revenue_history_engine import RevenueHistoryEngine
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -1132,3 +1133,24 @@ async def analyze_with_rea(request: Request):
         game_id=game_id,
         artifact_path=artifact_path
     )
+
+# --- Sensor Tower Style Revenue & Download Historical Intelligence ---
+@app.get("/api/game/{game_id}/revenue-history")
+async def get_game_revenue_history_api(game_id: str, days: int = Query(30, ge=7, le=90)):
+    """Returns 30-day historical revenue, download curves, ARPU and lifecycle phase."""
+    return RevenueHistoryEngine.get_game_revenue_history(game_id=game_id, days=days)
+
+# --- Unity Editor Importer Plugin Endpoints ---
+@app.get("/api/unity/importer-script")
+async def get_unity_importer_script_api():
+    """Serves the Unity Editor Window C# script (GameRadarImporter.cs)."""
+    script_path = BASE_DIR / "app" / "unity" / "GameRadarImporter.cs"
+    if script_path.exists():
+        with open(script_path, "r", encoding="utf-8") as f:
+            code = f.read()
+        return Response(
+            content=code,
+            media_type="text/plain",
+            headers={"Content-Disposition": 'attachment; filename="GameRadarImporter.cs"'}
+        )
+    return Response(content="// GameRadarImporter.cs not found", media_type="text/plain", status_code=404)

@@ -3756,6 +3756,16 @@
           <span>🎮 Chơi Thử Prototype Live</span>
           <span class="px-1.5 py-0.5 rounded text-[9px] bg-violet-500/20 text-violet-400 font-bold border border-violet-500/30">CANVAS 60FPS</span>
         </button>
+        <button onclick="switchModalSubTab('unityplugin')" id="modalSubTabBtn-unityplugin" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer font-semibold shrink-0">
+          <i data-lucide="box" class="w-4 h-4 text-purple-400"></i>
+          <span>🔌 Unity Editor Plugin</span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] bg-purple-500/20 text-purple-400 font-bold border border-purple-500/30">1-CLICK SCENE</span>
+        </button>
+        <button onclick="switchModalSubTab('overview')" id="modalSubTabBtn-overview" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
+          <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-400"></i>
+          <span>📈 Doanh Thu & Lượt Tải 30D</span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">SENSOR TOWER</span>
+        </button>
         <button onclick="switchModalSubTab('artprompts')" id="modalSubTabBtn-artprompts" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer font-semibold shrink-0">
           <i data-lucide="palette" class="w-4 h-4 text-fuchsia-400"></i>
           <span>🎨 Prompt AI Vẽ Assets</span>
@@ -3769,10 +3779,6 @@
         <button onclick="switchModalSubTab('gdd')" id="modalSubTabBtn-gdd" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
           <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
           <span>📋 Xuất GDD 1-Page</span>
-        </button>
-        <button onclick="switchModalSubTab('overview')" id="modalSubTabBtn-overview" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
-          <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
-          <span>📊 Doanh Thu & Xếp Hạng</span>
         </button>
         <button onclick="switchModalSubTab('reviews')" id="modalSubTabBtn-reviews" class="modal-subtab-btn px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
           <i data-lucide="message-square-quote" class="w-4 h-4 text-pink-400"></i>
@@ -3941,6 +3947,88 @@
         </div>
       </div>
 
+      <!-- SUB-TAB: UNITY EDITOR 1-CLICK IMPORTER PLUGIN -->
+      <div id="modalSubTabContent-unityplugin" class="hidden space-y-4">
+        <!-- Banner & Quick Actions -->
+        <div class="glass-card p-4 rounded-2xl border border-purple-500/30 bg-gradient-to-r from-purple-950/40 via-slate-900 to-indigo-950/40 flex items-center justify-between flex-wrap gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="box" class="w-3 h-3 text-purple-400"></i>
+                UNITY EDITOR WINDOW PLUGIN
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                PORT 8888 READY
+              </span>
+            </div>
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
+              Tự Động Sinh Scene & Gán Toàn Bộ Components 1:1 Vào Unity Editor
+            </h4>
+            <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
+              Không cần kéo thả thủ công! Chỉ cần thêm file script <b>GameRadarImporter.cs</b> vào thư mục <code class="text-purple-300 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">Assets/Editor/</code> của project Unity, bạn có thể bấm 1 nút để tự động kết nối web này và dựng ngay Scene playable hoàn chỉnh!
+            </p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="/api/unity/importer-script" download="GameRadarImporter.cs" class="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-purple-600/30 cursor-pointer transition-all">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Tải File GameRadarImporter.cs
+            </a>
+            <button onclick="copyUnityImporterCode()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-700 cursor-pointer transition-all">
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-purple-400"></i> Sao Chép C# Code
+            </button>
+            <button onclick="downloadUnityZipPackage()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-emerald-600/30 cursor-pointer transition-all">
+              <i data-lucide="package" class="w-3.5 h-3.5"></i> Tải Trọn Bộ .ZIP
+            </button>
+          </div>
+        </div>
+
+        <!-- 3-Step Setup Guide Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-xs border border-purple-500/40">1</span>
+              <h5 class="font-bold text-white text-xs">Thêm File Vào Unity</h5>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Tạo thư mục <code class="text-purple-300">Assets/Editor/</code> trong Unity Project của bạn và lưu file <b>GameRadarImporter.cs</b> vào đó.
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-bold text-xs border border-indigo-500/40">2</span>
+              <h5 class="font-bold text-white text-xs">Mở Menu Radar Trong Unity</h5>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Trên thanh menu chính của Unity, bấm vào: <br>
+              <code class="text-indigo-300 font-bold">Tools > Game Trending Radar > Setup Prototype Scene</code>
+            </p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs border border-emerald-500/40">3</span>
+              <h5 class="font-bold text-white text-xs">Bấm Build & Chơi Ngay</h5>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Bấm nút màu xanh <b>🚀 Bắt Đầu Dựng Prototype Scene</b> $\rightarrow$ Unity sẽ tự tải 5 script, tạo Prefab, Player, Collider và bấm <b>Play (Ctrl + P)</b> để chơi!
+            </p>
+          </div>
+        </div>
+
+        <!-- Code Viewer Box -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-slate-300 flex items-center gap-1.5">
+              <i data-lucide="file-code-2" class="w-4 h-4 text-purple-400"></i>
+              Mã Nguồn Editor C# (GameRadarImporter.cs):
+            </span>
+            <span class="text-[10px] text-slate-500">Đặt trong Assets/Editor/</span>
+          </div>
+          <div class="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-4">
+            <pre id="unityImporterCodeDisplay" class="font-mono text-[11px] text-purple-300 leading-relaxed overflow-x-auto max-h-72 scrollbar-thin"><code>// Đang tải mã nguồn GameRadarImporter.cs...</code></pre>
+          </div>
+        </div>
+      </div>
+
       <!-- SUB-TAB 0.3: AI VISUAL ASSET PROMPT GENERATOR & MOODBOARD STUDIO -->
       <div id="modalSubTabContent-artprompts" class="hidden space-y-4">
         <!-- Top Filter & Actions -->
@@ -4047,30 +4135,221 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 1: OVERVIEW & FINANCIALS -->
+      <!-- SUB-TAB 1: OVERVIEW & SENSOR TOWER FINANCIAL INTELLIGENCE -->
       <div id="modalSubTabContent-overview" class="hidden space-y-6">
-        <!-- Financial & Audience Estimates Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-indigo-950/40 border border-emerald-500/30">
-          <div>
-            <span class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider flex items-center gap-1">
-              <i data-lucide="dollar-sign" class="w-3 h-3"></i> Doanh Thu Ngày Ước Tính
-            </span>
-            <h4 id="modalStatRevDaily" class="text-base font-bold text-emerald-300 mt-1">--</h4>
-            <span class="text-[10px] text-slate-400">Dựa theo Power Law Pareto</span>
+        <!-- Sensor Tower Intelligence Header Card -->
+        <div class="glass-card p-4 rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900 to-teal-950/40 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="bar-chart-2" class="w-3 h-3 text-emerald-400"></i>
+                SENSOR TOWER & APPMAGIC INTELLIGENCE ENGINE
+              </span>
+              <span id="sensorRevGrowthBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                +0.0% WoW
+              </span>
+            </div>
+            <!-- Range Selector & Mode Toggle -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <div class="inline-flex rounded-xl bg-slate-950/80 p-0.5 border border-slate-800 text-[11px]">
+                <button onclick="setSensorChartMode('daily')" id="btnSensorModeDaily" class="px-2.5 py-1 rounded-lg font-bold bg-emerald-600 text-white transition-all cursor-pointer">Theo Ngày</button>
+                <button onclick="setSensorChartMode('cumulative')" id="btnSensorModeCumulative" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition-all cursor-pointer">Lũy Kế</button>
+              </div>
+              <div class="inline-flex rounded-xl bg-slate-950/80 p-0.5 border border-slate-800 text-[11px]">
+                <button onclick="changeSensorDays(7)" id="btnSensorDays7" class="px-2 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition-all cursor-pointer">7D</button>
+                <button onclick="changeSensorDays(14)" id="btnSensorDays14" class="px-2 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition-all cursor-pointer">14D</button>
+                <button onclick="changeSensorDays(30)" id="btnSensorDays30" class="px-2 py-1 rounded-lg font-bold bg-slate-800 text-emerald-400 border border-emerald-500/30 transition-all cursor-pointer">30D</button>
+              </div>
+            </div>
           </div>
-          <div>
-            <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider flex items-center gap-1">
-              <i data-lucide="calendar" class="w-3 h-3"></i> Doanh Thu Tháng Ước Tính
-            </span>
-            <h4 id="modalStatRevMonthly" class="text-base font-bold text-indigo-300 mt-1">--</h4>
-            <span class="text-[10px] text-slate-400">Chu kỳ 30 ngày liên tục</span>
+
+          <!-- 4 Core Financial Metrics -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+            <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+              <span class="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="dollar-sign" class="w-3 h-3"></i> Doanh Thu Lũy Kế
+              </span>
+              <h4 id="sensorRev30d" class="text-lg font-black text-emerald-300 mt-1">--</h4>
+              <p class="text-[10px] text-slate-400 mt-0.5">TB ngày: <span id="sensorRevDailyAvg" class="text-slate-300 font-medium">--</span></p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+              <span class="text-[10px] text-cyan-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="download" class="w-3 h-3"></i> Lượt Tải Lũy Kế
+              </span>
+              <h4 id="sensorDl30d" class="text-lg font-black text-cyan-300 mt-1">--</h4>
+              <p class="text-[10px] text-slate-400 mt-0.5">TB ngày: <span id="sensorDlDailyAvg" class="text-slate-300 font-medium">--</span></p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+              <span class="text-[10px] text-amber-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="gem" class="w-3 h-3"></i> Blended ARPU
+              </span>
+              <h4 id="sensorArpu" class="text-lg font-black text-amber-300 mt-1">--</h4>
+              <p class="text-[10px] text-slate-400 mt-0.5">Doanh thu / Mỗi lượt tải</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+              <span class="text-[10px] text-purple-400 font-semibold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="zap" class="w-3 h-3"></i> Monetization Score
+              </span>
+              <h4 id="sensorMonetizationScore" class="text-lg font-black text-purple-300 mt-1">--/100</h4>
+              <p class="text-[10px] text-slate-400 mt-0.5">Hiệu suất thương mại</p>
+            </div>
           </div>
-          <div>
-            <span class="text-[10px] text-sky-400 font-semibold uppercase tracking-wider flex items-center gap-1">
-              <i data-lucide="download" class="w-3 h-3"></i> Lượt Tải / CCU Ước Tính
-            </span>
-            <h4 id="modalStatDownloads" class="text-base font-bold text-sky-300 mt-1">--</h4>
-            <span class="text-[10px] text-slate-400">Quy mô người chơi mới</span>
+        </div>
+
+        <!-- Lifecycle Phase Diagnostic Alert -->
+        <div id="sensorLifecycleBanner" class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-start gap-3">
+          <div class="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0">
+            <i data-lucide="activity" class="w-5 h-5"></i>
+          </div>
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-white uppercase tracking-wider">Giai Đoạn Vòng Đời (Lifecycle Phase):</span>
+              <span id="sensorLifecycleBadge" class="px-2 py-0.5 rounded text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Đang phân tích...</span>
+            </div>
+            <p id="sensorLifecycleDesc" class="text-xs text-slate-300 leading-relaxed">
+              Đang tính toán tốc độ tăng trưởng doanh thu tuần (WoW Velocity) và hành vi nạp của người chơi...
+            </p>
+          </div>
+        </div>
+
+        <!-- Dual-Axis Sensor Tower Chart -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="line-chart" class="w-4 h-4 text-emerald-400"></i>
+              Biểu Đồ Lịch Sử Doanh Thu ($) & Lượt Tải (Sensor Tower Dual-Axis)
+            </h4>
+            <div class="flex items-center gap-3 text-[10px]">
+              <span class="flex items-center gap-1 text-emerald-400 font-semibold">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Doanh Thu (Trục Trái $)
+              </span>
+              <span class="flex items-center gap-1 text-cyan-400 font-semibold">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-500 inline-block"></span> Lượt Tải (Trục Phải)
+              </span>
+            </div>
+          </div>
+          <div class="h-72 bg-slate-950/80 p-3 rounded-xl border border-slate-800 relative">
+            <div id="sensorRevenueLoading" class="absolute inset-0 bg-slate-950/80 flex items-center justify-center rounded-xl z-10 hidden">
+              <div class="flex items-center gap-2 text-xs text-emerald-400">
+                <div class="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                Đang nạp dữ liệu Sensor Tower 30D...
+              </div>
+            </div>
+            <canvas id="sensorTowerRevenueChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Country Tier Revenue Breakdown (3 Cards) -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="globe-2" class="w-4 h-4 text-indigo-400"></i>
+              Phân Bổ Doanh Thu & Lượt Tải Theo Thị Trường (Country Tier Breakdown)
+            </h4>
+            <span class="text-[10px] text-slate-400">Mô hình phân vùng quốc gia chuẩn Sensor Tower</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- Tier 1 -->
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-emerald-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Tier 1 (US, JP, KR, DE, UK)
+                </span>
+                <span id="sensorTier1Share" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">64.5%</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1 text-left">
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Doanh Thu:</span>
+                  <span id="sensorTier1Rev" class="text-xs font-bold text-white">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Lượt Tải:</span>
+                  <span id="sensorTier1Dl" class="text-xs font-bold text-white">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Blended ARPU:</span>
+                  <span id="sensorTier1Arpu" class="text-xs font-bold text-emerald-400">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Đặc Tính:</span>
+                  <span class="text-[10px] font-semibold text-slate-300">Whale IAP & VIP</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 flex-wrap pt-1 border-t border-slate-800 text-[10px] text-slate-400">
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Mỹ 🇺🇸</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Nhật Bản 🇯🇵</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Hàn Quốc 🇰🇷</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Đức 🇩🇪</span>
+              </div>
+            </div>
+
+            <!-- Tier 2 -->
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-indigo-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-indigo-400"></span> Tier 2 (FR, CA, TW, AU, IT)
+                </span>
+                <span id="sensorTier2Share" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300">21.5%</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1 text-left">
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Doanh Thu:</span>
+                  <span id="sensorTier2Rev" class="text-xs font-bold text-white">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Lượt Tải:</span>
+                  <span id="sensorTier2Dl" class="text-xs font-bold text-white">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Blended ARPU:</span>
+                  <span id="sensorTier2Arpu" class="text-xs font-bold text-indigo-400">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Đặc Tính:</span>
+                  <span class="text-[10px] font-semibold text-slate-300">Battle Pass & Ads</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 flex-wrap pt-1 border-t border-slate-800 text-[10px] text-slate-400">
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Đài Loan 🇹🇼</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Pháp 🇫🇷</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Canada 🇨🇦</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Úc 🇦🇺</span>
+              </div>
+            </div>
+
+            <!-- Tier 3 -->
+            <div class="p-3.5 rounded-xl bg-slate-950/80 border border-cyan-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-cyan-300 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Tier 3 (VN, BR, ID, TH, PH)
+                </span>
+                <span id="sensorTier3Share" class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300">14.0%</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1 text-left">
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Doanh Thu:</span>
+                  <span id="sensorTier3Rev" class="text-xs font-bold text-white">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Lượt Tải:</span>
+                  <span id="sensorTier3Dl" class="text-xs font-bold text-white">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Blended ARPU:</span>
+                  <span id="sensorTier3Arpu" class="text-xs font-bold text-cyan-400">--</span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Đặc Tính:</span>
+                  <span class="text-[10px] font-semibold text-slate-300">Viral Traffic & Rewarded</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 flex-wrap pt-1 border-t border-slate-800 text-[10px] text-slate-400">
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Việt Nam 🇻🇳</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Brazil 🇧🇷</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Indonesia 🇮🇩</span>
+                <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800">Thái Lan 🇹🇭</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -4091,7 +4370,7 @@
               </div>
               <div>
                 <h4 class="text-sm font-bold text-white">Báo Cáo Bóc Tách Trí Tuệ Nhân Tạo (AI Teardown)</h4>
-                <p id="modalAiSourceBadge" class="text-[10px] text-purple-400">Nguồn: Gemini 1.5 Flash</p>
+                <p id="modalAiSourceBadge" class="text-[10px] text-purple-400">Nguồn: Gemini 3.5 Flash Lite</p>
               </div>
             </div>
             <button onclick="toggleAiCard()" class="text-slate-400 hover:text-white text-xs cursor-pointer">Ẩn</button>
@@ -4100,7 +4379,7 @@
           <div id="modalAiContent" class="space-y-4 text-xs leading-relaxed text-slate-300"></div>
         </div>
 
-        <!-- Historical Stats Row -->
+        <!-- Historical Rank Stats Row -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
           <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
             <p class="text-[10px] text-slate-400 uppercase font-semibold">Rank Hiện Tại</p>
@@ -4120,7 +4399,7 @@
           </div>
         </div>
 
-        <!-- Trendline Chart -->
+        <!-- Rank Trendline Chart -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
@@ -4129,7 +4408,7 @@
             </h4>
             <span class="text-[10px] text-slate-500">*Trục Y đảo ngược (Vị trí #1 ở trên đỉnh)</span>
           </div>
-          <div class="h-64 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+          <div class="h-56 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
             <canvas id="gameModalChart"></canvas>
           </div>
         </div>
@@ -7733,7 +8012,7 @@
 
     function switchModalSubTab(tabName) {
       currentModalSubTab = tabName;
-      const subTabs = ['deconstruct', 'playprototype', 'artprompts', 'adscript', 'gdd', 'overview', 'reviews', 'aso', 'liveops'];
+      const subTabs = ['deconstruct', 'playprototype', 'unityplugin', 'overview', 'artprompts', 'adscript', 'gdd', 'reviews', 'aso', 'liveops'];
       subTabs.forEach(t => {
         const btn = document.getElementById(`modalSubTabBtn-${t}`);
         const content = document.getElementById(`modalSubTabContent-${t}`);
@@ -7743,14 +8022,16 @@
             btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-emerald-900/40 shrink-0";
           } else if (t === 'playprototype') {
             btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-violet-900/40 shrink-0";
+          } else if (t === 'unityplugin') {
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-purple-900/40 shrink-0";
+          } else if (t === 'overview') {
+            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-emerald-900/40 shrink-0";
           } else if (t === 'artprompts') {
             btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-fuchsia-900/40 shrink-0";
           } else if (t === 'adscript') {
             btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-orange-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-rose-900/40 shrink-0";
           } else if (t === 'gdd') {
             btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-lg shadow-cyan-900/40 shrink-0";
-          } else if (t === 'overview') {
-            btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-indigo-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md shrink-0";
           } else if (t === 'reviews') {
             btn.className = "modal-subtab-btn px-3.5 py-2 rounded-xl bg-pink-600 text-white flex items-center gap-1.5 transition-all cursor-pointer font-bold shadow-md shrink-0";
           } else if (t === 'aso') {
@@ -7771,17 +8052,21 @@
 
       if (tabName === 'deconstruct') loadModalDeconstruct();
       if (tabName === 'playprototype') initOrResumePrototype();
+      if (tabName === 'unityplugin') loadModalUnityPlugin();
+      if (tabName === 'overview') {
+        if (currentActiveModalGameId) {
+          loadGameRevenueHistory(currentActiveModalGameId, sensorChartDays || 30);
+        }
+        if (currentActiveModalHistory && currentActiveModalHistory.length > 0) {
+          renderModalTrendChart(currentActiveModalHistory, (currentActiveModalGamePlatform || '').includes('pc'));
+        }
+      }
       if (tabName === 'artprompts') loadModalArtPrompts();
       if (tabName === 'adscript') loadModalAdScript();
       if (tabName === 'gdd') loadModalGDD();
       if (tabName === 'reviews') loadModalReviews(currentActiveModalGameId, currentActiveModalGameTitle, currentActiveModalGamePlatform);
       if (tabName === 'aso') loadModalASO(currentActiveModalGameId, currentActiveModalGameTitle, currentActiveModalGameGenre);
       if (tabName === 'liveops') loadModalLiveOps(currentActiveModalGameId, currentActiveModalGameTitle);
-      if (tabName === 'overview') {
-        if (currentActiveModalHistory && currentActiveModalHistory.length > 0) {
-          renderModalTrendChart(currentActiveModalHistory, (currentActiveModalGamePlatform || '').includes('pc'));
-        }
-      }
       lucide.createIcons();
     }
 
@@ -8017,9 +8302,12 @@
           ? `${(stats.peak_ccu || g.player_count || 0).toLocaleString()} CCU`
           : (g.estimated_downloads || 'Top Tier');
 
-        document.getElementById('modalStatRevDaily').innerText = g.estimated_revenue_daily_formatted || 'N/A';
-        document.getElementById('modalStatRevMonthly').innerText = g.estimated_revenue_monthly_formatted || 'N/A';
-        document.getElementById('modalStatDownloads').innerText = g.estimated_downloads_formatted || g.estimated_downloads || 'N/A';
+        if (document.getElementById('modalStatRevDaily')) document.getElementById('modalStatRevDaily').innerText = g.estimated_revenue_daily_formatted || 'N/A';
+        if (document.getElementById('modalStatRevMonthly')) document.getElementById('modalStatRevMonthly').innerText = g.estimated_revenue_monthly_formatted || 'N/A';
+        if (document.getElementById('modalStatDownloads')) document.getElementById('modalStatDownloads').innerText = g.estimated_downloads_formatted || g.estimated_downloads || 'N/A';
+
+        // Preload Sensor Tower Historical Intelligence
+        loadGameRevenueHistory(gameId, sensorChartDays || 30);
 
         renderModalTrendChart(history, isPC);
 
@@ -8138,6 +8426,292 @@
         btn.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i><span>🤖 Phân Tích Chuyên Sâu Bằng AI (AI Game Deconstruct)</span>';
         content.innerHTML = '<p class="text-rose-400">Lỗi khi gọi phân tích AI.</p>';
       }
+    }
+
+    // --- SENSOR TOWER & APPMAGIC HISTORICAL REVENUE INTELLIGENCE ---
+    let currentSensorRevenueHistoryData = null;
+    let sensorChartMode = 'daily'; // 'daily' or 'cumulative'
+    let sensorChartDays = 30;
+    let sensorTowerChartInstance = null;
+    let currentUnityImporterScriptText = '';
+
+    async function loadModalUnityPlugin() {
+      const codeDisplay = document.getElementById('unityImporterCodeDisplay');
+      if (!codeDisplay) return;
+      if (currentUnityImporterScriptText) {
+        codeDisplay.textContent = currentUnityImporterScriptText;
+        return;
+      }
+      codeDisplay.textContent = '// Đang tải mã nguồn GameRadarImporter.cs từ máy chủ...';
+      try {
+        const res = await fetch('/api/unity/importer-script');
+        if (!res.ok) throw new Error('Không thể tải script');
+        const text = await res.text();
+        currentUnityImporterScriptText = text;
+        codeDisplay.textContent = text;
+      } catch (err) {
+        console.error('Error loading Unity importer script:', err);
+        codeDisplay.textContent = '// Lỗi khi kết nối API tải GameRadarImporter.cs. Vui lòng thử lại sau.';
+      }
+    }
+
+    function copyUnityImporterCode() {
+      const codeDisplay = document.getElementById('unityImporterCodeDisplay');
+      const code = (codeDisplay && codeDisplay.textContent) ? codeDisplay.textContent : currentUnityImporterScriptText;
+      if (!code || code.startsWith('// Lỗi') || code.startsWith('// Đang')) {
+        showToast('Chưa tải được mã nguồn script.');
+        return;
+      }
+      navigator.clipboard.writeText(code).then(() => {
+        showToast('Đã sao chép mã nguồn GameRadarImporter.cs vào clipboard!');
+      }).catch(() => {
+        showToast('Không thể truy cập clipboard.');
+      });
+    }
+
+    async function loadGameRevenueHistory(gameId, days = 30) {
+      if (!gameId) return;
+      sensorChartDays = days;
+      const loadingEl = document.getElementById('sensorRevenueLoading');
+      if (loadingEl) loadingEl.classList.remove('hidden');
+
+      try {
+        const res = await fetch(`/api/game/${encodeURIComponent(gameId)}/revenue-history?days=${days}`);
+        if (!res.ok) throw new Error('API error');
+        const data = await res.json();
+        currentSensorRevenueHistoryData = data;
+        renderSensorTowerDashboard(data);
+      } catch (err) {
+        console.error('Error loading Sensor Tower revenue history:', err);
+      } finally {
+        if (loadingEl) loadingEl.classList.add('hidden');
+      }
+    }
+
+    function setSensorChartMode(mode) {
+      sensorChartMode = mode;
+      const btnDaily = document.getElementById('btnSensorModeDaily');
+      const btnCum = document.getElementById('btnSensorModeCumulative');
+      if (btnDaily && btnCum) {
+        if (mode === 'daily') {
+          btnDaily.className = 'px-2.5 py-1 rounded-lg font-bold bg-emerald-600 text-white transition-all cursor-pointer';
+          btnCum.className = 'px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition-all cursor-pointer';
+        } else {
+          btnCum.className = 'px-2.5 py-1 rounded-lg font-bold bg-emerald-600 text-white transition-all cursor-pointer';
+          btnDaily.className = 'px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition-all cursor-pointer';
+        }
+      }
+      if (currentSensorRevenueHistoryData) {
+        renderSensorTowerChart(currentSensorRevenueHistoryData);
+      }
+    }
+
+    function changeSensorDays(days) {
+      sensorChartDays = days;
+      [7, 14, 30].forEach(d => {
+        const btn = document.getElementById(`btnSensorDays${d}`);
+        if (!btn) return;
+        if (d === days) {
+          btn.className = 'px-2 py-1 rounded-lg font-bold bg-slate-800 text-emerald-400 border border-emerald-500/30 transition-all cursor-pointer';
+        } else {
+          btn.className = 'px-2 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition-all cursor-pointer';
+        }
+      });
+      if (currentActiveModalGameId) {
+        loadGameRevenueHistory(currentActiveModalGameId, days);
+      }
+    }
+
+    function renderSensorTowerDashboard(data) {
+      if (!data) return;
+      const s = data.metrics_summary || {};
+      const l = data.lifecycle || {};
+      const t = data.tier_breakdown || {};
+
+      // Metrics
+      const elRev30d = document.getElementById('sensorRev30d');
+      if (elRev30d) elRev30d.innerText = s.total_revenue_formatted || '--';
+      const elRevAvg = document.getElementById('sensorRevDailyAvg');
+      if (elRevAvg) elRevAvg.innerText = s.average_daily_revenue_formatted || '--';
+      const elDl30d = document.getElementById('sensorDl30d');
+      if (elDl30d) elDl30d.innerText = s.total_downloads_formatted || '--';
+      const elDlAvg = document.getElementById('sensorDlDailyAvg');
+      if (elDlAvg) elDlAvg.innerText = s.average_daily_downloads_formatted || '--';
+      const elArpu = document.getElementById('sensorArpu');
+      if (elArpu) elArpu.innerText = s.blended_arpu_formatted ? `${s.blended_arpu_formatted} / tải` : '--';
+      const elScore = document.getElementById('sensorMonetizationScore');
+      if (elScore) elScore.innerText = `${s.monetization_score || 75}/100`;
+
+      // WoW Growth Badge
+      const elGrowth = document.getElementById('sensorRevGrowthBadge');
+      if (elGrowth) {
+        const wow = s.wow_growth_pct || 0;
+        const sign = wow >= 0 ? '+' : '';
+        elGrowth.innerText = `${sign}${wow}% WoW`;
+        if (wow >= 0) {
+          elGrowth.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        } else {
+          elGrowth.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20';
+        }
+      }
+
+      // Lifecycle
+      const elLifeBadge = document.getElementById('sensorLifecycleBadge');
+      if (elLifeBadge) elLifeBadge.innerText = l.phase || 'Bình thường';
+      const elLifeDesc = document.getElementById('sensorLifecycleDesc');
+      if (elLifeDesc) elLifeDesc.innerText = l.description || '';
+
+      // Country Tiers
+      if (t.tier_1) {
+        const t1 = t.tier_1;
+        const el = document.getElementById('sensorTier1Rev');
+        if (el) el.innerText = t1.revenue_formatted;
+        const elDl = document.getElementById('sensorTier1Dl');
+        if (elDl) elDl.innerText = t1.downloads_formatted;
+        const elArpu = document.getElementById('sensorTier1Arpu');
+        if (elArpu) elArpu.innerText = `$${t1.arpu}`;
+        const elShare = document.getElementById('sensorTier1Share');
+        if (elShare) elShare.innerText = `${t1.share_pct}%`;
+      }
+      if (t.tier_2) {
+        const t2 = t.tier_2;
+        const el = document.getElementById('sensorTier2Rev');
+        if (el) el.innerText = t2.revenue_formatted;
+        const elDl = document.getElementById('sensorTier2Dl');
+        if (elDl) elDl.innerText = t2.downloads_formatted;
+        const elArpu = document.getElementById('sensorTier2Arpu');
+        if (elArpu) elArpu.innerText = `$${t2.arpu}`;
+        const elShare = document.getElementById('sensorTier2Share');
+        if (elShare) elShare.innerText = `${t2.share_pct}%`;
+      }
+      if (t.tier_3) {
+        const t3 = t.tier_3;
+        const el = document.getElementById('sensorTier3Rev');
+        if (el) el.innerText = t3.revenue_formatted;
+        const elDl = document.getElementById('sensorTier3Dl');
+        if (elDl) elDl.innerText = t3.downloads_formatted;
+        const elArpu = document.getElementById('sensorTier3Arpu');
+        if (elArpu) elArpu.innerText = `$${t3.arpu}`;
+        const elShare = document.getElementById('sensorTier3Share');
+        if (elShare) elShare.innerText = `${t3.share_pct}%`;
+      }
+
+      // Chart
+      renderSensorTowerChart(data);
+      lucide.createIcons();
+    }
+
+    function renderSensorTowerChart(data) {
+      const canvas = document.getElementById('sensorTowerRevenueChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (sensorTowerChartInstance) sensorTowerChartInstance.destroy();
+
+      const timeline = data.timeline || [];
+      const labels = timeline.map(d => d.display_date);
+
+      let revData, dlData, revLabel, dlLabel;
+      if (sensorChartMode === 'cumulative') {
+        revData = timeline.map(d => d.cumulative_revenue);
+        dlData = timeline.map(d => d.cumulative_downloads);
+        revLabel = 'Doanh Thu Lũy Kế ($)';
+        dlLabel = 'Lượt Tải Lũy Kế';
+      } else {
+        revData = timeline.map(d => d.daily_revenue);
+        dlData = timeline.map(d => d.daily_downloads);
+        revLabel = 'Doanh Thu Ngày ($)';
+        dlLabel = 'Lượt Tải Ngày';
+      }
+
+      sensorTowerChartInstance = new Chart(ctx, {
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              type: 'line',
+              label: revLabel,
+              data: revData,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.12)',
+              borderWidth: 2.5,
+              fill: true,
+              tension: 0.35,
+              pointRadius: timeline.length > 20 ? 2 : 4,
+              pointHoverRadius: 6,
+              yAxisID: 'yRev'
+            },
+            {
+              type: sensorChartMode === 'cumulative' ? 'line' : 'bar',
+              label: dlLabel,
+              data: dlData,
+              borderColor: '#06b6d4',
+              backgroundColor: sensorChartMode === 'cumulative' ? 'rgba(6, 182, 212, 0.1)' : 'rgba(6, 182, 212, 0.35)',
+              borderWidth: sensorChartMode === 'cumulative' ? 2 : 1,
+              borderRadius: 4,
+              fill: sensorChartMode === 'cumulative',
+              tension: 0.35,
+              pointRadius: sensorChartMode === 'cumulative' ? 2 : 0,
+              yAxisID: 'yDl'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: { color: '#94a3b8', font: { size: 10 } }
+            },
+            yRev: {
+              type: 'linear',
+              position: 'left',
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: {
+                color: '#10b981',
+                font: { size: 10 },
+                callback: function(val) {
+                  if (val >= 1000000) return '$' + (val / 1000000).toFixed(1) + 'M';
+                  if (val >= 1000) return '$' + (val / 1000).toFixed(0) + 'K';
+                  return '$' + val;
+                }
+              }
+            },
+            yDl: {
+              type: 'linear',
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: {
+                color: '#06b6d4',
+                font: { size: 10 },
+                callback: function(val) {
+                  if (val >= 1000000) return (val / 1000000).toFixed(1) + 'M';
+                  if (val >= 1000) return (val / 1000).toFixed(0) + 'K';
+                  return val;
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' } }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.dataset.label || '';
+                  const val = context.parsed.y;
+                  if (context.dataset.yAxisID === 'yRev') {
+                    return ` ${label}: $${val.toLocaleString()}`;
+                  }
+                  return ` ${label}: ${val.toLocaleString()} lượt`;
+                }
+              }
+            }
+          }
+        }
+      });
     }
 
     function renderModalTrendChart(history, isPC) {

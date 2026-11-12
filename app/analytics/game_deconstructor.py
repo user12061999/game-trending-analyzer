@@ -1327,7 +1327,13 @@ Chỉ trả về JSON thuần túy, không có thẻ markdown.
             # 5. Project Version metadata
             zf.writestr(f"{root_dir}/ProjectSettings/ProjectVersion.txt", "m_EditorVersion: 2022.3.20f1\nm_EditorVersionWithRevision: 2022.3.20f1 (e3366e6c4668)\n")
 
-            # 6. Comprehensive README setup guide
+            # 6. Unity Editor 1-Click Importer Window Script
+            importer_path = BASE_DIR / "app" / "unity" / "GameRadarImporter.cs"
+            if importer_path.exists():
+                with open(importer_path, "r", encoding="utf-8") as imp_f:
+                    zf.writestr(f"{root_dir}/Assets/Editor/GameRadarImporter.cs", imp_f.read())
+
+            # 7. Comprehensive README setup guide
             readme_content = f"""# {title} - Unity 2022.3 LTS Starter Project
 ## Reverse-Engineered Gameplay Prototype Scaffold
 
