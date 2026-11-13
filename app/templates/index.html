@@ -2220,37 +2220,205 @@
               <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
               APPLOVIN MAX & ADMOB WATERFALL ARCHITECTURE
             </span>
-            <span class="text-xs text-slate-400">eCPM Floors & Frequency Capping Simulator</span>
+            <span class="text-xs text-slate-400">eCPM Floors & LTV / ROAS Break-Even Simulator</span>
           </div>
           <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
-            💵 Tối Ưu Thác Doanh Thu Quảng Cáo (Ad Mediation Waterfall)
+            💵 Mô Phỏng Thác Doanh Thu Quảng Cáo & Điểm Hòa Vốn LTV / ROAS
           </h2>
           <p class="text-xs text-slate-300 leading-relaxed">
-            Chuẩn hóa thang giá sàn (eCPM Floors) cho các mạng hòa mạng quảng cáo (AppLovin MAX / Google AdMob / LevelPlay) theo quốc gia, mô phỏng tần suất hiển thị (Frequency Capping) để tối đa hóa doanh thu quảng cáo mà không gây sụt giảm retention.
+            Chuẩn hóa thang giá sàn (eCPM Floors) cho các mạng hòa mạng quảng cáo (AppLovin MAX / Google AdMob / Unity LevelPlay) theo từng quốc gia, mô phỏng tần suất hiển thị (Frequency Capping), dự toán <b>Blended ARPDAU</b>, <b>đường cong LTV D1-D60</b> và <b>ngày hoàn vốn CPI mục tiêu</b>.
           </p>
         </div>
       </div>
 
-      <!-- Section 1: Regional eCPM Benchmarks Table -->
+      <!-- 4 Top Level KPI Metric Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10 space-y-1">
+          <div class="flex items-center justify-between text-slate-400 text-xs">
+            <span class="text-amber-300 font-semibold uppercase tracking-wider">Doanh Thu Ads Tháng</span>
+            <i data-lucide="dollar-sign" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div class="text-2xl font-black text-amber-400" id="medStatMonthlyAdRev">$48,250</div>
+          <p class="text-[10px] text-slate-400">Tổng Gross Ads (30 ngày)</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10 space-y-1">
+          <div class="flex items-center justify-between text-slate-400 text-xs">
+            <span class="text-emerald-300 font-semibold uppercase tracking-wider">Blended ARPDAU</span>
+            <i data-lucide="gem" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="text-2xl font-black text-emerald-400" id="medStatArpdau">$0.0465</div>
+          <p class="text-[10px] text-slate-400">Doanh thu / User / Ngày</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-cyan-500/30 bg-cyan-950/10 space-y-1">
+          <div class="flex items-center justify-between text-slate-400 text-xs">
+            <span class="text-cyan-300 font-semibold uppercase tracking-wider">LTV D30 Dự Báo</span>
+            <i data-lucide="line-chart" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div class="text-2xl font-black text-cyan-400" id="medStatLtvD30">$0.842</div>
+          <p class="text-[10px] text-slate-400">Mỗi người chơi tạo ra sau 30 ngày</p>
+        </div>
+
+        <div class="glass-card p-4 rounded-xl border border-purple-500/30 bg-purple-950/10 space-y-1">
+          <div class="flex items-center justify-between text-slate-400 text-xs">
+            <span class="text-purple-300 font-semibold uppercase tracking-wider">Ngày Hòa Vốn / ROAS D30</span>
+            <i data-lucide="target" class="w-4 h-4 text-purple-400"></i>
+          </div>
+          <div class="text-2xl font-black text-purple-400" id="medStatPayback">Ngày 9 • 129%</div>
+          <p class="text-[10px] text-slate-400">Break-even vs Target CPI</p>
+        </div>
+      </div>
+
+      <!-- Studio Simulator Control Console -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 flex-wrap gap-2">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="sliders" class="w-5 h-5 text-amber-400"></i>
+              Bảng Thông Số Giả Lập Hoạt Động Của Studio (Studio Parameters)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Tùy chỉnh quy mô người chơi, tần suất quảng cáo và cơ cấu doanh thu thực tế</p>
+          </div>
+          <span class="text-xs text-amber-400 font-mono font-semibold">Tự động đồng bộ mô hình LTV</span>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">DAU Mục Tiêu</label>
+            <input type="number" id="medSimDau" value="50000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Thời Lượng Chơi (Phút/Session)</label>
+            <input type="number" id="medSimSession" value="15" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Số Phiên Chơi/Ngày (Sessions/Day)</label>
+            <input type="number" id="medSimSessionsPerDay" value="2.4" step="0.2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Giãn Cách Interstitial (Giây)</label>
+            <select id="medSimCooldown" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer">
+              <option value="40">40 Giây (Bão Ads - Rủi ro cực cao)</option>
+              <option value="60">60 Giây (Tần suất dày đặc)</option>
+              <option value="75" selected>75 Giây (Tiêu Chuẩn Vàng Hybrid-Casual)</option>
+              <option value="90">90 Giây (An Toàn Cho Retention)</option>
+              <option value="120">120 Giây (Thưa thớt, bỏ lỡ doanh thu)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Lượt Xem Rewarded/User/Ngày</label>
+            <input type="number" id="medSimRewarded" value="2.8" step="0.2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Target CPI Mua User ($ USD)</label>
+            <input type="number" id="medSimCpi" value="0.65" step="0.05" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Tỷ Trọng Doanh Thu IAP (%)</label>
+            <input type="number" id="medSimIapShare" value="30" min="0" max="80" step="5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Cơ Cấu Vùng Địa Lý</label>
+            <select id="medSimRegionPreset" onchange="applyMedRegionPreset()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer">
+              <option value="global" selected>Toàn Cầu (30% T1, 25% T2, 45% T3)</option>
+              <option value="us_heavy">Tập Trung US/Tier 1 (70% T1, 20% T2, 10% T3)</option>
+              <option value="sea_heavy">Tập Trung SEA/VN (10% T1, 15% T2, 75% T3)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-6 text-xs text-slate-300 pt-1">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="medSimBannerCheck" checked class="rounded border-slate-700 bg-slate-900 text-amber-500">
+            <span>Bật Banner Quảng Cáo (Refresh 30s)</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="medSimAoaCheck" checked class="rounded border-slate-700 bg-slate-900 text-amber-500">
+            <span>Bật App Open Ads (Mở ứng dụng & Resume)</span>
+          </label>
+        </div>
+
+        <button onclick="runMediationSimulation()" id="btnRunMediationSim" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:to-orange-500 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xl shadow-amber-900/40 active:scale-[0.99]">
+          <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+          <span>MÔ PHỎNG DOANH THU THÁC NƯỚC & DỰ BÁO LTV / ROAS NGAY</span>
+        </button>
+      </div>
+
+      <!-- Simulation Visual Results: Dual Charts -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Chart 1: LTV vs CPI Break-Even Curve -->
+        <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+              Đường Cong LTV D1-D30 vs Điểm Hòa Vốn CPI
+            </h4>
+            <span class="text-[10px] text-slate-400">Đường đỏ: Ngưỡng CPI mục tiêu</span>
+          </div>
+          <div class="h-64 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+            <canvas id="medLtvChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Ad Formats Revenue Share -->
+        <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="pie-chart" class="w-4 h-4 text-amber-400"></i>
+              Cơ Cấu Doanh Thu Theo Định Dạng Ads & IAP
+            </h4>
+            <span class="text-[10px] text-slate-400">Phân rã doanh thu ngày</span>
+          </div>
+          <div class="h-64 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+            <canvas id="medFormatChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Ad Fatigue & Churn Diagnostic Alert Box -->
+      <div id="medFatigueCard" class="p-4 rounded-xl bg-slate-950 border border-emerald-500/30 flex items-start gap-3">
+        <div class="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+        </div>
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-white uppercase tracking-wider">Đánh Giá Nguy Cơ Ad Fatigue & Churn:</span>
+            <span id="medFatigueBadge" class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              ĐIỂM CÂN BẰNG VÀNG (Golden Sweet Spot)
+            </span>
+          </div>
+          <p id="medFatigueAdvice" class="text-xs text-slate-300 leading-relaxed">
+            Tần suất 75s - 95s là tiêu chuẩn vàng của ngành Hybrid-Casual. Tối đa hóa doanh thu mà vẫn bảo vệ trải nghiệm người chơi.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section: Regional eCPM Benchmarks Table -->
       <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h3 class="text-base font-bold text-white flex items-center gap-2">
               <i data-lucide="bar-chart-3" class="w-5 h-5 text-amber-400"></i>
               Bảng Benchmark Giá Sàn eCPM Toàn Cầu (Regional eCPM Floors)
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Giá chuẩn eCPM cho Rewarded Video, Interstitial và Banner</p>
+            <p class="text-xs text-slate-400 mt-0.5">Dữ liệu thực chiến qua AppLovin MAX, Google AdMob, Unity LevelPlay</p>
           </div>
+          <span class="text-[10px] text-slate-500">Cập nhật theo chu kỳ 2026</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
               <tr>
-                <th class="px-4 py-3">Quốc Gia</th>
+                <th class="px-4 py-3">Quốc Gia / Thị Trường</th>
                 <th class="px-4 py-3">Phân Tier</th>
-                <th class="px-4 py-3">Rewarded Video eCPM</th>
-                <th class="px-4 py-3">Interstitial eCPM</th>
-                <th class="px-4 py-3">Banner eCPM</th>
+                <th class="px-4 py-3">Rewarded Video</th>
+                <th class="px-4 py-3">Interstitial</th>
+                <th class="px-4 py-3">App Open Ads</th>
+                <th class="px-4 py-3">Banner (MREC)</th>
                 <th class="px-4 py-3">Đặc Thù Thị Trường</th>
               </tr>
             </thead>
@@ -2259,58 +2427,20 @@
         </div>
       </div>
 
-      <!-- Section 2: Frequency Capping & Retention Churn Simulator -->
-      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+      <!-- Section: Mediation Waterfall Architecture Setup Guide -->
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center justify-between">
           <div>
             <h3 class="text-base font-bold text-white flex items-center gap-2">
-              <i data-lucide="clock" class="w-5 h-5 text-emerald-400"></i>
-              Mô Phỏng Tần Suất Quảng Cáo vs Độ Giữ Chân (Ad Fatigue Simulator)
+              <i data-lucide="layers" class="w-5 h-5 text-indigo-400"></i>
+              Cấu Trúc Tầng Thác Nước Khuyên Dùng (Mediation Waterfall Setup)
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Tìm điểm cân bằng vàng (Golden Sweet Spot) giữa doanh thu ads và nguy cơ người chơi ức chế gỡ game</p>
+            <p class="text-xs text-slate-400 mt-0.5">Sơ đồ 4 tầng kết hợp giữa In-App Bidding tự động và Giá sàn thủ công (Price Floors)</p>
           </div>
         </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">DAU Mục Tiêu</label>
-            <input type="number" id="medSimDau" value="50000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Thời Lượng Chơi (Phút/Session)</label>
-            <input type="number" id="medSimSession" value="15" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Giãn Cách Interstitial (Giây)</label>
-            <select id="medSimCooldown" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <option value="40">40 Giây (Bão Ads - Rủi ro cao)</option>
-              <option value="60">60 Giây (Tần suất dày)</option>
-              <option value="75" selected>75 Giây (Tiêu Chuẩn Vàng)</option>
-              <option value="90">90 Giây (An Toàn Retention)</option>
-              <option value="120">120 Giây (Thưa thớt)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Lượt Xem Rewarded/User/Ngày</label>
-            <input type="number" id="medSimRewarded" value="2.5" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1">Khu Vực Phân Bổ</label>
-            <select id="medSimRegion" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <option value="us">United States (Tier 1)</option>
-              <option value="jp">Japan (Tier 1)</option>
-              <option value="vn">Vietnam (Tier 3)</option>
-              <option value="br">Brazil (Tier 3)</option>
-            </select>
-          </div>
+        <div id="medWaterfallTierCards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dynamically populated -->
         </div>
-
-        <button onclick="runMediationSimulation()" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-amber-900/30">
-          <i data-lucide="play" class="w-4 h-4 fill-white"></i>
-          <span>Mô Phỏng Doanh Thu Ads & Cảnh Báo Churn</span>
-        </button>
-
-        <div id="mediationSimResults" class="space-y-4 pt-2"></div>
       </div>
     </div>
 
@@ -3550,6 +3680,150 @@
       <div id="compareResultContainer" class="space-y-6"></div>
     </div>
 
+    <!-- TAB: MECHANICS HYBRID LAB (AI GAME DNA FUSION STUDIO) -->
+    <div id="tabContent-hybridlab" class="hidden space-y-6">
+      <!-- Banner & Quick Presets -->
+      <div class="glass-card p-6 rounded-2xl border border-violet-500/40 bg-gradient-to-r from-violet-950/40 via-slate-900 to-indigo-950/40 space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div class="space-y-1 max-w-2xl">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-violet-500/20 text-violet-300 border border-violet-500/30 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="dna" class="w-3.5 h-3.5 text-violet-400"></i>
+                AI MECHANIC FUSION & PROTOTYPE LAB
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                CANVAS 60FPS PLAYABLE
+              </span>
+            </div>
+            <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+              🧬 Phòng Thí Nghiệm Lai Ghép Cơ Chế Game (Mechanics Hybrid Lab)
+            </h2>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Lai ghép DNA của 2 tựa game bất kỳ: Lấy Core Loop điều khiển & nhịp chiến đấu của <b>Game A</b> kết hợp với Meta-Progression & hệ thống nạp của <b>Game B</b> để sinh ra concept game đột phá, giải quyết thị trường đỏ và <b>tạo ngay bản chơi thử HTML5 Canvas 60FPS</b> trên trình duyệt!
+            </p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="loadHybridPreset('vampire_candy')" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer">
+              <span>🍬 Vampire x Match-3</span>
+            </button>
+            <button onclick="loadHybridPreset('archero_tycoon')" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer">
+              <span>🏹 Archero x Tycoon</span>
+            </button>
+            <button onclick="loadHybridPreset('flappy_souls')" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer">
+              <span>⚔️ Flappy x Dark Souls</span>
+            </button>
+            <button onclick="loadHybridPreset('balatro_ninja')" class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer">
+              <span>🃏 Balatro x Ninja</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2 Selection Slots & DNA Cross Reactor -->
+        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center pt-2">
+          <!-- Game A Slot (5 cols) -->
+          <div class="md:col-span-5 p-4 rounded-xl bg-slate-950/80 border border-violet-500/30 space-y-3 relative">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-violet-400 flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-violet-500"></span>
+                GENOME A: Core Loop & Combat Feel
+              </span>
+              <span class="text-[10px] text-slate-400">Chi phối điều khiển & pacing</span>
+            </div>
+            <div class="relative">
+              <input type="text" id="hybridSearchA" oninput="searchHybridGameAutocomplete('A')" placeholder="Gõ tên tìm Game A (VD: Vampire Survivors, Elden Ring, PUBG...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500">
+              <div id="hybridDropdownA" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-h-48 overflow-y-auto z-50 text-xs"></div>
+              <input type="hidden" id="hybridGameIdA" value="steam_1794680">
+            </div>
+            <div id="hybridCardA" class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center gap-3">
+              <img id="hybridIconA" src="https://cdn.akamai.steamstatic.com/steam/apps/1794680/header.jpg" class="w-10 h-10 rounded-lg object-cover bg-slate-800" onerror="this.src='https://placehold.co/40x40/1e293b/white?text=A'">
+              <div class="min-w-0 flex-1">
+                <h4 id="hybridTitleA" class="text-xs font-bold text-white truncate">Vampire Survivors</h4>
+                <p id="hybridGenreA" class="text-[10px] text-violet-300 truncate">Roguelite / Bullet Hell • poncle</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fusion Reactor Icon (1 col) -->
+          <div class="md:col-span-1 flex flex-col items-center justify-center py-2">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-900/50 animate-pulse text-white">
+              <i data-lucide="sparkles" class="w-5 h-5 text-amber-300"></i>
+            </div>
+            <span class="text-[9px] font-black text-violet-300 uppercase tracking-tighter mt-1">FUSION</span>
+          </div>
+
+          <!-- Game B Slot (5 cols) -->
+          <div class="md:col-span-5 p-4 rounded-xl bg-slate-950/80 border border-indigo-500/30 space-y-3 relative">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-400 flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                GENOME B: Meta-Progression & Hook
+              </span>
+              <span class="text-[10px] text-slate-400">Chi phối kinh tế, gacha & tiến trình</span>
+            </div>
+            <div class="relative">
+              <input type="text" id="hybridSearchB" oninput="searchHybridGameAutocomplete('B')" placeholder="Gõ tên tìm Game B (VD: Candy Crush, Monopoly GO, Clash Royale...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+              <div id="hybridDropdownB" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-h-48 overflow-y-auto z-50 text-xs"></div>
+              <input type="hidden" id="hybridGameIdB" value="gp_com.king.candycrushsaga">
+            </div>
+            <div id="hybridCardB" class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center gap-3">
+              <img id="hybridIconB" src="https://play-lh.googleusercontent.com/4h_R-zXbLw0Q7i7e36Jq3r-V8x_9" class="w-10 h-10 rounded-lg object-cover bg-slate-800" onerror="this.src='https://placehold.co/40x40/1e293b/white?text=B'">
+              <div class="min-w-0 flex-1">
+                <h4 id="hybridTitleB" class="text-xs font-bold text-white truncate">Candy Crush Saga</h4>
+                <p id="hybridGenreB" class="text-[10px] text-indigo-300 truncate">Match-3 Puzzle • King Studio</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customization Parameters Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+          <div>
+            <label class="text-[11px] font-semibold text-slate-300 block mb-1">Tỷ Lệ Hòa Phối (DNA Ratio):</label>
+            <select id="hybridRatioSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500 cursor-pointer">
+              <option value="50_50" selected>50% Core A / 50% Meta B (Cân Bằng Hoàn Hảo)</option>
+              <option value="70_30">70% Core A / 30% Meta B (Nghiêng về Action A)</option>
+              <option value="30_70">30% Core A / 70% Meta B (Nghiêng về Giải Đố / Tycoon B)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold text-slate-300 block mb-1">Phong Cách Đồ Họa (Art Style):</label>
+            <select id="hybridArtSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500 cursor-pointer">
+              <option value="Pixel Art 2D Retro" selected>Pixel Art 2D Retro (Vampire / Dead Cells)</option>
+              <option value="Cartoon Low-Poly 3D">Cartoon Low-Poly 3D (Archero / Brawl Stars)</option>
+              <option value="Cyberpunk Neon">Cyberpunk Neon (Vivid Synthwave)</option>
+              <option value="Dark Fantasy Souls-like">Dark Fantasy Souls-like (Gothic Dark)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold text-slate-300 block mb-1">Mô Hình Kiếm Tiền (Monetization):</label>
+            <select id="hybridMonetizationSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500 cursor-pointer">
+              <option value="Hybrid-Casual (IAA + Battle Pass)" selected>Hybrid-Casual (Quảng Cáo + Battle Pass nhẹ)</option>
+              <option value="Pure F2P Gacha">F2P Gacha (Waifu / Hero Collector IAP)</option>
+              <option value="Premium Indie Steam">Premium Indie $9.99 (Không Pay-to-Win)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fusion Trigger Button -->
+        <button onclick="triggerMechanicFusion()" id="btnTriggerFusion" class="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:via-purple-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-xl shadow-violet-900/40 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.99]">
+          <i data-lucide="zap" class="w-5 h-5 text-amber-300"></i>
+          <span>KÍCH HOẠT PHẢN ỨNG LAI GHÉP DNA GAME (AI MECHANIC FUSION)</span>
+        </button>
+      </div>
+
+      <!-- Loading State Indicator -->
+      <div id="hybridLoadingState" class="hidden glass-card p-8 rounded-2xl border border-violet-500/30 text-center space-y-3">
+        <div class="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <h4 class="text-sm font-bold text-white">Đang Tổng Hợp Chuỗi DNA & Sinh Bản Chơi Thử 60FPS...</h4>
+        <p class="text-xs text-slate-400">Gemini 3.5 Flash Lite đang bóc tách Core Loop, hòa phối cơ chế và biên dịch mã nguồn Canvas...</p>
+      </div>
+
+      <!-- Fusion Results Display Container -->
+      <div id="hybridResultContainer" class="hidden space-y-6">
+        <!-- Results will be dynamically populated by renderHybridResult() -->
+      </div>
+    </div>
+
     <!-- TAB 7: SETTINGS, BOT & AI CONFIG -->
     <div id="tabContent-alerts" class="hidden space-y-6">
       <div class="glass-card p-6 rounded-2xl border border-slate-800 space-y-6">
@@ -4784,6 +5058,7 @@
           { id: 'breakouts', name: 'Bứt Phá (Breakouts)', icon: 'flame' },
           { id: 'watchlist', name: 'Theo Dõi (Watchlist)', icon: 'bookmark' },
           { id: 'compare', name: 'So Sánh 2 Game', icon: 'arrow-left-right' },
+          { id: 'hybridlab', name: '🧬 Lai Ghép Cơ Chế', icon: 'dna', badge: 'AI LAB' },
           { id: 'blueocean', name: 'Thị Trường Ngách (Blue Ocean)', icon: 'anchor' }
         ]
       },
@@ -4795,7 +5070,7 @@
           { id: 'creatives', name: 'Creative Spy & Trend', icon: 'video' },
           { id: 'playable', name: 'Playable Ad Studio', icon: 'play' },
           { id: 'voiceover', name: 'AI Voiceover & Script', icon: 'mic' },
-          { id: 'mediation', name: 'Ad Mediation Waterfall', icon: 'layers' },
+          { id: 'mediation', name: 'Ad Mediation & LTV', icon: 'layers', badge: 'ROAS' },
           { id: 'uapacing', name: 'UA Budget & ROAS Pacing', icon: 'line-chart' },
           { id: 'fraud', name: 'Ad Fraud Scanner', icon: 'shield-alert' },
           { id: 'mmpstream', name: 'MMP Stream Simulation', icon: 'activity' }
@@ -4984,6 +5259,7 @@
       if (tabId === 'breakouts') loadBreakoutRadar();
       if (tabId === 'watchlist') loadWatchlist();
       if (tabId === 'compare') executeComparison();
+      if (tabId === 'hybridlab') initHybridLabTab();
       if (tabId === 'alerts') loadAlertSettings();
       if (tabId === 'report') loadMarketReport();
       if (tabId === 'logs') loadCrawlLogs();
@@ -11018,24 +11294,74 @@
     }
 
     // ==========================================
-    // MODULE 4: AD MEDIATION WATERFALL & ECPM
+    // MODULE 4: AD MEDIATION WATERFALL & LTV SIMULATOR
     // ==========================================
+    let medLtvChartInstance = null;
+    let medFormatChartInstance = null;
+
+    let medCurrentTier1Pct = 30.0;
+    let medCurrentTier2Pct = 25.0;
+    let medCurrentTier3Pct = 45.0;
+
+    function applyMedRegionPreset() {
+      const preset = document.getElementById('medSimRegionPreset').value;
+      if (preset === 'us_heavy') {
+        medCurrentTier1Pct = 70.0;
+        medCurrentTier2Pct = 20.0;
+        medCurrentTier3Pct = 10.0;
+      } else if (preset === 'sea_heavy') {
+        medCurrentTier1Pct = 10.0;
+        medCurrentTier2Pct = 15.0;
+        medCurrentTier3Pct = 75.0;
+      } else {
+        medCurrentTier1Pct = 30.0;
+        medCurrentTier2Pct = 25.0;
+        medCurrentTier3Pct = 45.0;
+      }
+      runMediationSimulation();
+    }
+
     async function initMediationTab() {
       try {
         const res = await fetch('/api/mobile/mediation/benchmarks');
         const data = await res.json();
 
+        // 1. Regional Benchmarks Table
         const tbody = document.getElementById('mediationBenchmarkTableBody');
-        tbody.innerHTML = (data.ecpm_benchmarks || []).map(b => `
-          <tr class="hover:bg-slate-900/60 transition-colors">
-            <td class="px-4 py-3 font-semibold text-white">${b.region}</td>
-            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${b.tier === 'Tier 1' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300'}">${b.tier}</span></td>
-            <td class="px-4 py-3 text-emerald-400 font-bold font-mono">$${b.rewarded_ecpm.toFixed(2)}</td>
-            <td class="px-4 py-3 text-amber-400 font-bold font-mono">$${b.interstitial_ecpm.toFixed(2)}</td>
-            <td class="px-4 py-3 text-sky-400 font-bold font-mono">$${b.banner_ecpm.toFixed(2)}</td>
-            <td class="px-4 py-3 text-slate-400 font-sans">${b.notes}</td>
-          </tr>
-        `).join('');
+        if (tbody) {
+          tbody.innerHTML = (data.regional_benchmarks || []).map(b => `
+            <tr class="hover:bg-slate-900/60 transition-colors">
+              <td class="px-4 py-3 font-semibold text-white">${b.name}</td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${b.tier === 'Tier 1' ? 'bg-indigo-500/20 text-indigo-300' : (b.tier === 'Tier 2' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-emerald-500/20 text-emerald-300')}">${b.tier}</span></td>
+              <td class="px-4 py-3 text-emerald-400 font-bold font-mono">$${b.rewarded_ecpm.toFixed(2)}</td>
+              <td class="px-4 py-3 text-amber-400 font-bold font-mono">$${b.interstitial_ecpm.toFixed(2)}</td>
+              <td class="px-4 py-3 text-purple-400 font-bold font-mono">$${(b.aoa_ecpm || 0).toFixed(2)}</td>
+              <td class="px-4 py-3 text-sky-400 font-bold font-mono">$${b.banner_ecpm.toFixed(2)}</td>
+              <td class="px-4 py-3 text-slate-400 font-sans text-[11px]">${b.notes}</td>
+            </tr>
+          `).join('');
+        }
+
+        // 2. Waterfall Tier Architecture Cards
+        const tierCards = document.getElementById('medWaterfallTierCards');
+        if (tierCards) {
+          tierCards.innerHTML = (data.waterfall_tiers || []).map((w, idx) => `
+            <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span class="w-5 h-5 rounded-md bg-amber-500/20 text-amber-300 flex items-center justify-center text-[10px] font-mono">${idx + 1}</span>
+                  ${w.priority}
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-amber-300 border border-slate-700">${w.price_floor}</span>
+              </div>
+              <p class="text-[11px] text-slate-300">${w.role}</p>
+              <div class="pt-1 border-t border-slate-800/80 flex items-center justify-between text-[10px]">
+                <span class="text-slate-400">Fill Share: <strong class="text-emerald-400">${w.fill_share}</strong></span>
+                <span class="text-slate-500 truncate max-w-[200px]">${w.networks}</span>
+              </div>
+            </div>
+          `).join('');
+        }
 
         runMediationSimulation();
         lucide.createIcons();
@@ -11045,66 +11371,525 @@
     }
 
     async function runMediationSimulation() {
-      const dau = document.getElementById('medSimDau').value;
-      const session = document.getElementById('medSimSession').value;
-      const cooldown = document.getElementById('medSimCooldown').value;
-      const rewarded = document.getElementById('medSimRewarded').value;
-      const region = document.getElementById('medSimRegion').value;
+      const dau = document.getElementById('medSimDau') ? parseInt(document.getElementById('medSimDau').value) || 50000 : 50000;
+      const sessionMins = document.getElementById('medSimSession') ? parseInt(document.getElementById('medSimSession').value) || 15 : 15;
+      const sessionsPerDay = document.getElementById('medSimSessionsPerDay') ? parseFloat(document.getElementById('medSimSessionsPerDay').value) || 2.4 : 2.4;
+      const cooldownSecs = document.getElementById('medSimCooldown') ? parseInt(document.getElementById('medSimCooldown').value) || 75 : 75;
+      const rewardedWatches = document.getElementById('medSimRewarded') ? parseFloat(document.getElementById('medSimRewarded').value) || 2.8 : 2.8;
+      const targetCpi = document.getElementById('medSimCpi') ? parseFloat(document.getElementById('medSimCpi').value) || 0.65 : 0.65;
+      const iapSharePct = document.getElementById('medSimIapShare') ? parseFloat(document.getElementById('medSimIapShare').value) || 30.0 : 30.0;
+      const bannerEnabled = document.getElementById('medSimBannerCheck') ? document.getElementById('medSimBannerCheck').checked : true;
+      const aoaEnabled = document.getElementById('medSimAoaCheck') ? document.getElementById('medSimAoaCheck').checked : true;
 
       try {
         const res = await fetch('/api/mobile/mediation/simulate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            dau: parseInt(dau) || 50000,
-            session_mins: parseInt(session) || 15,
-            cooldown_secs: parseInt(cooldown) || 75,
-            rewarded_watches: parseFloat(rewarded) || 2.5,
-            region: region
+            dau: dau,
+            session_mins: sessionMins,
+            sessions_per_day: sessionsPerDay,
+            cooldown_secs: cooldownSecs,
+            rewarded_watches: rewardedWatches,
+            banner_enabled: bannerEnabled,
+            aoa_enabled: aoaEnabled,
+            tier1_pct: medCurrentTier1Pct,
+            tier2_pct: medCurrentTier2Pct,
+            tier3_pct: medCurrentTier3Pct,
+            iap_share_pct: iapSharePct,
+            target_cpi: targetCpi
           })
         });
 
         const data = await res.json();
-        const rev = data.revenue_forecast;
-        const churn = data.ad_fatigue_churn_analysis;
+        const m = data.monthly_projection || {};
+        const a = data.arpdau_metrics || {};
+        const l = data.ltv_milestones || {};
+        const f = data.ad_fatigue_diagnostic || {};
+        const revDaily = data.daily_revenue_breakdown || {};
 
-        const results = document.getElementById('mediationSimResults');
-        results.innerHTML = `
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="glass-card p-4 rounded-xl border border-amber-500/30 bg-amber-950/10">
-              <span class="text-xs text-slate-400">Doanh Thu Ads Tháng (Gross)</span>
-              <div class="text-2xl font-black text-amber-400 mt-1 font-mono">$${Math.round(rev.total_monthly_ad_revenue_usd).toLocaleString()}</div>
-              <div class="text-[10px] text-amber-300/70 mt-0.5">Ad ARPDAU: $${rev.effective_ad_arpdau_usd}</div>
-            </div>
-            <div class="glass-card p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/10">
-              <span class="text-xs text-slate-400">Rewarded Video Doanh Thu</span>
-              <div class="text-2xl font-black text-emerald-400 mt-1 font-mono">$${Math.round(rev.monthly_rewarded_rev_usd).toLocaleString()}</div>
-              <div class="text-[10px] text-emerald-300/70 mt-0.5">${rev.daily_rewarded_impressions.toLocaleString()} imp/ngày</div>
-            </div>
-            <div class="glass-card p-4 rounded-xl border border-sky-500/30 bg-sky-950/10">
-              <span class="text-xs text-slate-400">Interstitial Ads Doanh Thu</span>
-              <div class="text-2xl font-black text-sky-400 mt-1 font-mono">$${Math.round(rev.monthly_interstitial_rev_usd).toLocaleString()}</div>
-              <div class="text-[10px] text-sky-300/70 mt-0.5">${rev.daily_interstitial_impressions.toLocaleString()} imp/ngày</div>
-            </div>
-            <div class="glass-card p-4 rounded-xl border ${churn.badge_color === 'emerald' ? 'border-emerald-500/30 bg-emerald-950/10' : (churn.badge_color === 'amber' ? 'border-amber-500/30 bg-amber-950/10' : 'border-rose-500/30 bg-rose-950/10')}">
-              <span class="text-xs text-slate-400">Mức Độ Rủi Ro Ad Churn</span>
-              <div class="text-sm font-black ${churn.badge_color === 'emerald' ? 'text-emerald-400' : (churn.badge_color === 'amber' ? 'text-amber-400' : 'text-rose-400')} mt-1">
-                ${churn.churn_risk_level}
-              </div>
-              <div class="text-[10px] text-slate-400 mt-0.5">Tác động retention: <strong class="text-white">${churn.projected_d1_retention_penalty}</strong></div>
-            </div>
-          </div>
+        // 1. Update Top KPI Cards
+        const elGross = document.getElementById('medStatMonthlyAdRev');
+        if (elGross) elGross.innerText = `$${Math.round(m.gross_ad_revenue_usd || 0).toLocaleString()}`;
 
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 flex items-center gap-2">
-            <span class="text-emerald-400 font-bold shrink-0">💡 Chiến Lược Tần Suất:</span>
-            <span>${churn.strategic_recommendation}</span>
-          </div>
-        `;
+        const elArpdau = document.getElementById('medStatArpdau');
+        if (elArpdau) elArpdau.innerText = `$${(a.blended_arpdau || 0).toFixed(4)}`;
+
+        const elLtv30 = document.getElementById('medStatLtvD30');
+        if (elLtv30) elLtv30.innerText = `$${(l.d30_ltv || 0).toFixed(3)}`;
+
+        const elPayback = document.getElementById('medStatPayback');
+        if (elPayback) {
+          const pb = typeof l.payback_day === 'number' ? `Ngày ${l.payback_day}` : l.payback_day;
+          elPayback.innerText = `${pb} • ${l.roas_d30_pct}%`;
+        }
+
+        // 2. Update Fatigue Alert
+        const badgeEl = document.getElementById('medFatigueBadge');
+        if (badgeEl) {
+          badgeEl.innerText = f.title || '';
+          badgeEl.className = `px-2 py-0.5 rounded text-xs font-bold ${f.badge_color === 'emerald' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : (f.badge_color === 'amber' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30')}`;
+        }
+        const adviceEl = document.getElementById('medFatigueAdvice');
+        if (adviceEl) adviceEl.innerText = f.advice || '';
+
+        // 3. Render Chart 1: Cumulative LTV Curve vs CPI
+        const ltvCanvas = document.getElementById('medLtvChart');
+        if (ltvCanvas) {
+          const ctxLtv = ltvCanvas.getContext('2d');
+          if (medLtvChartInstance) medLtvChartInstance.destroy();
+
+          const pts = data.ltv_curve_points || [];
+          const labels = pts.map(p => p.label);
+          const ltvData = pts.map(p => p.cumulative_ltv);
+          const cpiData = pts.map(p => p.target_cpi);
+
+          medLtvChartInstance = new Chart(ctxLtv, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'LTV Tích Lũy ($)',
+                  data: ltvData,
+                  borderColor: '#10b981',
+                  backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                  borderWidth: 2.5,
+                  fill: true,
+                  tension: 0.35,
+                  pointRadius: 2
+                },
+                {
+                  label: `Target CPI ($${targetCpi})`,
+                  data: cpiData,
+                  borderColor: '#ef4444',
+                  borderDash: [5, 5],
+                  borderWidth: 2,
+                  fill: false,
+                  pointRadius: 0
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#10b981', callback: v => '$' + v.toFixed(2) } }
+              },
+              plugins: { legend: { labels: { color: '#cbd5e1', font: { size: 11 } } } }
+            }
+          });
+        }
+
+        // 4. Render Chart 2: Format Revenue Share
+        const formatCanvas = document.getElementById('medFormatChart');
+        if (formatCanvas) {
+          const ctxFormat = formatCanvas.getContext('2d');
+          if (medFormatChartInstance) medFormatChartInstance.destroy();
+
+          medFormatChartInstance = new Chart(ctxFormat, {
+            type: 'doughnut',
+            data: {
+              labels: ['Rewarded Video', 'Interstitial Ads', 'App Open Ads', 'Banner / MREC', 'IAP In-App Purchases'],
+              datasets: [{
+                data: [
+                  revDaily.rewarded_video_usd || 100,
+                  revDaily.interstitial_usd || 80,
+                  revDaily.app_open_ads_usd || 30,
+                  revDaily.banner_usd || 15,
+                  revDaily.total_iap_revenue_usd || 90
+                ],
+                backgroundColor: ['#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899'],
+                borderWidth: 1,
+                borderColor: '#0f172a'
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 10 } } } }
+            }
+          });
+        }
 
         lucide.createIcons();
       } catch (err) {
         console.error("Error simulating mediation:", err);
       }
+    }
+
+    // ==========================================
+    // MODULE: MECHANICS HYBRID LAB (AI GAME DNA FUSION)
+    // ==========================================
+    let currentHybridFusionData = null;
+    let currentHybridPresetsCache = [];
+
+    async function initHybridLabTab() {
+      try {
+        const res = await fetch('/api/hybrid-lab/presets');
+        currentHybridPresetsCache = await res.json();
+      } catch (err) {
+        console.error("Error loading hybrid presets:", err);
+      }
+      lucide.createIcons();
+    }
+
+    function loadHybridPreset(presetId) {
+      const preset = (currentHybridPresetsCache || []).find(p => p.id === presetId);
+      if (!preset) return;
+
+      const titleA = document.getElementById('hybridTitleA');
+      const genreA = document.getElementById('hybridGenreA');
+      const titleB = document.getElementById('hybridTitleB');
+      const genreB = document.getElementById('hybridGenreB');
+
+      if (titleA) titleA.innerText = preset.game_a_name;
+      if (genreA) genreA.innerText = preset.game_a_genre;
+      if (titleB) titleB.innerText = preset.game_b_name;
+      if (genreB) genreB.innerText = preset.game_b_genre;
+
+      document.getElementById('hybridGameIdA').value = preset.game_a_name;
+      document.getElementById('hybridGameIdB').value = preset.game_b_name;
+
+      if (document.getElementById('hybridArtSelect')) {
+        document.getElementById('hybridArtSelect').value = preset.art_style || 'Pixel Art 2D Retro';
+      }
+
+      triggerMechanicFusion();
+    }
+
+    async function searchHybridGameAutocomplete(target) {
+      const input = document.getElementById(`hybridSearch${target}`);
+      const dropdown = document.getElementById(`hybridDropdown${target}`);
+      const q = input.value.trim();
+      if (!q) {
+        dropdown.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/games/search?q=${encodeURIComponent(q)}&limit=8`);
+        const games = await res.json();
+        if (games.length === 0) {
+          dropdown.innerHTML = '<div class="p-2 text-slate-500">Không tìm thấy tựa game nào</div>';
+          dropdown.classList.remove('hidden');
+          return;
+        }
+
+        dropdown.innerHTML = games.map(g => `
+          <div onclick="selectHybridGame('${target}', '${g.game_id}', '${escape(g.title)}', '${escape(g.genre || 'Action')}', '${g.icon_url || ''}')" class="p-2 hover:bg-slate-800 cursor-pointer flex items-center justify-between border-b border-slate-800 last:border-none">
+            <div class="flex items-center gap-2 truncate">
+              <img src="${g.icon_url}" class="w-6 h-6 rounded object-cover bg-slate-700" onerror="this.src='https://placehold.co/24x24/1e293b/white?text=G'">
+              <span class="font-bold text-white text-xs truncate">${g.title}</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono">#${g.rank}</span>
+          </div>
+        `).join('');
+        dropdown.classList.remove('hidden');
+      } catch (err) {
+        console.error("Error searching hybrid games:", err);
+      }
+    }
+
+    function selectHybridGame(target, gameId, title, genre, iconUrl) {
+      const unescapedTitle = unescape(title);
+      const unescapedGenre = unescape(genre);
+
+      document.getElementById(`hybridGameId${target}`).value = gameId;
+      document.getElementById(`hybridTitle${target}`).innerText = unescapedTitle;
+      document.getElementById(`hybridGenre${target}`).innerText = unescapedGenre;
+      if (iconUrl) {
+        document.getElementById(`hybridIcon${target}`).src = iconUrl;
+      }
+      document.getElementById(`hybridDropdown${target}`).classList.add('hidden');
+      document.getElementById(`hybridSearch${target}`).value = unescapedTitle;
+    }
+
+    async function triggerMechanicFusion() {
+      const gameAId = document.getElementById('hybridGameIdA').value;
+      const gameBId = document.getElementById('hybridGameIdB').value;
+      const ratio = document.getElementById('hybridRatioSelect').value;
+      const art = document.getElementById('hybridArtSelect').value;
+      const monetization = document.getElementById('hybridMonetizationSelect').value;
+
+      const btn = document.getElementById('btnTriggerFusion');
+      const loading = document.getElementById('hybridLoadingState');
+      const container = document.getElementById('hybridResultContainer');
+
+      btn.disabled = true;
+      loading.classList.remove('hidden');
+      container.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/hybrid-lab/fuse', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            game_a_id: gameAId,
+            game_b_id: gameBId,
+            fusion_ratio: ratio,
+            art_style: art,
+            monetization_model: monetization
+          })
+        });
+
+        const data = await res.json();
+        currentHybridFusionData = data;
+        renderHybridResult(data);
+        container.classList.remove('hidden');
+      } catch (err) {
+        console.error('Error fusing mechanics:', err);
+        showToast('Lỗi khi kích hoạt phản ứng lai ghép DNA.');
+      } finally {
+        btn.disabled = false;
+        loading.classList.add('hidden');
+      }
+    }
+
+    function renderHybridResult(data) {
+      const container = document.getElementById('hybridResultContainer');
+      if (!container) return;
+
+      const m = data.dna_fusion_matrix || {};
+      const ftue = data.ftue_180s || {};
+      const mon = data.monetization_strategy || {};
+      const loop = data.core_loop_steps || [];
+
+      container.innerHTML = `
+        <!-- 1. Concept Hero Pitch Banner -->
+        <div class="glass-card p-6 rounded-2xl border border-violet-500/40 bg-gradient-to-r from-violet-950/60 via-slate-900 to-indigo-950/60 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-black bg-violet-500/20 text-violet-300 border border-violet-500/30 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+              ${data.concept_title || 'Breakthrough Hybrid Game'}
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 font-mono">${data.art_style}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">${data.fusion_ratio}</span>
+            </div>
+          </div>
+          <h3 class="text-xl font-extrabold text-white tracking-tight leading-snug">
+            "${data.slogan || ''}"
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed max-w-3xl">
+            ${data.high_concept_pitch || ''}
+          </p>
+          <div class="pt-2 flex items-center gap-4 flex-wrap text-xs border-t border-violet-500/20">
+            <div>
+              <span class="text-slate-400 block text-[10px]">Tập Khách Hàng Mục Tiêu:</span>
+              <span class="font-bold text-white">${data.target_audience || 'Gen-Z & Mobile Gamers'}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px]">Mô Hình Kinh Doanh:</span>
+              <span class="font-bold text-emerald-400">${data.monetization_model || 'Hybrid-Casual'}</span>
+            </div>
+            <div class="flex-1 min-w-[200px]">
+              <span class="text-slate-400 block text-[10px]">Đại Dương Xanh (USP):</span>
+              <span class="font-medium text-amber-300 text-[11px]">${data.usp_market_gap || ''}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. DNA Cross-Breeding Matrix Cards (3 Cards) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-slate-950/80 border border-violet-500/30 space-y-2">
+            <span class="text-xs font-bold text-violet-400 flex items-center gap-1.5 uppercase tracking-wider">
+              <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Kế Thừa Từ Game A
+            </span>
+            <p class="text-xs text-slate-300 leading-relaxed">${m.game_a_inherited || 'N/A'}</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950/80 border border-indigo-500/30 space-y-2">
+            <span class="text-xs font-bold text-indigo-400 flex items-center gap-1.5 uppercase tracking-wider">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i> Kế Thừa Từ Game B
+            </span>
+            <p class="text-xs text-slate-300 leading-relaxed">${m.game_b_inherited || 'N/A'}</p>
+          </div>
+          <div class="p-4 rounded-xl bg-gradient-to-br from-violet-950/40 to-amber-950/30 border border-amber-500/40 space-y-2">
+            <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+              <i data-lucide="zap" class="w-3.5 h-3.5"></i> Cơ Chế Đột Phá (Synergy)
+            </span>
+            <p class="text-xs text-amber-200 leading-relaxed font-semibold">${m.synergy_mechanic || 'N/A'}</p>
+          </div>
+        </div>
+
+        <!-- 3. Core Gameplay Loop 4-Steps -->
+        <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="repeat" class="w-4 h-4 text-emerald-400"></i>
+            Vòng Lặp Cốt Lõi 4 Bước (Core Game Loop Flow)
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            ${loop.map((st, idx) => `
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1 relative">
+                <span class="text-[10px] font-mono text-emerald-400 font-bold">BƯỚC ${idx + 1}</span>
+                <h5 class="text-xs font-bold text-white">${st.action}</h5>
+                <p class="text-[11px] text-slate-400 leading-relaxed">${st.desc}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- 4. Interactive 60FPS Playable Canvas Prototype Box -->
+        <div class="glass-card p-5 rounded-2xl border border-emerald-500/40 bg-gradient-to-br from-emerald-950/20 via-slate-950 to-slate-900 space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
+                CANVAS 60FPS LIVE ENGINE
+              </span>
+              <h4 class="text-sm font-bold text-white mt-1 flex items-center gap-2">
+                <i data-lucide="gamepad-2" class="w-4 h-4 text-emerald-400"></i>
+                Chơi Thử Prototype Live Ngay Trên Web (Playable Prototype)
+              </h4>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="if (typeof restartHybridPrototype === 'function') restartHybridPrototype();" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-700 cursor-pointer">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-emerald-400"></i> Chơi Lại Từ Đầu
+              </button>
+            </div>
+          </div>
+
+          <div class="relative rounded-2xl overflow-hidden border border-slate-800 flex justify-center bg-slate-950 p-2">
+            <canvas id="hybridPrototypeCanvas" width="640" height="420" class="rounded-xl shadow-2xl max-w-full h-auto"></canvas>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-slate-400 flex-wrap gap-2 pt-1 border-t border-slate-800">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="keyboard" class="w-3.5 h-3.5 text-slate-300"></i>
+              Điều khiển: <strong>Phím WASD / Mũi Tên</strong> để di chuyển, <strong>Chuột</strong> để ngắm đạn!
+            </span>
+            <span class="text-amber-300 font-semibold flex items-center gap-1">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+              Chạm các khối tròn màu để tích nạp MANA COMBO x2 x3!
+            </span>
+          </div>
+        </div>
+
+        <!-- 5. FTUE 180s & Monetization Breakdown -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- FTUE -->
+          <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+            <h5 class="text-xs font-bold text-white flex items-center gap-1.5 uppercase">
+              <i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i> Phễu Giữ Chân 180 Giây Đầu (FTUE)
+            </h5>
+            <div class="space-y-1.5 text-xs">
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                <span class="text-cyan-400 font-bold block text-[10px]">0-30s Hook:</span>
+                <span class="text-slate-300">${ftue.phase_1_hook || ''}</span>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                <span class="text-emerald-400 font-bold block text-[10px]">30-90s First Win:</span>
+                <span class="text-slate-300">${ftue.phase_2_first_win || ''}</span>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                <span class="text-purple-400 font-bold block text-[10px]">90-180s Retention Lock:</span>
+                <span class="text-slate-300">${ftue.phase_3_retention_lock || ''}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monetization -->
+          <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+            <h5 class="text-xs font-bold text-white flex items-center gap-1.5 uppercase">
+              <i data-lucide="gem" class="w-4 h-4 text-amber-400"></i> Chiến Lược Khai Thác Doanh Thu (Monetization)
+            </h5>
+            <div class="space-y-1.5 text-xs text-slate-300">
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                <span class="text-amber-400 font-bold block text-[10px]">Rewarded Video Điểm Vàng:</span>
+                <ul class="list-disc list-inside text-[11px] text-slate-300 space-y-0.5">
+                  ${(mon.rewarded_video_placements || []).map(p => `<li>${p}</li>`).join('')}
+                </ul>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                <span class="text-emerald-400 font-bold block text-[10px]">Gói Nạp & Battle Pass:</span>
+                <span class="text-[11px] text-slate-300 block">${(mon.iap_high_value_packs || []).join(' • ')}</span>
+                <span class="text-[10px] text-slate-400 italic block mt-0.5">${mon.battle_pass_concept || ''}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Unity C# Export & GDD Download Row -->
+        <div class="glass-card p-4 rounded-xl border border-slate-800 flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h5 class="text-xs font-bold text-white">Sẵn Sàng Triển Khai Vào Dự Án Game Thực Tế?</h5>
+            <p class="text-[11px] text-slate-400">Tải mã nguồn Unity Controller C# hoặc lưu tài liệu thiết kế GDD hoàn chỉnh</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="copyHybridUnityCode()" class="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md transition-all cursor-pointer">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Sao Chép C# Code
+            </button>
+            <button onclick="downloadHybridGddMarkdown()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer">
+              <i data-lucide="download" class="w-3.5 h-3.5 text-cyan-400"></i> Tải GDD (.md)
+            </button>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+
+      // Dynamically run the executable 60FPS Canvas game script
+      if (data.playable_canvas_code) {
+        try {
+          const oldScript = document.getElementById('dynamicHybridCanvasScript');
+          if (oldScript) oldScript.remove();
+
+          const scriptEl = document.createElement('script');
+          scriptEl.id = 'dynamicHybridCanvasScript';
+          scriptEl.textContent = data.playable_canvas_code;
+          document.body.appendChild(scriptEl);
+        } catch (e) {
+          console.error("Error launching hybrid canvas engine:", e);
+        }
+      }
+    }
+
+    function copyHybridUnityCode() {
+      if (!currentHybridFusionData || !currentHybridFusionData.unity_starter_code) {
+        showToast('Chưa có mã nguồn C# để sao chép.');
+        return;
+      }
+      navigator.clipboard.writeText(currentHybridFusionData.unity_starter_code).then(() => {
+        showToast('Đã sao chép mã nguồn Unity C# vào clipboard!');
+      });
+    }
+
+    function downloadHybridGddMarkdown() {
+      if (!currentHybridFusionData) {
+        showToast('Chưa có dữ liệu để xuất file.');
+        return;
+      }
+      const title = (currentHybridFusionData.concept_title || 'HybridGame').replace(/[^a-zA-Z0-9_-]/g, '_');
+      const lines = [
+        `# ${currentHybridFusionData.concept_title}`,
+        `> ${currentHybridFusionData.slogan}\n`,
+        `## 1. High Concept Pitch`,
+        `${currentHybridFusionData.high_concept_pitch}\n`,
+        `## 2. Target Audience & USP`,
+        `- **Đối tượng**: ${currentHybridFusionData.target_audience}`,
+        `- **USP**: ${currentHybridFusionData.usp_market_gap}\n`,
+        `## 3. DNA Fusion Matrix`,
+        `- **Kế thừa từ Game A**: ${currentHybridFusionData.dna_fusion_matrix?.game_a_inherited}`,
+        `- **Kế thừa từ Game B**: ${currentHybridFusionData.dna_fusion_matrix?.game_b_inherited}`,
+        `- **Cơ chế đột phá**: ${currentHybridFusionData.dna_fusion_matrix?.synergy_mechanic}\n`,
+        `## 4. First-Time User Experience (180s)`,
+        `- **0-30s**: ${currentHybridFusionData.ftue_180s?.phase_1_hook}`,
+        `- **30-90s**: ${currentHybridFusionData.ftue_180s?.phase_2_first_win}`,
+        `- **90-180s**: ${currentHybridFusionData.ftue_180s?.phase_3_retention_lock}\n`,
+        `## 5. Unity Starter C# Code`,
+        "```csharp",
+        currentHybridFusionData.unity_starter_code || "// No C# code",
+        "```"
+      ].join('\n');
+
+      const blob = new Blob([lines], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title}_GDD.md`;
+      document.body.appendChild(a);
+      a.click();
+      showToast('Đã tải tài liệu GDD lai ghép (.md)!');
     }
 
     // --- 1. PLAYABLE AD CANVAS SANDBOX & MRAID EXPORTER ---

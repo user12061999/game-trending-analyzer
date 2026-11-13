@@ -56,6 +56,8 @@ from app.analytics.prereg_wishlist_forecaster import PreRegWishlistForecaster
 from app.analytics.game_deconstructor import GameDeconstructor
 from app.analytics.rea_integrator import REAIntegrator
 from app.analytics.revenue_history_engine import RevenueHistoryEngine
+from app.analytics.mechanics_hybrid_lab import MechanicsHybridLab
+from app.analytics.ad_mediation_engine import AdMediationEngine
 from app.notifications.notifier import AlertNotifier
 
 # Scheduler for automatic daily crawl & alerts
@@ -94,6 +96,8 @@ gdd_generator = GameDesignDocumentGenerator()
 prereg_forecaster = PreRegWishlistForecaster()
 game_deconstructor = GameDeconstructor()
 rea_integrator = REAIntegrator()
+hybrid_lab = MechanicsHybridLab()
+ad_mediation_engine = AdMediationEngine()
 
 is_crawling = False
 
@@ -795,23 +799,62 @@ async def evaluate_ab_test_api(request: Request):
 @app.get("/api/mobile/mediation/benchmarks")
 async def get_mediation_benchmarks_api():
     """Returns regional eCPM benchmarks and standard waterfall templates."""
-    return mediation_optimizer.get_benchmarks()
+    return ad_mediation_engine.get_benchmarks()
 
 @app.post("/api/mobile/mediation/simulate")
 async def simulate_mediation_api(request: Request):
-    """Simulates ad revenue yield and ad fatigue retention penalty."""
+    """Simulates ad revenue yield, blended ARPDAU, and full LTV/ROAS break-even curve."""
     payload = await request.json()
     dau = int(payload.get("dau", 50000))
     session_mins = int(payload.get("session_mins", 15))
-    cooldown = int(payload.get("cooldown_secs", 60))
-    rewarded = float(payload.get("rewarded_watches", 2.5))
-    region = payload.get("region", "us")
-    return mediation_optimizer.simulate_mediation_yield(
+    sessions_per_day = float(payload.get("sessions_per_day", 2.4))
+    cooldown = int(payload.get("cooldown_secs", 75))
+    rewarded = float(payload.get("rewarded_watches", 2.8))
+    banner_enabled = bool(payload.get("banner_enabled", True))
+    aoa_enabled = bool(payload.get("aoa_enabled", True))
+    tier1_pct = float(payload.get("tier1_pct", 30.0))
+    tier2_pct = float(payload.get("tier2_pct", 25.0))
+    tier3_pct = float(payload.get("tier3_pct", 45.0))
+    iap_share_pct = float(payload.get("iap_share_pct", 30.0))
+    target_cpi = float(payload.get("target_cpi", 0.65))
+
+    return ad_mediation_engine.simulate(
         dau=dau,
         avg_session_mins=session_mins,
+        sessions_per_day=sessions_per_day,
         interstitial_cooldown_secs=cooldown,
         rewarded_watches_per_user=rewarded,
-        region_tier=region
+        banner_enabled=banner_enabled,
+        aoa_enabled=aoa_enabled,
+        tier1_pct=tier1_pct,
+        tier2_pct=tier2_pct,
+        tier3_pct=tier3_pct,
+        iap_share_pct=iap_share_pct,
+        target_cpi=target_cpi
+    )
+
+# --- Mechanics Hybrid Lab (AI Game DNA Fusion Studio) Endpoints ---
+@app.get("/api/hybrid-lab/presets")
+async def get_hybrid_presets_api():
+    """Returns pre-engineered high-synergy mechanic fusion templates."""
+    return hybrid_lab.get_preset_combos()
+
+@app.post("/api/hybrid-lab/fuse")
+async def fuse_mechanics_api(request: Request):
+    """Cross-breeds DNA of Game A and Game B into a breakthrough hybrid game concept."""
+    payload = await request.json()
+    game_a_id = payload.get("game_a_id", "")
+    game_b_id = payload.get("game_b_id", "")
+    fusion_ratio = payload.get("fusion_ratio", "50_50")
+    art_style = payload.get("art_style", "Pixel Art 2D Retro")
+    monetization_model = payload.get("monetization_model", "Hybrid-Casual (IAA + Battle Pass)")
+
+    return hybrid_lab.fuse_mechanics(
+        game_a_id=game_a_id,
+        game_b_id=game_b_id,
+        fusion_ratio=fusion_ratio,
+        art_style=art_style,
+        monetization_model=monetization_model
     )
 
 # --- Playable Ad Canvas Sandbox & MRAID Exporter Endpoints ---
