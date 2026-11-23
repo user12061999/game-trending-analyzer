@@ -35,3 +35,15 @@ def test_all_referenced_static_files_exist():
     assert refs, "no static references found"
     for ref in refs:
         assert (BASE_DIR / "app" / "static" / ref).exists(), ref
+
+
+def test_cdn_scripts_are_pinned():
+    """Unpinned CDN URLs (no version / @latest) can silently break the dashboard."""
+    import re
+    from app.config import BASE_DIR
+    html = (BASE_DIR / "app" / "templates" / "index.html").read_text(encoding="utf-8")
+    urls = re.findall(r'<script[^>]+src="(https?://[^"]+)"', html)
+    assert urls
+    for u in urls:
+        assert "@latest" not in u, u
+        assert re.search(r"[@/]\d+\.\d+\.\d+", u), f"CDN URL without pinned version: {u}"

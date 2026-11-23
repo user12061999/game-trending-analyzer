@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Game Trend Radar - Phân Tích Thị Trường Game Mobile & PC</title>
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pinned CDN versions. Tailwind's CDN sends no CORS headers, so it cannot use SRI. -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -29,9 +30,9 @@
     }
   </script>
   <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js" integrity="sha384-Emf5ZVIUiarAdhkgtqK+5/Z5qIvM6QoVrS+qAVtfyZVuD5lIHrac0me485+Antp0" crossorigin="anonymous"></script>
   <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@1.77.0/dist/umd/lucide.min.js" integrity="sha384-fwFZu/W4jQGjDm7nioPLVWVdT/j9eDRcHN7Otg9U/hRD60LEhWduz/qvBAT1A/Q2" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
