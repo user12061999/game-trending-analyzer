@@ -10,6 +10,14 @@ async function loadAlertSettings() {
     document.getElementById('alertEnableDigest').checked = data.enable_daily_digest !== false;
     document.getElementById('alertEnableBreakout').checked = data.enable_breakout_alerts !== false;
     document.getElementById('alertThreshold').value = data.breakout_threshold || 15;
+    document.getElementById('alertCooldownDays').value = data.breakout_cooldown_days || 3;
+    document.getElementById('alertEnableSustained').checked = data.enable_sustained_alerts !== false;
+    document.getElementById('alertSustainedGain').value = data.sustained_min_gain || 10;
+    document.getElementById('alertSustainedWindow').value = data.sustained_window_days || 7;
+    document.getElementById('alertEnableHealth').checked = data.enable_health_alerts !== false;
+    document.getElementById('alertEnableWeekly').checked = data.enable_weekly_digest !== false;
+    document.getElementById('alertWeeklyDay').value = String(data.weekly_digest_weekday ?? 0);
+    loadAlertHistory();
 
     const aiRes = await fetch('/api/ai/config');
     const aiData = await aiRes.json();
@@ -34,7 +42,14 @@ async function saveAlertSettings() {
     telegram_chat_id: document.getElementById('alertTgChatId').value.trim(),
     enable_daily_digest: document.getElementById('alertEnableDigest').checked,
     enable_breakout_alerts: document.getElementById('alertEnableBreakout').checked,
-    breakout_threshold: parseInt(document.getElementById('alertThreshold').value) || 15
+    breakout_threshold: parseInt(document.getElementById('alertThreshold').value) || 15,
+    breakout_cooldown_days: parseInt(document.getElementById('alertCooldownDays').value) || 3,
+    enable_sustained_alerts: document.getElementById('alertEnableSustained').checked,
+    sustained_min_gain: parseInt(document.getElementById('alertSustainedGain').value) || 10,
+    sustained_window_days: parseInt(document.getElementById('alertSustainedWindow').value) || 7,
+    enable_health_alerts: document.getElementById('alertEnableHealth').checked,
+    enable_weekly_digest: document.getElementById('alertEnableWeekly').checked,
+    weekly_digest_weekday: parseInt(document.getElementById('alertWeeklyDay').value) || 0
   };
 
   try {
@@ -47,6 +62,41 @@ async function saveAlertSettings() {
   } catch (err) {
     showToast('Lỗi khi lưu cấu hình.');
   }
+}
+
+const ALERT_TYPE_LABELS = {
+  daily_digest: '📊 Bản tin ngày', weekly_digest: '🗓️ Bản tin tuần', breakout: '🚀 Breakout',
+  sustained: '📈 Bứt phá bền vững', health: '⚠️ Crawl lỗi'
+};
+
+async function loadAlertHistory() {
+  const el = document.getElementById('alertHistoryList');
+  if (!el) return;
+  try {
+    const items = await fetch('/api/alerts/history?limit=30').then(r => r.json());
+    el.innerHTML = items.map(a => `
+      <li class="flex gap-2 text-slate-300">
+        <span class="text-slate-500 shrink-0">${escHtml(a.sent_at)}</span>
+        <span class="shrink-0 font-semibold">${ALERT_TYPE_LABELS[a.alert_type] || escHtml(a.alert_type)}</span>
+        <span class="truncate" title="${escHtml(a.summary || '')}">${escHtml(a.summary || '')}</span>
+      </li>`).join('') || '<li class="text-slate-500">Chưa gửi cảnh báo nào.</li>';
+  } catch (e) {
+    console.error('Error loading alert history:', e);
+  }
+}
+
+async function runAlertChecksNow() {
+  await saveAlertSettings();
+  const res = await fetch('/api/alerts/run-checks', { method: 'POST' }).then(r => r.json());
+  showToast(res.skipped ? 'Chưa cấu hình Discord/Telegram' : 'Đã kiểm tra xong (cảnh báo đã gửi trước đó sẽ không gửi lại)');
+  loadAlertHistory();
+}
+
+async function sendWeeklyDigestNow() {
+  await saveAlertSettings();
+  const res = await fetch('/api/alerts/weekly', { method: 'POST' }).then(r => r.json());
+  showToast(res.sent ? 'Đã gửi bản tin tuần' : `Chưa gửi: ${res.reason || res.skipped || 'không có kênh nào nhận'}`);
+  loadAlertHistory();
 }
 
 async function saveGeminiKey() {

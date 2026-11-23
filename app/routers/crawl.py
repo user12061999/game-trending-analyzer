@@ -41,6 +41,7 @@ async def get_crawl_status():
     return {
         "is_crawling": crawl_service.is_crawling,
         "last_run": crawl_service.last_run,
+        "last_alerts": crawl_service.last_alerts,
         "next_scheduled_run": crawl_service.next_scheduled_run(),
         "recent_logs": logs
     }

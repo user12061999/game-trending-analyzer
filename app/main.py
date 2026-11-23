@@ -15,8 +15,9 @@ from app.routers import (
 
 
 def scheduled_morning_digest_job():
-    print(f"[{datetime.now()}] Dispatching morning market digest...")
-    notifier.dispatch_daily_digest()
+    # Normally the digest is sent right after the morning crawl (server or Windows task);
+    # this 08:00 job only sends it if that hasn't happened yet today.
+    print(f"[{datetime.now()}] Morning digest check: {crawl_service.send_daily_digest_if_needed()}")
 
 
 @asynccontextmanager

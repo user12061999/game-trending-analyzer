@@ -11,6 +11,9 @@ def temp_db(tmp_path, monkeypatch):
     """Points the app at an empty temporary SQLite database."""
     db_file = tmp_path / "test.db"
     monkeypatch.setattr(config, "DB_PATH", db_file)
+    # Never read the real alerts config in tests, so no real Discord/Telegram message can be sent
+    from app.notifications import notifier as notifier_mod
+    monkeypatch.setattr(notifier_mod, "CONFIG_PATH", tmp_path / "alerts_config_test.json")
     from app.database.db import init_db
     init_db()
     from app.analytics import calibration

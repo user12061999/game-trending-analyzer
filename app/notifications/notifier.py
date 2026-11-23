@@ -1,5 +1,6 @@
 """Notification system for Discord Webhook and Telegram Bot alerts."""
 
+import html
 import json
 import logging
 from pathlib import Path
@@ -7,7 +8,14 @@ from typing import Dict, Any, Optional
 from datetime import datetime, date
 import httpx
 
-from app.config import DATA_DIR
+from app.config import DATA_DIR, PORT
+
+DASHBOARD_URL = f"http://127.0.0.1:{PORT}"
+
+
+def _e(value) -> str:
+    """Escape text for Telegram HTML parse mode (titles with < or & would make Telegram reject the message)."""
+    return html.escape(str(value if value is not None else ""), quote=False)
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +28,18 @@ DEFAULT_CONFIG = {
     "enable_daily_digest": True,
     "enable_breakout_alerts": True,
     "digest_time": "08:00",
-    "breakout_threshold": 15
+    "breakout_threshold": 15,
+    # Do not re-alert the same game on the same chart within this many days
+    "breakout_cooldown_days": 3,
+    # Sustained breakout alerts (steady climb over several crawls)
+    "enable_sustained_alerts": True,
+    "sustained_window_days": 7,
+    "sustained_min_gain": 10,
+    # Crawl / data-source failure alerts
+    "enable_health_alerts": True,
+    # Weekly genre trend digest (0 = Monday ... 6 = Sunday)
+    "enable_weekly_digest": True,
+    "weekly_digest_weekday": 0
 }
 
 class AlertNotifier:
@@ -46,8 +65,12 @@ class AlertNotifier:
         return DEFAULT_CONFIG.copy()
 
     def save_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
-        """Persists alerts configuration."""
-        merged = {**DEFAULT_CONFIG, **config}
+        """Persists alerts configuration.
+
+        Merges into the existing file so keys saved elsewhere (e.g. gemini_api_key)
+        are not wiped when the alert settings form is saved.
+        """
+        merged = {**self.get_config(), **config}
         with open(CONFIG_PATH, "w", encoding="utf-8") as f:
             json.dump(merged, f, indent=2, ensure_ascii=False)
         return merged
@@ -104,6 +127,27 @@ class AlertNotifier:
         except Exception as e:
             logger.error(f"Error sending Telegram message: {e}")
             return False
+
+    def has_channel(self, config: Optional[Dict[str, Any]] = None) -> bool:
+        config = config or self.get_config()
+        return bool(config.get("discord_webhook_url")
+                    or (config.get("telegram_bot_token") and config.get("telegram_chat_id")))
+
+    def broadcast(self, title: str, discord_description: str, telegram_html: str,
+                  fields: list = None, color: int = 0x6366F1, thumbnail_url: str = None) -> Dict[str, bool]:
+        """Sends one message to every configured channel. telegram_html must already be escaped."""
+        config = self.get_config()
+        result = {"discord": False, "telegram": False}
+        if config.get("discord_webhook_url"):
+            result["discord"] = self.send_discord_message(
+                webhook_url=config["discord_webhook_url"], title=title, description=discord_description,
+                fields=fields, color=color, thumbnail_url=thumbnail_url,
+            )
+        if config.get("telegram_bot_token") and config.get("telegram_chat_id"):
+            result["telegram"] = self.send_telegram_message(
+                bot_token=config["telegram_bot_token"], chat_id=config["telegram_chat_id"], text=telegram_html,
+            )
+        return result
 
     def send_test_alert(self) -> Dict[str, Any]:
         """Sends a verification test alert to all configured channels."""
@@ -203,15 +247,15 @@ class AlertNotifier:
             ]
             if overview.get("top_steam_ccu"):
                 top_pc = overview["top_steam_ccu"][0]
-                tg_text.append(f"🖥️ <b>PC Đỉnh CCU:</b> {top_pc.get('title')} (<code>{top_pc.get('player_count', 0):,} CCU</code>)")
+                tg_text.append(f"🖥️ <b>PC Đỉnh CCU:</b> {_e(top_pc.get('title'))} (<code>{top_pc.get('player_count', 0):,} CCU</code>)")
             if overview.get("rising_games"):
                 top_riser = overview["rising_games"][0]
-                tg_text.append(f"🔥 <b>Bứt Phá:</b> {top_riser.get('title')} (<b>+{top_riser.get('rank_change_day')}</b> bậc)")
+                tg_text.append(f"🔥 <b>Bứt Phá:</b> {_e(top_riser.get('title'))} (<b>+{top_riser.get('rank_change_day')}</b> bậc)")
             if overview.get("top_mobile_grossing"):
                 top_m = overview["top_mobile_grossing"][0]
-                tg_text.append(f"📱 <b>Mobile Top Doanh Thu:</b> {top_m.get('title')}")
+                tg_text.append(f"📱 <b>Mobile Top Doanh Thu:</b> {_e(top_m.get('title'))}")
 
-            tg_text.append("\n👉 <a href='http://127.0.0.1:8000'>Xem chi tiết trên Web Dashboard</a>")
+            tg_text.append(f"\n👉 <a href='{DASHBOARD_URL}'>Xem chi tiết trên Web Dashboard</a>")
             telegram_sent = self.send_telegram_message(
                 bot_token=config["telegram_bot_token"],
                 chat_id=config["telegram_chat_id"],
@@ -231,7 +275,7 @@ class AlertNotifier:
             return False
 
         threshold = config.get("breakout_threshold", 15)
-        delta = game.get("rank_change_day", 0)
+        delta = game.get("rank_change_day", 0) or 0
         if delta < threshold:
             return False
 
@@ -257,11 +301,11 @@ class AlertNotifier:
         if config.get("telegram_bot_token") and config.get("telegram_chat_id"):
             tg_text = (
                 f"🚀 <b>CẢNH BÁO HIỆN TƯỢNG BÙNG NỔ</b>\n\n"
-                f"Tựa game <b>{game.get('title')}</b> vừa tăng vọt <b>+{delta}</b> bậc trên bảng xếp hạng!\n"
+                f"Tựa game <b>{_e(game.get('title'))}</b> vừa tăng vọt <b>+{delta}</b> bậc trên bảng xếp hạng!\n"
                 f"• Rank hiện tại: <b>#{game.get('rank')}</b>\n"
-                f"• Nền tảng: <code>{game.get('platform')}</code>\n"
-                f"• Thể loại: {game.get('genre', 'N/A')}\n\n"
-                f"👉 <a href='{game.get('store_url', 'http://127.0.0.1:8000')}'>Mở trang Game</a>"
+                f"• Nền tảng: <code>{_e(game.get('platform'))} · {_e(game.get('country', ''))}</code>\n"
+                f"• Thể loại: {_e(game.get('genre', 'N/A'))}\n\n"
+                f"👉 <a href='{_e(game.get('store_url') or DASHBOARD_URL)}'>Mở trang Game</a>"
             )
             telegram_ok = self.send_telegram_message(
                 bot_token=config["telegram_bot_token"],
@@ -306,13 +350,13 @@ class AlertNotifier:
         if config.get("telegram_bot_token") and config.get("telegram_chat_id"):
             tg_text = (
                 f"🎯 <b>RADAR MOBILE: CẢNH BÁO BOM TẤN SẮP RA MẮT</b>\n\n"
-                f"Tựa game: <b>{game.get('title')}</b> [{threat_emoji}]\n"
-                f"• NPH / Studio: <b>{game.get('publisher', game.get('developer', 'N/A'))}</b>\n"
-                f"• Thể loại: <code>{game.get('genre', 'N/A')}</code>\n"
+                f"Tựa game: <b>{_e(game.get('title'))}</b> [{threat_emoji}]\n"
+                f"• NPH / Studio: <b>{_e(game.get('publisher', game.get('developer', 'N/A')))}</b>\n"
+                f"• Thể loại: <code>{_e(game.get('genre', 'N/A'))}</code>\n"
                 f"• Ngày ra mắt: <b>{game.get('expected_release_date')}</b> (Còn {game.get('countdown_days')} ngày)\n"
                 f"• Lượng Đăng Ký Trước: <b>{game.get('pre_reg_count')}</b>\n\n"
-                f"💡 <i>Khuyến nghị: {game.get('tactical_advice')}</i>\n\n"
-                f"👉 <a href='http://127.0.0.1:8000'>Xem chi tiết trên Radar Dashboard</a>"
+                f"💡 <i>Khuyến nghị: {_e(game.get('tactical_advice'))}</i>\n\n"
+                f"👉 <a href='{DASHBOARD_URL}'>Xem chi tiết trên Radar Dashboard</a>"
             )
             telegram_ok = self.send_telegram_message(
                 bot_token=config["telegram_bot_token"],

@@ -21,6 +21,7 @@ class CrawlService:
         self.notifier = notifier
         self._lock = threading.Lock()
         self.last_run: Optional[dict] = None
+        self.last_alerts: Optional[dict] = None
         self.scheduler = BackgroundScheduler()
 
     @property
@@ -51,12 +52,7 @@ class CrawlService:
                 return None
             logger.info("Starting crawl (%s)", reason)
             result = self.orchestrator.run_full_crawl(countries=countries or DEFAULT_CRAWL_COUNTRIES)
-            try:
-                overview = self.analyzer.get_market_overview()
-                for game in overview.get("rising_games", []):
-                    self.notifier.dispatch_breakout_alert(game)
-            except Exception as e:
-                logger.warning("Breakout alert dispatch failed: %s", e)
+            self.last_alerts = self._run_alerts(crawl_ok=result.get("total_items", 0) > 0)
             self.last_run = {
                 "reason": reason,
                 "started_at": started.isoformat(timespec="seconds"),
@@ -66,6 +62,7 @@ class CrawlService:
             return result
         except Exception as e:
             logger.error("Crawl (%s) failed: %s", reason, e)
+            self.last_alerts = self._run_alerts(crawl_ok=False)
             self.last_run = {
                 "reason": reason,
                 "started_at": started.isoformat(timespec="seconds"),
@@ -76,6 +73,29 @@ class CrawlService:
         finally:
             crawl_lock.release()
             self._lock.release()
+
+    def _run_alerts(self, crawl_ok: bool) -> Optional[dict]:
+        """Digest / breakout / sustained / health / weekly alerts, each deduplicated via alert_log."""
+        if self.notifier is None:
+            return None
+        try:
+            from app.notifications.alert_engine import AlertEngine
+            summary = AlertEngine(self.notifier, self.analyzer).run_after_crawl(crawl_ok=crawl_ok)
+            logger.info("Alerts after crawl: %s", summary)
+            return summary
+        except Exception as e:
+            logger.warning("Alert dispatch failed: %s", e)
+            return {"error": str(e)}
+
+    def send_daily_digest_if_needed(self) -> Optional[dict]:
+        """08:00 safety net: sends today's digest only if no crawl has sent it yet."""
+        if self.notifier is None:
+            return None
+        from app.notifications.alert_engine import AlertEngine
+        config = self.notifier.get_config()
+        if not self.notifier.has_channel(config):
+            return {"skipped": "no channel"}
+        return AlertEngine(self.notifier, self.analyzer).send_daily_digest(config)
 
     def run_crawl_async(self, countries: Optional[List[str]] = None, reason: str = "manual",
                         skip_if_done_today: bool = False) -> bool:

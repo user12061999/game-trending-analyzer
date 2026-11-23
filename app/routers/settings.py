@@ -44,6 +44,24 @@ async def test_alert():
 async def send_manual_digest(target_date: Optional[str] = None):
     return notifier.dispatch_daily_digest(target_date=target_date)
 
+@router.get("/api/alerts/history")
+async def get_alert_history(limit: int = Query(30, ge=1, le=200)):
+    from app.notifications.alert_engine import AlertEngine
+    return AlertEngine.recent_alerts(limit=limit)
+
+@router.post("/api/alerts/weekly")
+async def send_weekly_digest_now():
+    """Sends the weekly genre digest now (ignores weekday / once-a-week rule)."""
+    from app.notifications.alert_engine import AlertEngine
+    engine = AlertEngine(notifier, analyzer)
+    return engine.send_weekly_digest(notifier.get_config(), force=True)
+
+@router.post("/api/alerts/run-checks")
+async def run_alert_checks_now():
+    """Runs every alert check now, with the normal dedup rules (nothing is re-sent)."""
+    from app.notifications.alert_engine import AlertEngine
+    return AlertEngine(notifier, analyzer).run_after_crawl(crawl_ok=True)
+
 # --- AI Game Deconstruction Endpoints ---
 @router.post("/api/ai/analyze")
 async def analyze_game_ai(request: Request):

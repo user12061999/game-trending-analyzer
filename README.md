@@ -32,7 +32,7 @@ Hệ thống phân tích xu hướng thị trường game **Mobile (iOS & Androi
 6. **Hệ Thống Cảnh Báo & Bot Tự Động:**
    - **Discord Webhook:** Gửi thẻ tin nhắn Rich Embed cực đẹp vào kênh Discord của studio.
    - **Telegram Bot:** Gửi tin nhắn định dạng HTML vào nhóm Telegram.
-   - **Bản tin 08:00 sáng:** Tự động tổng kết Top bứt phá, PC đỉnh CCU, Mobile đỉnh doanh thu mỗi ngày.
+   - **Bản tin hằng ngày:** Tự động tổng kết Top bứt phá, PC đỉnh CCU, Mobile đỉnh doanh thu sau lần crawl đầu tiên mỗi ngày.
    - **Cảnh báo Breakout khẩn cấp:** Bắn tin nhắn ngay khi có game nhảy vọt $\ge 15$ bậc trong 24 giờ.
 7. **Theo dõi tất cả thị trường & Quốc gia:**
    - Hỗ trợ chọn nhanh các thị trường trọng điểm: 🌐 **Toàn cầu (Global)**, 🇻🇳 **Việt Nam**, 🇺🇸 **United States**, 🇰🇷 **Hàn Quốc**, 🇯🇵 **Nhật Bản**, 🇬🇧 **Anh**, 🇩🇪 **Đức**, 🇧🇷 **Brazil**, v.v.
@@ -95,6 +95,20 @@ Lệnh này tạo 2 tác vụ trong Windows Task Scheduler (thư mục `\GameTre
 - **Weekly DB Backup** — Chủ nhật 12:00 sao lưu database vào `dataackups\`, giữ 8 bản mới nhất.
 
 Web server và tác vụ dùng chung khóa `data\crawl.lock` nên không bao giờ crawl trùng nhau. Tùy chọn: `-CrawlTime 07:30` để đổi giờ, `-Uninstall` để gỡ. Crawl thủ công: `.\.venv\Scripts\python scripts\crawl_once.py --force`.
+
+### 🔔 Cảnh báo Discord / Telegram
+
+Điền Webhook Discord hoặc Bot Token + Chat ID Telegram trong tab **Cài Đặt → Cấu Hình Cảnh Báo**. Sau mỗi lần crawl (của web server hoặc tác vụ tự động), hệ thống gửi:
+
+| Cảnh báo | Khi nào | Chống gửi trùng |
+|---|---|---|
+| 📊 Bản tin ngày | Sau lần crawl thành công đầu tiên trong ngày (08:00 là lưới an toàn nếu Dashboard mở) | 1 lần/ngày |
+| 🚀 Breakout | Game tăng ≥ N bậc trong 1 ngày | Không báo lại cùng game trong X ngày |
+| 📈 Bứt phá bền vững | Game tăng ≥ N bậc đều đặn trong cửa sổ ngày (bỏ qua cú nhảy đơn lẻ) | 1 lần/cửa sổ |
+| ⚠️ Crawl lỗi | Nguồn crawl lỗi hoặc dữ liệu cũ > 36 giờ | 1 lần/ngày cho mỗi nhóm lỗi |
+| 🗓️ Bản tin tuần | Xu hướng thể loại, vào lần crawl đầu tiên từ ngày đã chọn trở đi | 1 lần/tuần |
+
+Mọi cảnh báo đã gửi được lưu trong bảng `alert_log` và hiển thị ở mục "Cảnh Báo Đã Gửi Gần Đây".
 
 ---
 

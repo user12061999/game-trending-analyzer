@@ -150,6 +150,18 @@ def init_db():
     );
     """)
 
+    # Sent alerts, used to avoid re-sending the same alert (dedup / cooldown)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS alert_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        alert_key TEXT NOT NULL,
+        alert_type TEXT NOT NULL,
+        sent_at TEXT NOT NULL,
+        summary TEXT
+    );
+    """)
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_alert_log_key ON alert_log(alert_key, sent_at)")
+
     # Real revenue figures used to calibrate the rank -> revenue model
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS revenue_calibration (
