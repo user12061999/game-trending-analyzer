@@ -2,7 +2,7 @@
 
 import sqlite3
 from typing import List, Dict, Any, Optional
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from app import config
 
 def get_db_connection() -> sqlite3.Connection:
@@ -128,6 +128,12 @@ def init_db():
         UNIQUE(title, platform)
     );
     """)
+
+    # Migration: where each radar entry comes from ("curated" = hand-written list in code,
+    # "app_store_live" = discovered by the App Store pre-order crawl)
+    radar_cols = {r[1] for r in cursor.execute("PRAGMA table_info(upcoming_mobile_games)").fetchall()}
+    if "data_source" not in radar_cols:
+        cursor.execute("ALTER TABLE upcoming_mobile_games ADD COLUMN data_source TEXT DEFAULT 'curated'")
 
     # MMP Live Webhook Postbacks & Fraud Log
     cursor.execute("""
@@ -298,12 +304,12 @@ def save_upcoming_games(games: List[Dict[str, Any]]):
         title, developer, publisher, platform, regions, genre,
         expected_release_date, countdown_days, hype_score, pre_reg_count,
         threat_level, target_audience, threat_analysis, tactical_advice,
-        icon_url, banner_url, store_url, is_tracked, status, updated_at
+        icon_url, banner_url, store_url, is_tracked, status, updated_at, data_source
     ) VALUES (
         :title, :developer, :publisher, :platform, :regions, :genre,
         :expected_release_date, :countdown_days, :hype_score, :pre_reg_count,
         :threat_level, :target_audience, :threat_analysis, :tactical_advice,
-        :icon_url, :banner_url, :store_url, :is_tracked, :status, :updated_at
+        :icon_url, :banner_url, :store_url, :is_tracked, :status, :updated_at, :data_source
     )
     ON CONFLICT(title, platform) DO UPDATE SET
         developer = excluded.developer,
@@ -322,7 +328,8 @@ def save_upcoming_games(games: List[Dict[str, Any]]):
         banner_url = excluded.banner_url,
         store_url = excluded.store_url,
         status = excluded.status,
-        updated_at = excluded.updated_at;
+        updated_at = excluded.updated_at,
+        data_source = excluded.data_source;
     """
 
     records = []
@@ -346,6 +353,7 @@ def save_upcoming_games(games: List[Dict[str, Any]]):
         rec.setdefault("store_url", "")
         rec.setdefault("is_tracked", 0)
         rec.setdefault("status", "PRE_REGISTRATION")
+        rec.setdefault("data_source", "curated")
         rec["updated_at"] = now_str
         records.append(rec)
 
@@ -364,8 +372,9 @@ def get_upcoming_mobile_games(
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    conditions = []
-    params = []
+    # Hide games whose release date has already passed (no longer "upcoming")
+    conditions = ["(expected_release_date IS NULL OR expected_release_date = '' OR expected_release_date >= ?)"]
+    params = [date.today().isoformat()]
 
     if region and region.lower() != "all":
         conditions.append("regions LIKE ?")
@@ -397,15 +406,25 @@ def get_upcoming_mobile_games(
         END as threat_rank
     FROM upcoming_mobile_games
     {where_clause}
-    ORDER BY threat_rank ASC, countdown_days ASC
+    ORDER BY threat_rank ASC, expected_release_date ASC
     LIMIT ?
     """
     params.append(limit)
 
     cursor.execute(query, params)
-    items = [dict(row) for row in cursor.fetchall()]
+    items = [_with_live_countdown(dict(row)) for row in cursor.fetchall()]
     conn.close()
     return items
+
+
+def _with_live_countdown(item: Dict[str, Any]) -> Dict[str, Any]:
+    """countdown_days is stored at crawl time; recompute it from the release date."""
+    try:
+        item["countdown_days"] = max(0, (date.fromisoformat(item["expected_release_date"]) - date.today()).days)
+    except Exception:
+        pass
+    item["is_verified"] = item.get("data_source") != "curated"
+    return item
 
 def get_upcoming_game_by_id(item_id: int) -> Optional[Dict[str, Any]]:
     """Fetches full details of a specific upcoming mobile game."""
@@ -414,7 +433,7 @@ def get_upcoming_game_by_id(item_id: int) -> Optional[Dict[str, Any]]:
     cursor.execute("SELECT * FROM upcoming_mobile_games WHERE id = ?", (item_id,))
     row = cursor.fetchone()
     conn.close()
-    return dict(row) if row else None
+    return _with_live_countdown(dict(row)) if row else None
 
 def toggle_track_upcoming_game(item_id: int) -> bool:
     """Toggles tracked status for an upcoming game."""
@@ -436,21 +455,30 @@ def get_radar_threat_stats() -> Dict[str, Any]:
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(*) as total FROM upcoming_mobile_games")
+    today = date.today().isoformat()
+    upcoming = "(expected_release_date IS NULL OR expected_release_date = '' OR expected_release_date >= ?)"
+
+    cursor.execute(f"SELECT COUNT(*) as total FROM upcoming_mobile_games WHERE {upcoming}", (today,))
     total = cursor.fetchone()["total"]
 
-    cursor.execute("SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE threat_level = 'CRITICAL'")
+    cursor.execute(f"SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE threat_level = 'CRITICAL' AND {upcoming}", (today,))
     critical = cursor.fetchone()["cnt"]
 
-    cursor.execute("SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE threat_level = 'HIGH'")
+    cursor.execute(f"SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE threat_level = 'HIGH' AND {upcoming}", (today,))
     high = cursor.fetchone()["cnt"]
 
-    cursor.execute("SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE countdown_days <= 30 AND countdown_days > 0")
+    in_30d = (date.today() + timedelta(days=30)).isoformat()
+    cursor.execute("SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE expected_release_date >= ? AND expected_release_date <= ?",
+                   (today, in_30d))
     imminent_30d = cursor.fetchone()["cnt"]
 
-    cursor.execute("""
+    cursor.execute("SELECT COUNT(*) as cnt FROM upcoming_mobile_games WHERE data_source = 'curated' AND " + upcoming, (today,))
+    curated_count = cursor.fetchone()["cnt"]
+
+    cursor.execute(f"""
     SELECT genre, COUNT(*) as count 
     FROM upcoming_mobile_games 
+    WHERE {upcoming.replace('?', "'" + today + "'")}
     GROUP BY genre 
     ORDER BY count DESC 
     LIMIT 3
@@ -463,5 +491,6 @@ def get_radar_threat_stats() -> Dict[str, Any]:
         "critical_threats": critical,
         "high_threats": high,
         "imminent_30d": imminent_30d,
+        "curated_count": curated_count,
         "top_threatened_genres": top_threatened_genres
     }

@@ -13,6 +13,8 @@ async function loadRadarUpcoming() {
       .then(res => res.json())
       .then(stats => {
         document.getElementById('radarStatTotal').innerText = stats.total_tracked || 0;
+        const totalEl = document.getElementById('radarStatTotal');
+        if (totalEl && stats.curated_count) totalEl.title = `${stats.curated_count} game từ danh sách nhập tay (chưa xác minh), còn lại phát hiện tự động từ App Store`;
         document.getElementById('radarStatCritical').innerText = stats.critical_threats || 0;
         document.getElementById('radarStatImminent').innerText = stats.imminent_30d || 0;
         if (stats.top_threatened_genres && stats.top_threatened_genres.length > 0) {
@@ -72,6 +74,10 @@ async function loadRadarUpcoming() {
       }
 
       const countdownLabel = g.countdown_days > 0 ? `Còn ${g.countdown_days} ngày` : 'Sắp ra mắt';
+      const sourceBadge = g.is_verified
+        ? '<span class="px-2 py-0.5 rounded-full text-[10px] border bg-emerald-500/20 text-emerald-300 border-emerald-500/40" title="Phát hiện tự động từ App Store">✔ App Store</span>'
+        : '<span class="px-2 py-0.5 rounded-full text-[10px] border bg-slate-900/80 text-amber-300 border-amber-500/40" title="Danh sách nhập tay trong code: ngày ra mắt, hype, lượt đăng ký và mức đe dọa chưa được xác minh; ảnh là ảnh minh họa">✎ Thủ công · chưa xác minh</span>';
+      const hasHype = g.hype_score !== null && g.hype_score !== undefined;
       const isTracked = g.is_tracked === 1;
       const starClass = isTracked ? 'text-amber-400 fill-amber-400' : 'text-slate-400 hover:text-amber-400';
 
@@ -80,7 +86,7 @@ async function loadRadarUpcoming() {
           <div>
             <!-- Card Header Banner & Overlays -->
             <div class="relative h-32 bg-slate-800 overflow-hidden">
-              <img src="${g.banner_url || g.icon_url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80'">
+              <img src="${escHtml(g.banner_url || g.icon_url)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80'">
               <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
               
               <!-- Badges on Banner -->
@@ -91,6 +97,7 @@ async function loadRadarUpcoming() {
                 <span class="px-2 py-0.5 rounded-full text-[10px] border ${countdownClass}">
                   ⏳ ${countdownLabel}
                 </span>
+                ${sourceBadge}
               </div>
 
               <div class="absolute top-3 right-3 flex items-center gap-1.5">
@@ -106,44 +113,44 @@ async function loadRadarUpcoming() {
             <!-- Card Content -->
             <div class="p-4 space-y-3">
               <div class="flex items-start gap-3">
-                <img src="${g.icon_url}" class="w-12 h-12 rounded-xl object-cover bg-slate-800 border border-slate-700 shadow shrink-0 -mt-7 relative z-10" onerror="this.src='https://placehold.co/48x48/1e293b/white?text=Game'">
+                <img src="${escHtml(g.icon_url)}" class="w-12 h-12 rounded-xl object-cover bg-slate-800 border border-slate-700 shadow shrink-0 -mt-7 relative z-10" onerror="this.src='https://placehold.co/48x48/1e293b/white?text=Game'">
                 <div class="min-w-0 flex-1">
-                  <h3 class="text-sm font-bold text-white group-hover:text-rose-400 transition-colors truncate" title="${g.title}">
-                    ${g.title}
+                  <h3 class="text-sm font-bold text-white group-hover:text-rose-400 transition-colors truncate" title="${escHtml(g.title)}">
+                    ${escHtml(g.title)}
                   </h3>
                   <p class="text-[11px] text-slate-400 truncate">
-                    ${g.publisher || g.developer || 'NPH Chưa công bố'}
+                    ${escHtml(g.publisher || g.developer || 'NPH Chưa công bố')}
                   </p>
                 </div>
               </div>
 
               <!-- Genre & Regions -->
               <div class="flex items-center gap-2 text-[10px] text-slate-300 flex-wrap">
-                <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/80">${g.genre || 'Game'}</span>
-                <span class="px-2 py-0.5 rounded bg-slate-800 text-indigo-400 border border-slate-700/80">${g.platform || 'iOS / Android'}</span>
-                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/80">Khu vực: ${g.regions || 'Global'}</span>
+                <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700/80">${escHtml(g.genre || 'Game')}</span>
+                <span class="px-2 py-0.5 rounded bg-slate-800 text-indigo-400 border border-slate-700/80">${escHtml(g.platform || 'iOS / Android')}</span>
+                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/80">Khu vực: ${escHtml(g.regions || 'Global')}</span>
               </div>
 
               <!-- Metrics: Pre-reg & Hype -->
               <div class="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/80 text-xs">
                 <div>
                   <span class="text-[10px] text-slate-400 uppercase font-semibold block">Đăng ký trước:</span>
-                  <span class="font-bold text-emerald-400">${g.pre_reg_count || 'Đang mở'}</span>
+                  <span class="font-bold text-emerald-400">${escHtml(g.pre_reg_count || 'Đang mở')}</span>
                 </div>
                 <div>
                   <div class="flex items-center justify-between text-[10px] text-slate-400 uppercase font-semibold">
                     <span>Hype Nhiệt:</span>
-                    <span class="text-amber-400 font-bold">${g.hype_score}/100</span>
+                    <span class="text-amber-400 font-bold">${hasHype ? g.hype_score + '/100' : 'N/A'}</span>
                   </div>
                   <div class="w-full bg-slate-800 h-1.5 rounded-full mt-1 overflow-hidden">
-                    <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-full rounded-full" style="width: ${g.hype_score}%"></div>
+                    <div class="bg-gradient-to-r from-amber-500 to-rose-500 h-full rounded-full" style="width: ${hasHype ? Number(g.hype_score) : 0}%"></div>
                   </div>
                 </div>
               </div>
 
               <!-- Tactical Advice Snippet -->
               <div class="text-[11px] text-slate-300/90 bg-rose-950/10 border border-rose-500/20 p-2.5 rounded-xl leading-relaxed line-clamp-2">
-                <span class="text-rose-400 font-bold">⚠️ Khuyến nghị:</span> ${g.tactical_advice || g.threat_analysis || ''}
+                <span class="text-rose-400 font-bold">⚠️ Khuyến nghị:</span> ${escHtml(g.tactical_advice || g.threat_analysis || '')}
               </div>
             </div>
           </div>
@@ -198,8 +205,9 @@ async function openRadarModal(gameId) {
 
     document.getElementById('radarModalDate').innerText = game.expected_release_date || 'Chưa công bố';
     document.getElementById('radarModalDaysLeft').innerText = game.countdown_days > 0 ? `Còn ${game.countdown_days} ngày` : 'Sắp diễn ra';
-    document.getElementById('radarModalPreReg').innerText = game.pre_reg_count || 'Đang mở';
-    document.getElementById('radarModalHype').innerText = `${game.hype_score} / 100`;
+    document.getElementById('radarModalPreReg').innerText = (game.pre_reg_count || 'Đang mở')
+      + (game.is_verified ? '' : '  ⚠️ (nhập tay, chưa xác minh)');
+    document.getElementById('radarModalHype').innerText = (game.hype_score === null || game.hype_score === undefined) ? 'N/A' : `${game.hype_score} / 100`;
 
     document.getElementById('radarModalAudience').innerText = game.target_audience || 'Game thủ dòng game di động.';
     document.getElementById('radarModalThreatAnalysis').innerText = game.threat_analysis || 'Chưa có phân tích chi tiết.';

@@ -16,7 +16,10 @@ from app.database.db import save_upcoming_games
 
 logger = logging.getLogger(__name__)
 
-# Curated blockbuster radar for upcoming AAA/Midcore mobile games with verified launch windows
+# Hand-written list of upcoming mobile games. NOT verified data: release dates, hype scores,
+# pre-registration counts, threat levels and images (stock photos) were typed in manually and
+# may be outdated. Entries are stored with data_source="curated" and labelled in the UI;
+# entries whose release date has passed are skipped.
 CURATED_UPCOMING_MOBILE_GAMES: List[Dict[str, Any]] = [
     {
         "title": "Monster Hunter Outlanders",
@@ -306,9 +309,11 @@ class MobileRadarCrawler:
                                         "genre": genre,
                                         "expected_release_date": rel_dt.strftime("%Y-%m-%d"),
                                         "countdown_days": days_left,
-                                        "hype_score": 75,
-                                        "pre_reg_count": "Đang mở Pre-Order",
+                                        # No hype / pre-reg numbers are available from the App Store API
+                                        "hype_score": None,
+                                        "pre_reg_count": "Đang mở Pre-Order (App Store)",
                                         "threat_level": "MEDIUM",
+                                        "data_source": "app_store_live",
                                         "target_audience": f"Game thủ {genre} trên nền tảng iOS tại thị trường {country.upper()}.",
                                         "threat_analysis": f"Tựa game mới mở Pre-order chính thức trên Apple App Store. Ngày dự kiến ra mắt: {rel_dt.strftime('%d/%m/%Y')}.",
                                         "tactical_advice": "Theo dõi thứ hạng Pre-order trên App Store để đánh giá độ chịu chi UA của nhà phát hành.",
@@ -330,12 +335,17 @@ class MobileRadarCrawler:
 
         # 1. Update countdowns for curated titles
         today = date.today()
+        skipped_past = 0
         for g in self.curated_games:
             item = dict(g)
+            item["data_source"] = "curated"
             try:
                 exp_date = datetime.strptime(item["expected_release_date"], "%Y-%m-%d").date()
                 days_left = (exp_date - today).days
-                item["countdown_days"] = max(0, days_left)
+                if days_left < 0:
+                    skipped_past += 1
+                    continue
+                item["countdown_days"] = days_left
             except Exception:
                 pass
             all_games.append(item)
@@ -360,5 +370,8 @@ class MobileRadarCrawler:
             "critical_count": sum(1 for g in all_games if g.get("threat_level") == "CRITICAL"),
             "high_count": sum(1 for g in all_games if g.get("threat_level") == "HIGH"),
             "medium_count": sum(1 for g in all_games if g.get("threat_level") == "MEDIUM"),
+            "curated_count": sum(1 for g in all_games if g.get("data_source") == "curated"),
+            "live_count": sum(1 for g in all_games if g.get("data_source") == "app_store_live"),
+            "curated_skipped_released": skipped_past,
             "status": "success"
         }

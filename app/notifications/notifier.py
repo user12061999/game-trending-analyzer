@@ -325,6 +325,9 @@ class AlertNotifier:
         color = 0xEF4444 if threat == "CRITICAL" else 0xF59E0B
         threat_emoji = "🔴 CỰC KỲ NGUY HIỂM" if threat == "CRITICAL" else "🟠 NGUY HIỂM CAO"
 
+        curated = game.get("data_source", "curated") == "curated"
+        source_note = ("⚠️ Nguồn: danh sách nhập thủ công, ngày ra mắt / lượt đăng ký chưa được xác minh."
+                       if curated else "Nguồn: App Store (crawl tự động).")
         title = f"🎯 RADAR MOBILE: {game.get('title')} [{threat_emoji}]"
         desc = (
             f"**Cảnh báo đối thủ Mobile sắp ra mắt:**\n"
@@ -333,7 +336,8 @@ class AlertNotifier:
             f"• Thể loại: **{game.get('genre', 'N/A')}**\n"
             f"• Dự kiến phát hành: **{game.get('expected_release_date')}** (Còn {game.get('countdown_days')} ngày)\n"
             f"• Đăng ký trước: **{game.get('pre_reg_count')}**\n\n"
-            f"⚠️ **Khuyến nghị cho Studio:** {game.get('tactical_advice')}"
+            f"⚠️ **Khuyến nghị cho Studio:** {game.get('tactical_advice')}\n\n"
+            f"_{source_note}_"
         )
 
         discord_ok = False
@@ -356,6 +360,7 @@ class AlertNotifier:
                 f"• Ngày ra mắt: <b>{game.get('expected_release_date')}</b> (Còn {game.get('countdown_days')} ngày)\n"
                 f"• Lượng Đăng Ký Trước: <b>{game.get('pre_reg_count')}</b>\n\n"
                 f"💡 <i>Khuyến nghị: {_e(game.get('tactical_advice'))}</i>\n\n"
+                f"<i>{_e(source_note)}</i>\n"
                 f"👉 <a href='{DASHBOARD_URL}'>Xem chi tiết trên Radar Dashboard</a>"
             )
             telegram_ok = self.send_telegram_message(

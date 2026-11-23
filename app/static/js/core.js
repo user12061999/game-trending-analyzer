@@ -6,6 +6,11 @@ let currentRawReport = "";
 let currentActiveModalGameId = null;
 let isCurrentModalInWatchlist = false;
 
+// Escape text before inserting into innerHTML (store reviews, titles... are untrusted)
+function escHtml(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+}
+
 // Debounce helper
 function debounce(func, wait) {
   let timeout;
@@ -157,6 +162,48 @@ function switchCategory(catKey, targetTabId = null) {
   switchTab(tabToOpen, false);
 }
 
+// Tabs whose numbers are NOT live market data. A banner is shown at the top of each so
+// hard-coded benchmarks / templates are never mistaken for measured data.
+const DATA_NOTES = {
+  creatives:    ['static', 'Danh sách mẫu quảng cáo viết sẵn. Các chỉ số CTR / CVR / CPI chỉ là ước lượng minh họa, không đo từ chiến dịch thật.'],
+  blueocean:    ['static', 'Danh sách thị trường ngách viết sẵn. Điểm cạnh tranh, tiềm năng doanh thu và các tỷ lệ tăng trưởng là nhận định biên soạn sẵn, không tính từ dữ liệu crawl.'],
+  liveopsradar: ['static', 'Lịch cập nhật đối thủ và mẫu sự kiện là dữ liệu viết sẵn; hệ số tăng doanh thu là giả định.'],
+  asolab:       ['static', 'Các kiểu ảnh store và điểm "clickability" là benchmark viết sẵn, không đo từ A/B test thật.'],
+  c10nscan:     ['static', 'Quy định & lưu ý văn hóa là ghi chú biên soạn sẵn, có thể đã cũ. Luôn kiểm tra lại với văn bản pháp lý / guideline hiện hành.'],
+  simulator:    ['model', 'Mô phỏng: CPI, retention và LTV dùng benchmark giả định. Thay bằng số liệu thật của bạn để có kết quả tin cậy.'],
+  iapmatrix:    ['model', 'Mô phỏng: bảng giá theo thể loại, hệ số PPP và tỷ lệ Whale/Dolphin là benchmark giả định.'],
+  uapacing:     ['model', 'Mô phỏng: phân bổ ngân sách theo giờ dựa trên benchmark giả định, không lấy từ tài khoản quảng cáo của bạn.'],
+  gachaecon:    ['model', 'Mô phỏng Monte Carlo theo tham số bạn nhập: kết quả chính xác về mặt xác suất cho đúng các tham số đó.'],
+  chokepoint:   ['model', 'Mô phỏng: phễu rời bỏ và ngưỡng chuẩn là benchmark giả định, không lấy từ analytics của game.'],
+  viralkfactor: ['model', 'Mô phỏng: công thức K-Factor chuẩn, nhưng các tỷ lệ mặc định là giả định.'],
+  mediation:    ['model', 'Mô phỏng: eCPM theo khu vực và waterfall là benchmark giả định, không lấy từ ad network thật.'],
+  pubpitch:     ['model', 'Mô phỏng: benchmark nhà phát hành và điều khoản hợp đồng là giả định tham khảo.'],
+  prereg:       ['model', 'Mô phỏng: tỷ lệ chuyển đổi wishlist / pre-reg là hệ số giả định.'],
+  fraud:        ['model', 'Kiểm tra theo luật CTIT chuẩn trên dữ liệu mẫu hoặc dữ liệu bạn nhập; mạng quảng cáo mẫu là giả lập.'],
+  hybridlab:    ['generated', 'Nội dung sinh tự động (Gemini nếu có key, nếu không là template nội bộ). Đây là ý tưởng thiết kế, không phải dữ liệu thị trường.'],
+  gdd:          ['generated', 'Tài liệu sinh tự động từ template, dùng làm khung bắt đầu.'],
+  pitchdeck:    ['generated', 'Slide sinh tự động; các con số trong slide lấy từ mô phỏng / ước tính, cần thay bằng số liệu thật trước khi trình bày.'],
+  voiceover:    ['generated', 'Kịch bản sinh tự động từ template.'],
+  playable:     ['generated', 'Playable ad sinh từ template mẫu.'],
+};
+
+function renderDataNote(tabId) {
+  const note = DATA_NOTES[tabId];
+  const content = document.getElementById(`tabContent-${tabId}`);
+  if (!note || !content || document.getElementById(`dataNote-${tabId}`)) return;
+  const [kind, text] = note;
+  const style = {
+    static: ['📚 THAM KHẢO TĨNH — KHÔNG PHẢI DỮ LIỆU LIVE', 'border-amber-500/40 bg-amber-500/10 text-amber-200'],
+    model: ['🧮 MÔ PHỎNG — SỐ LIỆU GIẢ ĐỊNH', 'border-sky-500/40 bg-sky-500/10 text-sky-200'],
+    generated: ['✨ NỘI DUNG SINH TỰ ĐỘNG', 'border-purple-500/40 bg-purple-500/10 text-purple-200'],
+  }[kind];
+  const div = document.createElement('div');
+  div.id = `dataNote-${tabId}`;
+  div.className = `px-3 py-2 rounded-xl border text-[11px] leading-relaxed ${style[1]}`;
+  div.innerHTML = `<b>${style[0]}</b> · ${escHtml(text)}`;
+  content.prepend(div);
+}
+
 function switchTab(tabId, syncCategory = true) {
   currentTabId = tabId;
 
@@ -207,6 +254,7 @@ function switchTab(tabId, syncCategory = true) {
     if (!content) return;
     if (t === tabId) {
       content.classList.remove('hidden');
+      renderDataNote(t);
     } else {
       content.classList.add('hidden');
     }

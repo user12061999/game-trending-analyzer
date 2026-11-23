@@ -4,9 +4,6 @@
 // ==========================================
 let genreTrendsChartInstance = null;
 
-function escHtml(v) {
-  return String(v ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
-}
 
 async function loadMarketSignals() {
   const platform = document.getElementById('signalsPlatform')?.value || 'all';

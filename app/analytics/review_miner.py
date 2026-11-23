@@ -10,7 +10,6 @@ import logging
 import re
 import urllib.request
 import urllib.parse
-from datetime import datetime
 from typing import Dict, Any, List, Optional
 
 from app.analytics.ai_analyst import AIAnalyst
@@ -101,152 +100,230 @@ class ReviewMiner:
 
         return reviews
 
-    def analyze_reviews(self, game_id: str, game_title: str = "", platform: str = "mobile", custom_reviews: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
-        """Performs full Sentiment & Churn Analysis on gathered reviews."""
+    def fetch_google_play_reviews(self, package_id: str, country: str = "us", limit: int = 100) -> List[Dict[str, Any]]:
+        """Fetches recent reviews from Google Play (package id like com.example.game)."""
+        if not package_id or "." not in package_id:
+            return []
+        try:
+            from google_play_scraper import reviews as gp_reviews, Sort
+            lang = "vi" if country == "vn" else "en"
+            items, _ = gp_reviews(package_id, lang=lang, country=country, sort=Sort.NEWEST, count=limit)
+        except Exception as e:
+            logger.debug(f"Failed to fetch Google Play reviews for {package_id}: {e}")
+            return []
+        out = []
+        for r in items:
+            rating = int(r.get("score") or 3)
+            out.append({
+                "rating": rating,
+                "title": "",
+                "content": r.get("content") or "",
+                "author": r.get("userName") or "Google Play user",
+                "version": r.get("reviewCreatedVersion") or "",
+                "source": "Google Play",
+                "sentiment": "positive" if rating >= 4 else ("negative" if rating <= 2 else "neutral"),
+            })
+        return out
+
+    def _fetch_for(self, game_id: str, platform: str) -> Dict[str, Any]:
+        """Picks the right store from the game_id prefix (ios_ / gp_ / Steam app id)."""
+        gid = str(game_id)
+        attempts = []
+        if gid.startswith("gp_") or "googleplay" in (platform or "").lower():
+            pkg = gid[3:] if gid.startswith("gp_") else gid
+            for country in ("us", "vn"):
+                attempts.append(f"Google Play ({country})")
+                reviews = self.fetch_google_play_reviews(pkg, country=country)
+                if reviews:
+                    return {"reviews": reviews, "source": f"Google Play ({country})"}
+        elif (platform or "").lower() in ("steam", "pc", "pc_steam") or gid.isdigit() and not gid.startswith("ios_"):
+            attempts.append("Steam")
+            reviews = self.fetch_steam_reviews(gid)
+            if reviews:
+                return {"reviews": reviews, "source": "Steam"}
+        else:
+            for country in ("us", "vn"):
+                attempts.append(f"App Store ({country})")
+                reviews = self.fetch_apple_reviews(gid, country=country)
+                if reviews:
+                    return {"reviews": reviews, "source": f"App Store ({country})"}
+        return {"reviews": [], "source": None, "attempted": attempts}
+
+    def analyze_reviews(self, game_id: str, game_title: str = "", platform: str = "mobile",
+                        custom_reviews: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+        """Sentiment & churn analysis computed only from real reviews.
+
+        If no review could be fetched, returns status "no_reviews" with empty results —
+        never invented sample reviews.
+        """
+        source = "custom"
+        attempted: List[str] = []
         reviews = custom_reviews or []
-
-        # If no custom reviews provided, attempt auto-fetch
         if not reviews:
-            if platform.lower() in ["steam", "pc"]:
-                reviews = self.fetch_steam_reviews(game_id)
-            else:
-                # Try Apple Store reviews
-                reviews = self.fetch_apple_reviews(game_id, country="us")
-                if not reviews:
-                    reviews = self.fetch_apple_reviews(game_id, country="vn")
+            fetched = self._fetch_for(game_id, platform)
+            reviews, source, attempted = fetched["reviews"], fetched["source"], fetched.get("attempted", [])
 
-        # If live scraping returned 0 reviews, generate simulated realistic market sample for analysis
+        base = {"game_id": game_id, "game_title": game_title, "review_source": source}
         if not reviews:
-            reviews = self._generate_sample_reviews(game_title or game_id)
+            return {
+                **base,
+                "status": "no_reviews",
+                "message": "Không lấy được đánh giá nào từ store (" + (", ".join(attempted) or "không xác định được store") +
+                           "). Store có thể chặn tạm thời hoặc game chưa có đánh giá.",
+                "total_reviews_analyzed": 0,
+                "average_rating": None,
+                "sentiment": {"positive_percentage": 0, "neutral_percentage": 0, "negative_percentage": 0,
+                              "positive_count": 0, "neutral_count": 0, "negative_count": 0},
+                "churn_drivers": [],
+                "retention_hooks": [],
+                "studio_attack_playbook": None,
+                "sample_reviews": [],
+            }
 
-        # 1. Statistical Breakdown
         total = len(reviews)
-        pos_count = sum(1 for r in reviews if r.get("rating", 3) >= 4)
-        neu_count = sum(1 for r in reviews if r.get("rating", 3) == 3)
-        neg_count = sum(1 for r in reviews if r.get("rating", 3) <= 2)
+        pos = [r for r in reviews if r.get("rating", 3) >= 4]
+        neu = [r for r in reviews if r.get("rating", 3) == 3]
+        neg = [r for r in reviews if r.get("rating", 3) <= 2]
+        pct = lambda n: round(n / total * 100, 1)
 
-        pos_pct = round((pos_count / total * 100), 1) if total > 0 else 0
-        neu_pct = round((neu_count / total * 100), 1) if total > 0 else 0
-        neg_pct = round((neg_count / total * 100), 1) if total > 0 else 0
-        avg_rating = round(sum(r.get("rating", 3) for r in reviews) / total, 2) if total > 0 else 3.5
-
-        # 2. Extract Churn Drivers (from 1-2 star reviews)
-        negative_texts = [f"{r.get('title', '')} {r.get('content', '')}" for r in reviews if r.get("rating", 3) <= 2]
-        churn_drivers = self._extract_churn_patterns(negative_texts, game_title)
-
-        # 3. Extract Retention Hooks (from 4-5 star reviews)
-        positive_texts = [f"{r.get('title', '')} {r.get('content', '')}" for r in reviews if r.get("rating", 3) >= 4]
-        retention_hooks = self._extract_retention_patterns(positive_texts, game_title)
-
-        # 4. Generate Studio Attack Playbook (How our studio can exploit their weaknesses)
-        attack_playbook = self._generate_attack_playbook(churn_drivers, retention_hooks, game_title)
+        churn_drivers = self._match_categories(neg, CHURN_CATEGORIES)
+        retention_hooks = self._match_categories(pos, RETENTION_CATEGORIES)
 
         return {
-            "game_id": game_id,
-            "game_title": game_title,
+            **base,
+            "status": "ok",
             "total_reviews_analyzed": total,
-            "average_rating": avg_rating,
+            "average_rating": round(sum(r.get("rating", 3) for r in reviews) / total, 2),
             "sentiment": {
-                "positive_percentage": pos_pct,
-                "neutral_percentage": neu_pct,
-                "negative_percentage": neg_pct,
-                "positive_count": pos_count,
-                "neutral_count": neu_count,
-                "negative_count": neg_count
+                "positive_percentage": pct(len(pos)),
+                "neutral_percentage": pct(len(neu)),
+                "negative_percentage": pct(len(neg)),
+                "positive_count": len(pos),
+                "neutral_count": len(neu),
+                "negative_count": len(neg),
             },
             "churn_drivers": churn_drivers,
             "retention_hooks": retention_hooks,
-            "studio_attack_playbook": attack_playbook,
-            "sample_reviews": reviews[:12]
+            "studio_attack_playbook": self._generate_attack_playbook(churn_drivers, game_title),
+            "sample_reviews": (neg[:6] + pos[:6])[:12],
         }
 
-    def _extract_churn_patterns(self, texts: List[str], game_title: str) -> List[Dict[str, Any]]:
-        """Categorizes negative complaints into 4 core mobile churn pillars."""
-        joined = " ".join(texts).lower()
+    @staticmethod
+    def _match_categories(reviews: List[Dict[str, Any]], categories: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Counts how many of the given reviews mention each category's keywords.
 
-        categories = [
-            {
-                "category": "🐛 Lỗi Kỹ Thuật, Nóng Máy & Giật Lag",
-                "severity": "CRITICAL" if any(w in joined for w in ["crash", "văng", "lag", "giật", "nóng", "đen màn", "bug", "freeze"]) else "MEDIUM",
-                "frequency_pct": 38,
-                "description": "Người chơi phàn nàn game tiêu tốn nhiều pin, nóng máy nhanh trên các dòng điện thoại tầm trung và thường xuyên văng game (crash) sau khi cập nhật phiên bản mới.",
-                "sample_quote": "Game cập nhật xong vào là văng ra ngoài, chơi 10 phút máy nóng như than hòn!"
-            },
-            {
-                "category": "💸 Tỷ Lệ Gacha & Sức Ép Pay-to-Win (P2W)",
-                "severity": "HIGH" if any(w in joined for w in ["p2w", "nạp", "gacha", "hút máu", "tỉ lệ", "đắt", "rate", "money"]) else "MEDIUM",
-                "frequency_pct": 32,
-                "description": "Tỷ lệ quay tướng/vũ khí hiếm bị người chơi đánh giá là 'lừa đảo', bảo hiểm (pity) quá cao, người nạp tiền đè bẹp hoàn toàn người chơi cày cuốc (F2P).",
-                "sample_quote": "Nạp tiền triệu quay toàn rác, người không nạp vào đấu trường bị one-shot không thể chơi nổi."
-            },
-            {
-                "category": "📺 Mật Độ Quảng Cáo Quá Dày Đặc (Ad Saturation)",
-                "severity": "HIGH" if any(w in joined for w in ["ads", "quảng cáo", "quang cao", "ad", "xem quảng cáo"]) else "LOW",
-                "frequency_pct": 18,
-                "description": "Quảng cáo chèn ép (interstitial) xuất hiện sau mỗi màn chơi hoặc sau 60 giây, làm đứt gãy mạch trải nghiệm (flow) của người dùng.",
-                "sample_quote": "Chơi 30 giây bắt xem quảng cáo 30 giây, quá ức chế xóa game ngay lập tức."
-            },
-            {
-                "category": "⚖️ Mất Cân Bằng PvP & Rào Cản Màn Chơi (Wall)",
-                "severity": "MEDIUM",
-                "frequency_pct": 12,
-                "description": "Độ khó tăng đột ngột ở các màn chơi giữa game (mid-game wall) nhằm ép người chơi phải nạp thẻ mới qua được ải.",
-                "sample_quote": "Qua map 7 là kẹt cứng, boss trâu bất thường nếu không mua gói trợ lực."
+        frequency_pct = share of these reviews (negative or positive) that mention the
+        category; sample_quote is an excerpt of a real matching review.
+        """
+        if not reviews:
+            return []
+        texts = [(r, f"{r.get('title', '')} {r.get('content', '')}".lower()) for r in reviews]
+        out = []
+        for cat in categories:
+            hits = [r for r, t in texts if any(k in t for k in cat["keywords"])]
+            if not hits:
+                continue
+            freq = round(len(hits) / len(reviews) * 100, 1)
+            quote_src = hits[0]
+            quote = (quote_src.get("content") or quote_src.get("title") or "").strip()
+            item = {
+                "category": cat["label"],
+                "mentions": len(hits),
+                "frequency_pct": freq,
+                "description": cat["description"],
+                "sample_quote": quote[:220] + ("…" if len(quote) > 220 else ""),
             }
-        ]
+            if "advice" in cat:
+                item["severity"] = "CRITICAL" if freq >= 40 else ("HIGH" if freq >= 20 else "MEDIUM")
+                item["key"] = cat["key"]
+            out.append(item)
+        out.sort(key=lambda x: -x["mentions"])
+        return out
 
-        return categories
-
-    def _extract_retention_patterns(self, texts: List[str], game_title: str) -> List[Dict[str, Any]]:
-        """Extracts top positive elements that retain players."""
-        return [
-            {
-                "feature": "🎨 Đồ Họa Đẹp & Phong Cách Nghệ Thuật Cuốn Hút",
-                "rating": "5.0 ⭐",
-                "summary": "Tạo hình nhân vật, hiệu ứng chiêu thức mãn nhãn và âm thanh sống động là điểm chạm giữ chân người chơi lâu nhất."
-            },
-            {
-                "feature": "🎮 Vòng Lặp Lối Chơi (Core Loop) Gây Nghiện",
-                "rating": "4.8 ⭐",
-                "summary": "Cơ chế điều khiển trực quan, tiết tấu trận đấu nhanh (dưới 5 phút) cực kỳ phù hợp cho thói quen chơi game trên điện thoại."
-            },
-            {
-                "feature": "🎁 Quà Tân Thủ Hào Phóng & Sự Kiện Đều Đặn",
-                "rating": "4.6 ⭐",
-                "summary": "Hệ thống tặng lượt quay miễn phí giai đoạn đầu (Early Game) giúp người chơi có cảm giác đạt thành tựu nhanh chóng."
-            }
-        ]
-
-    def _generate_attack_playbook(self, churn: List[Dict[str, Any]], retention: List[Dict[str, Any]], game_title: str) -> Dict[str, Any]:
-        """Provides actionable studio counter-strategy to win players from competitor."""
+    def _generate_attack_playbook(self, churn: List[Dict[str, Any]], game_title: str) -> Optional[Dict[str, Any]]:
+        """Counter-strategy built only from complaint categories actually found in reviews."""
+        if not churn:
+            return None
+        by_key = {c["key"]: c for c in CHURN_CATEGORIES}
+        steps = [{"step": by_key[c["key"]]["advice"][0], "detail": by_key[c["key"]]["advice"][1],
+                  "evidence": f"{c['mentions']} đánh giá tiêu cực ({c['frequency_pct']}%) nhắc tới"}
+                 for c in churn[:3]]
+        top = churn[0]
         return {
-            "core_opportunity": f"Khai thác tệp người chơi thất vọng vì vấn đề hiệu năng và gacha khắc nghiệt của {game_title or 'đối thủ'}.",
-            "actionable_steps": [
-                {
-                    "step": "Tối ưu hóa dung lượng & Cấu hình thấp (Low-spec Optimization)",
-                    "detail": "Giảm dung lượng bộ cài (dưới 1.5GB), hỗ trợ 60 FPS mượt mà trên máy RAM 3GB-4GB để gom toàn bộ tệp người chơi bị giật lag từ đối thủ."
-                },
-                {
-                    "step": "Xây dựng cơ chế Gacha Thân Thiện (F2P Friendly Pity)",
-                    "detail": "Hạ mốc bảo hiểm quay tướng từ 90 về 60 lượt, cho phép cày mảnh tướng qua hoạt động hàng ngày để tạo sự tín nhiệm cộng đồng."
-                },
-                {
-                    "step": "Chính sách Quảng Cáo Không Bắt Buộc (Rewarded Video Only)",
-                    "detail": "Nếu áp dụng Ad Monetization, chuyển 100% sang xem quảng cáo nhận quà tự nguyện, tuyệt đối không chèn quảng cáo ép buộc (No Forced Interstitials)."
-                }
-            ],
-            "marketing_hook": f"Quảng cáo nhắm trực tiếp: 'Game nhập vai mượt mà không nóng máy, tỷ lệ nổ SSR cực cao, tặng 100 lượt quay tân thủ!'"
+            "core_opportunity": f"Điểm yếu lớn nhất của {game_title or 'đối thủ'} theo đánh giá thật: "
+                                f"{top['category']} ({top['frequency_pct']}% đánh giá tiêu cực nhắc tới).",
+            "actionable_steps": steps,
+            "marketing_hook": by_key[top["key"]]["hook"],
         }
 
-    def _generate_sample_reviews(self, title: str) -> List[Dict[str, Any]]:
-        """Generates realistic sample reviews when live store feed is temporarily inaccessible."""
-        return [
-            {"rating": 1, "title": "Quá giật lag sau bản cập nhật!", "content": "Bản update mới làm máy nóng rực và văng game liên tục khi vào trận combat đông người.", "author": "Huy Hoang", "version": "v1.4", "source": "Store", "sentiment": "negative"},
-            {"rating": 1, "title": "Tỉ lệ gacha lừa đảo", "content": "Tích cả tháng quay 80 vé toàn ra đồ rác, game hút máu quá thể.", "author": "Minh Tuấn", "version": "v1.4", "source": "Store", "sentiment": "negative"},
-            {"rating": 2, "title": "Quảng cáo quá nhiều", "content": "Cứ xong 1 ải là lại hiện quảng cáo 30s không tắt được, chơi rất bực mình.", "author": "Thanh Hang", "version": "v1.3", "source": "Store", "sentiment": "negative"},
-            {"rating": 5, "title": "Đồ họa đỉnh cao", "content": "Hình ảnh anime đẹp xuất sắc, combat combo rất đã tay, nhạc nền nghe cực chill.", "author": "Quoc Bao", "version": "v1.4", "source": "Store", "sentiment": "positive"},
-            {"rating": 5, "title": "Game rất cuốn", "content": "Lối chơi dễ làm quen nhưng có chiều sâu, nhân vật thiết kế dễ thương.", "author": "Mai Anh", "version": "v1.4", "source": "Store", "sentiment": "positive"},
-            {"rating": 4, "title": "Chơi ổn nhưng cần tối ưu thêm", "content": "Nội dung phong phú, nếu giảm bớt nóng máy thì hoàn hảo 5 sao.", "author": "Duc Tran", "version": "v1.4", "source": "Store", "sentiment": "positive"},
-            {"rating": 1, "title": "Mắc kẹt ải không qua nổi", "content": "Độ khó màn 10 quá vô lý, ép người chơi phải nạp gói 200k mới qua được.", "author": "Viet Anh", "version": "v1.3", "source": "Store", "sentiment": "negative"},
-            {"rating": 5, "title": "Tặng quà tân thủ rất hào phóng", "content": "Vừa vào game tặng ngay 50 vé quay và tướng 5 sao, cày chay vẫn sống tốt.", "author": "Gia Huy", "version": "v1.4", "source": "Store", "sentiment": "positive"}
-        ]
+
+# Keyword-based categories (English + Vietnamese, with and without diacritics)
+CHURN_CATEGORIES: List[Dict[str, Any]] = [
+    {
+        "key": "tech",
+        "label": "🐛 Lỗi Kỹ Thuật, Nóng Máy & Giật Lag",
+        "keywords": ["crash", "bug", "lag", "freeze", "glitch", "battery", "overheat", "black screen", "loading",
+                     "văng", "giật", "nóng máy", "đơ", "lỗi", "treo", "van game", "giat", "nong may", "loi game"],
+        "description": "Người chơi phàn nàn về crash, giật lag, nóng máy hoặc lỗi.",
+        "advice": ("Tối ưu hiệu năng cho máy cấu hình thấp",
+                   "Giữ dung lượng nhỏ, 60 FPS ổn định trên máy RAM 3–4GB, test kỹ trước mỗi bản cập nhật."),
+        "hook": "Mượt trên mọi máy, không nóng máy, không văng game.",
+    },
+    {
+        "key": "p2w",
+        "label": "💸 Gacha & Pay-to-Win",
+        "keywords": ["p2w", "pay to win", "pay2win", "gacha", "rates", "drop rate", "greedy", "money", "expensive",
+                     "nạp", "hút máu", "tỉ lệ", "tỷ lệ", "đắt", "nap tien", "hut mau", "ti le"],
+        "description": "Người chơi cho rằng tỷ lệ gacha thấp, game ép nạp tiền hoặc người nạp áp đảo người không nạp.",
+        "advice": ("Gacha thân thiện với người không nạp",
+                   "Pity thấp và minh bạch, cho phép cày mảnh nhân vật qua hoạt động hằng ngày."),
+        "hook": "Tỷ lệ minh bạch, cày chay vẫn mạnh.",
+    },
+    {
+        "key": "ads",
+        "label": "📺 Quảng Cáo Quá Dày",
+        "keywords": [" ads", "ads ", "advert", "commercial", "too many ad", "quảng cáo", "quang cao"],
+        "description": "Người chơi phàn nàn quảng cáo xuất hiện quá thường xuyên.",
+        "advice": ("Chỉ dùng quảng cáo tự nguyện",
+                   "Chuyển sang rewarded video, bỏ interstitial ép buộc, có gói IAP xóa quảng cáo."),
+        "hook": "Không quảng cáo ép buộc.",
+    },
+    {
+        "key": "difficulty",
+        "label": "⚖️ Mất Cân Bằng & Kẹt Màn",
+        "keywords": ["too hard", "impossible", "stuck", "unfair", "balance", "matchmaking", "nerf", "op ",
+                     "kẹt", "khó quá", "vô lý", "mất cân bằng", "ket man", "kho qua"],
+        "description": "Người chơi kẹt ở màn khó, phàn nàn cân bằng hoặc ghép trận không công bằng.",
+        "advice": ("Đường cong độ khó mượt",
+                   "Theo dõi tỷ lệ bỏ game theo màn, thêm cơ chế hỗ trợ thay vì ép mua vật phẩm."),
+        "hook": "Thử thách công bằng, thắng bằng kỹ năng.",
+    },
+    {
+        "key": "server",
+        "label": "🌐 Server, Kết Nối & Tài Khoản",
+        "keywords": ["server", "connection", "disconnect", "login", "account", "lost progress", "banned",
+                     "mất kết nối", "đăng nhập", "tài khoản", "mất acc", "mat ket noi", "dang nhap"],
+        "description": "Người chơi gặp lỗi kết nối, đăng nhập hoặc mất tài khoản/tiến trình.",
+        "advice": ("Hạ tầng ổn định & bảo vệ tài khoản",
+                   "Server khu vực gần người chơi, liên kết tài khoản và sao lưu tiến trình trên cloud."),
+        "hook": "Kết nối ổn định, không lo mất tài khoản.",
+    },
+]
+
+RETENTION_CATEGORIES: List[Dict[str, Any]] = [
+    {"label": "🎨 Đồ Họa & Phong Cách Nghệ Thuật",
+     "keywords": ["graphic", "beautiful", "art", "visual", "animation", "đồ họa", "đẹp", "do hoa", "hình ảnh"],
+     "description": "Người chơi khen đồ họa, phong cách nghệ thuật hoặc hiệu ứng."},
+    {"label": "🎮 Lối Chơi Cuốn Hút",
+     "keywords": ["fun", "addictive", "gameplay", "addicting", "enjoy", "hay", "cuốn", "vui", "gây nghiện", "cuon"],
+     "description": "Người chơi khen lối chơi vui, gây nghiện."},
+    {"label": "🎁 Phần Thưởng & Sự Kiện",
+     "keywords": ["reward", "free", "event", "generous", "gift", "quà", "sự kiện", "miễn phí", "qua tang", "su kien"],
+     "description": "Người chơi khen phần thưởng, quà tặng hoặc sự kiện thường xuyên."},
+    {"label": "📖 Cốt Truyện & Nhân Vật",
+     "keywords": ["story", "character", "lore", "cốt truyện", "nhân vật", "cot truyen", "nhan vat"],
+     "description": "Người chơi khen cốt truyện hoặc thiết kế nhân vật."},
+    {"label": "👥 Cộng Đồng & Chơi Cùng Bạn",
+     "keywords": ["friend", "guild", "clan", "multiplayer", "community", "bạn bè", "bang hội", "ban be", "cộng đồng"],
+     "description": "Người chơi khen tính năng chơi cùng bạn bè, bang hội."},
+]

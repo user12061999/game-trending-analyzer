@@ -76,78 +76,82 @@ async function loadModalReviews(gameId, title, platform) {
     const res = await fetch(`/api/mobile/reviews/${encodeURIComponent(gameId)}?title=${encodeURIComponent(title || '')}&platform=${encodeURIComponent(platform || 'mobile')}`);
     const data = await res.json();
 
-    metaSum.innerText = `Dựa trên phân tích ${data.total_reviews_analyzed} đánh giá từ người dùng thực tế.`;
-    document.getElementById('reviewsAvgRating').innerText = `${data.average_rating} ⭐`;
-
     const s = data.sentiment || {};
     const pos = s.positive_percentage || 0;
     const neu = s.neutral_percentage || 0;
     const neg = s.negative_percentage || 0;
-
     document.getElementById('sentimentBarPos').style.width = `${pos}%`;
     document.getElementById('sentimentBarNeu').style.width = `${neu}%`;
     document.getElementById('sentimentBarNeg').style.width = `${neg}%`;
-
     document.getElementById('sentimentPosLabel').innerText = `🟢 Tích cực: ${pos}% (${s.positive_count || 0})`;
     document.getElementById('sentimentNeuLabel').innerText = `🟡 Trung lập: ${neu}% (${s.neutral_count || 0})`;
     document.getElementById('sentimentNegLabel').innerText = `🔴 Tiêu cực: ${neg}% (${s.negative_count || 0})`;
 
-    // Churn Drivers List
     const churnList = document.getElementById('churnDriversList');
+    const hooksList = document.getElementById('retentionHooksList');
+    const reviewsGrid = document.getElementById('sampleReviewsGrid');
+
+    if (data.status === 'no_reviews') {
+      metaSum.innerText = `⚠️ ${data.message}`;
+      document.getElementById('reviewsAvgRating').innerText = '--';
+      const empty = '<p class="text-[11px] text-slate-500">Không có dữ liệu đánh giá thật để phân tích.</p>';
+      churnList.innerHTML = empty;
+      hooksList.innerHTML = empty;
+      reviewsGrid.innerHTML = '';
+      document.getElementById('attackCoreOpportunity').innerText = '--';
+      document.getElementById('attackStepsList').innerHTML = '';
+      document.getElementById('attackMarketingHook').innerText = '';
+      return;
+    }
+
+    metaSum.innerText = `Dựa trên ${data.total_reviews_analyzed} đánh giá mới nhất từ ${data.review_source || 'store'}. `
+      + 'Tỷ lệ mỗi nhóm = số đánh giá có nhắc tới nhóm đó (theo từ khóa).';
+    document.getElementById('reviewsAvgRating').innerText = `${data.average_rating} ⭐`;
+
     churnList.innerHTML = (data.churn_drivers || []).map(c => {
       let badge = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-      if (c.severity === 'CRITICAL') badge = 'bg-rose-500/20 text-rose-400 border-rose-500/30 animate-pulse';
+      if (c.severity === 'CRITICAL') badge = 'bg-rose-500/20 text-rose-400 border-rose-500/30';
       return `
         <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-white">${c.category}</span>
-            <span class="text-[10px] px-2 py-0.5 rounded font-bold border ${badge}">${c.severity} (~${c.frequency_pct}%)</span>
+            <span class="text-xs font-bold text-white">${escHtml(c.category)}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded font-bold border ${badge}">${escHtml(c.severity)} · ${c.mentions} đánh giá (${c.frequency_pct}%)</span>
           </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">${c.description}</p>
-          <div class="text-[10px] text-rose-300/80 italic bg-rose-950/20 p-1.5 rounded border border-rose-500/20">
-            "${c.sample_quote}"
-          </div>
-        </div>
-      `;
-    }).join('');
+          <p class="text-[11px] text-slate-300 leading-relaxed">${escHtml(c.description)}</p>
+          <div class="text-[10px] text-rose-300/80 italic bg-rose-950/20 p-1.5 rounded border border-rose-500/20">"${escHtml(c.sample_quote)}"</div>
+        </div>`;
+    }).join('') || '<p class="text-[11px] text-slate-500">Không phát hiện nhóm phàn nàn nào trong các đánh giá tiêu cực.</p>';
 
-    // Retention Hooks List
-    const hooksList = document.getElementById('retentionHooksList');
     hooksList.innerHTML = (data.retention_hooks || []).map(h => `
       <div class="p-3 rounded-xl bg-slate-950 border border-emerald-500/20 space-y-1">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-emerald-300">${h.feature}</span>
-          <span class="text-[10px] text-amber-400 font-bold">${h.rating}</span>
+          <span class="text-xs font-bold text-emerald-300">${escHtml(h.category)}</span>
+          <span class="text-[10px] text-amber-400 font-bold">${h.mentions} đánh giá (${h.frequency_pct}%)</span>
         </div>
-        <p class="text-[11px] text-slate-400 leading-relaxed">${h.summary}</p>
-      </div>
-    `).join('');
+        <p class="text-[11px] text-slate-400 leading-relaxed">${escHtml(h.description)}</p>
+        <p class="text-[10px] text-emerald-300/70 italic">"${escHtml(h.sample_quote)}"</p>
+      </div>`).join('') || '<p class="text-[11px] text-slate-500">Không phát hiện nhóm điểm mạnh nào trong các đánh giá tích cực.</p>';
 
-    // Attack Playbook
-    const pb = data.studio_attack_playbook || {};
-    document.getElementById('attackCoreOpportunity').innerText = pb.core_opportunity || '--';
-    document.getElementById('attackStepsList').innerHTML = (pb.actionable_steps || []).map(st => `
+    const pb = data.studio_attack_playbook;
+    document.getElementById('attackCoreOpportunity').innerText = pb ? pb.core_opportunity : 'Chưa đủ đánh giá tiêu cực để đề xuất chiến lược.';
+    document.getElementById('attackStepsList').innerHTML = (pb?.actionable_steps || []).map(st => `
       <div class="flex items-start gap-2 text-xs">
         <span class="text-emerald-400 font-bold">✔</span>
-        <div><strong class="text-white">${st.step}:</strong> <span class="text-slate-300">${st.detail}</span></div>
-      </div>
-    `).join('');
-    document.getElementById('attackMarketingHook').innerText = `📢 Khẩu hiệu đề xuất: "${pb.marketing_hook || ''}"`;
+        <div><strong class="text-white">${escHtml(st.step)}:</strong> <span class="text-slate-300">${escHtml(st.detail)}</span>
+        <div class="text-[10px] text-slate-500">${escHtml(st.evidence || '')}</div></div>
+      </div>`).join('');
+    document.getElementById('attackMarketingHook').innerText = pb ? `📢 Khẩu hiệu đề xuất: "${pb.marketing_hook}"` : '';
 
-    // Sample Reviews
-    const reviewsGrid = document.getElementById('sampleReviewsGrid');
     reviewsGrid.innerHTML = (data.sample_reviews || []).map(r => {
-      const isPos = r.rating >= 4;
-      const starColor = isPos ? 'text-amber-400' : 'text-rose-400';
+      const starColor = r.rating >= 4 ? 'text-amber-400' : 'text-rose-400';
       return `
         <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] space-y-1">
           <div class="flex items-center justify-between">
-            <span class="${starColor} font-bold">⭐ ${r.rating}/5 - ${r.title}</span>
-            <span class="text-[10px] text-slate-500">${r.author || 'User'} (${r.version || 'v1.0'})</span>
+            <span class="${starColor} font-bold">⭐ ${Number(r.rating)}/5${r.title ? ' - ' + escHtml(r.title) : ''}</span>
+            <span class="text-[10px] text-slate-500">${escHtml(r.author || 'User')}${r.version ? ' (' + escHtml(r.version) + ')' : ''}</span>
           </div>
-          <p class="text-slate-300 leading-snug line-clamp-3">${r.content}</p>
-        </div>
-      `;
+          <p class="text-slate-300 leading-snug line-clamp-3">${escHtml(r.content)}</p>
+        </div>`;
     }).join('');
 
     lucide.createIcons();
