@@ -81,6 +81,21 @@ Sao chép `.env.example` thành `.env` rồi điền giá trị. File `.env` và
 
 **Lịch crawl:** crawl chạy theo cron vào giờ cố định mỗi ngày. Nếu máy tắt đúng giờ đó, lần khởi động kế tiếp sẽ tự **crawl bù** khi hôm nay chưa có snapshot. Mọi request mạng của crawler có retry + backoff (429/5xx/lỗi mạng).
 
+### 🕕 Crawl tự động kể cả khi không mở Dashboard
+
+Chạy một lần (không cần quyền admin):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install_scheduled_tasks.ps1
+```
+
+Lệnh này tạo 2 tác vụ trong Windows Task Scheduler (thư mục `\GameTrendAnalyzer\`):
+
+- **Daily Crawl** — chạy `scripts\crawl_once.py` lúc 06:00 và 18:00 (lần 18:00 là lưới an toàn). Script tự bỏ qua nếu hôm nay đã có dữ liệu, và Windows tự chạy bù khi máy bật lại nếu lỡ giờ. Log ở `data\logs\`.
+- **Weekly DB Backup** — Chủ nhật 12:00 sao lưu database vào `dataackups\`, giữ 8 bản mới nhất.
+
+Web server và tác vụ dùng chung khóa `data\crawl.lock` nên không bao giờ crawl trùng nhau. Tùy chọn: `-CrawlTime 07:30` để đổi giờ, `-Uninstall` để gỡ. Crawl thủ công: `.\.venv\Scripts\python scripts\crawl_once.py --force`.
+
 ---
 
 ## 🧭 Về Độ Tin Cậy Của Dữ Liệu
@@ -116,6 +131,7 @@ d:\game-trending-analyzer\
 ├── requirements-dev.txt         # Thư viện test (pytest)
 ├── .env.example                 # Mẫu cấu hình (copy thành .env)
 ├── data/game_trends.db          # SQLite snapshot lịch sử (git-ignored)
+├── scripts/                     # crawl_once.py, backup_db.py, install_scheduled_tasks.ps1
 ├── tests/                       # Pytest: delta rank, mô hình doanh thu, tín hiệu thị trường, smoke test API
 └── app/
     ├── main.py                  # Tạo FastAPI app, lifespan (lịch crawl), mount static, gắn routers

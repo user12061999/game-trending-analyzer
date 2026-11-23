@@ -9,6 +9,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.config import DAILY_CRAWL_HOUR, DAILY_CRAWL_MINUTE, DEFAULT_CRAWL_COUNTRIES
 from app.database.db import get_db_connection
+from app.services import crawl_lock
 
 logger = logging.getLogger(__name__)
 
@@ -24,15 +25,30 @@ class CrawlService:
 
     @property
     def is_crawling(self) -> bool:
-        return self._lock.locked()
+        # True if this process is crawling, or another process (e.g. the scheduled task) holds the lock
+        return self._lock.locked() or crawl_lock.is_locked()
 
-    def run_crawl(self, countries: Optional[List[str]] = None, reason: str = "manual") -> Optional[dict]:
-        """Runs a full crawl unless one is already running. Returns None if busy."""
+    def run_crawl(self, countries: Optional[List[str]] = None, reason: str = "manual",
+                  skip_if_done_today: bool = False) -> Optional[dict]:
+        """Runs a full crawl unless one is already running (in any process). Returns None if skipped.
+
+        skip_if_done_today: used by automatic runs (scheduler, catch-up, Windows task) so the
+        server and the scheduled task don't crawl the same day twice.
+        """
         if not self._lock.acquire(blocking=False):
             logger.info("Crawl (%s) skipped: another crawl is running", reason)
             return None
+        if not crawl_lock.acquire(owner=reason):
+            self._lock.release()
+            logger.info("Crawl (%s) skipped: another process holds the crawl lock (%s)", reason, crawl_lock.holder())
+            return None
         started = datetime.now()
         try:
+            if skip_if_done_today and self.has_snapshot_for(date.today()):
+                logger.info("Crawl (%s) skipped: today's snapshot already exists", reason)
+                self.last_run = {"reason": reason, "started_at": started.isoformat(timespec="seconds"),
+                                 "skipped": "already crawled today"}
+                return None
             logger.info("Starting crawl (%s)", reason)
             result = self.orchestrator.run_full_crawl(countries=countries or DEFAULT_CRAWL_COUNTRIES)
             try:
@@ -58,13 +74,15 @@ class CrawlService:
             }
             return None
         finally:
+            crawl_lock.release()
             self._lock.release()
 
-    def run_crawl_async(self, countries: Optional[List[str]] = None, reason: str = "manual") -> bool:
+    def run_crawl_async(self, countries: Optional[List[str]] = None, reason: str = "manual",
+                        skip_if_done_today: bool = False) -> bool:
         """Starts a crawl in a background thread. Returns False if one is already running."""
         if self.is_crawling:
             return False
-        threading.Thread(target=self.run_crawl, args=(countries, reason), daemon=True).start()
+        threading.Thread(target=self.run_crawl, args=(countries, reason, skip_if_done_today), daemon=True).start()
         return True
 
     @staticmethod
@@ -83,11 +101,11 @@ class CrawlService:
         if self.has_snapshot_for(date.today()):
             return False
         logger.info("No snapshot for today yet — running catch-up crawl in background")
-        return self.run_crawl_async(reason="startup-catch-up")
+        return self.run_crawl_async(reason="startup-catch-up", skip_if_done_today=True)
 
     def start_schedule(self, digest_job) -> None:
         self.scheduler.add_job(
-            lambda: self.run_crawl(reason="scheduled"),
+            lambda: self.run_crawl(reason="scheduled", skip_if_done_today=True),
             "cron",
             hour=DAILY_CRAWL_HOUR,
             minute=DAILY_CRAWL_MINUTE,

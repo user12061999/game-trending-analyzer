@@ -10,6 +10,9 @@ build/
 .DS_Store
 Thumbs.db
 data/*.db
+data/backups/
+data/logs/
+data/crawl.lock
 data/alerts_config.json
 
 
