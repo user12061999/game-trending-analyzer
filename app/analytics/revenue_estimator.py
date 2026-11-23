@@ -36,7 +36,7 @@ TIER_DOWNLOADS_BENCHMARK = {
 
 class RevenueEstimator:
     @staticmethod
-    def estimate_mobile_revenue(rank: int, country: str = "us", ranking_type: str = "top_grossing") -> Dict[str, Any]:
+    def estimate_mobile_revenue(rank: int, country: str = "us", ranking_type: str = "top_grossing", calibrated: bool = True) -> Dict[str, Any]:
         """
         Estimates daily and monthly gross revenue for a mobile game.
         Formula: Revenue(rank) = R_1 * (rank ^ -0.84)
@@ -55,6 +55,9 @@ class RevenueEstimator:
             # Top Grossing power-law
             daily_rev = int(r1 * (rank ** -0.84))
 
+        factor = RevenueEstimator._calibration_factor("mobile", country_key) if calibrated else 1.0
+        daily_rev = int(daily_rev * factor)
+
         # Add reasonable confidence interval range (-15% to +20%)
         low_daily = int(daily_rev * 0.85)
         high_daily = int(daily_rev * 1.20)
@@ -68,6 +71,7 @@ class RevenueEstimator:
             "daily_revenue_formatted": RevenueEstimator._format_currency_range(low_daily, high_daily),
             "monthly_revenue": monthly_est,
             "monthly_revenue_formatted": RevenueEstimator._format_currency_range(low_monthly, high_monthly),
+            "calibration_factor": round(factor, 3),
         }
 
     @staticmethod
@@ -103,7 +107,7 @@ class RevenueEstimator:
         }
 
     @staticmethod
-    def estimate_pc_revenue(price_str: str, estimated_downloads_str: str, player_count: int = 0, rank: int = 1) -> Dict[str, Any]:
+    def estimate_pc_revenue(price_str: str, estimated_downloads_str: str, player_count: int = 0, rank: int = 1, calibrated: bool = True) -> Dict[str, Any]:
         """
         Estimates lifetime revenue and daily cash flow for a PC Steam game.
         Uses Owners count from SteamSpy and price (with ~0.65 realization rate for discounts/Steam cut).
@@ -146,6 +150,9 @@ class RevenueEstimator:
         else:
             daily_rev = int(800000 * (rank ** -0.92))
 
+        factor = RevenueEstimator._calibration_factor("pc", "global") if calibrated else 1.0
+        daily_rev = int(daily_rev * factor)
+
         low_d = int(daily_rev * 0.85)
         high_d = int(daily_rev * 1.25)
 
@@ -155,8 +162,45 @@ class RevenueEstimator:
             "monthly_revenue": daily_rev * 30,
             "monthly_revenue_formatted": RevenueEstimator._format_currency_range(low_d * 30, high_d * 30),
             "lifetime_gross": lifetime_gross,
-            "lifetime_formatted": lifetime_formatted
+            "lifetime_formatted": lifetime_formatted,
+            "calibration_factor": round(factor, 3),
         }
+
+    @staticmethod
+    def estimate_steam_revenue(rank: int, player_count: int = 0, price_str: str = "") -> Dict[str, Any]:
+        """Daily revenue + daily units/new players for a Steam game (used by the history engine)."""
+        price = RevenueEstimator._parse_price(price_str)
+        base = RevenueEstimator.estimate_pc_revenue(price_str, "", player_count, max(1, rank))
+        daily_rev = base["daily_revenue"]
+        if price > 0:
+            units = int(daily_rev / price)
+        elif player_count:
+            # F2P: assume ~3% of peak CCU are new players per day
+            units = int(player_count * 0.03)
+        else:
+            units = int(20000 * (max(1, rank) ** -0.9))
+        return {
+            "daily_revenue": daily_rev,
+            "estimated_units_sold_daily": max(0, units),
+        }
+
+    @staticmethod
+    def _calibration_factor(platform: str, country: str) -> float:
+        """Multiplier learned from user-entered real revenue figures (1.0 if none / on error)."""
+        try:
+            from app.analytics.calibration import get_factor
+            return get_factor(platform, country)
+        except Exception:
+            return 1.0
+
+    @staticmethod
+    def _parse_price(price_str: str) -> float:
+        if price_str and price_str.lower() != "free" and "$" in price_str:
+            try:
+                return float(re.sub(r"[^\d\.]", "", price_str))
+            except ValueError:
+                return 0.0
+        return 0.0
 
     @staticmethod
     def _format_currency_range(low: int, high: int) -> str:

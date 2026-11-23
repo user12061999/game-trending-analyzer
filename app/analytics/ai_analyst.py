@@ -3,13 +3,11 @@
 import json
 import logging
 from typing import Dict, Any, Optional
-import httpx
-
 from app.notifications.notifier import AlertNotifier
+from app.analytics import gemini_client
 
 logger = logging.getLogger(__name__)
 
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 class AIAnalyst:
     def __init__(self):
@@ -17,8 +15,7 @@ class AIAnalyst:
 
     def get_api_key(self) -> str:
         """Retrieves Gemini API Key from config if set."""
-        cfg = self.notifier.get_config()
-        return cfg.get("gemini_api_key", "").strip()
+        return gemini_client.resolve_gemini_key()
 
     def save_api_key(self, api_key: str) -> bool:
         """Saves Gemini API Key to config."""
@@ -32,14 +29,15 @@ class AIAnalyst:
         Deconstructs a game's design, monetization, and market positioning.
         Uses Gemini API if key is present; otherwise falls back to the Expert Heuristic Engine.
         """
-        api_key = custom_api_key or self.get_api_key()
+        api_key = gemini_client.resolve_gemini_key(custom_api_key)
 
         if api_key:
             try:
                 gemini_result = self._call_gemini_api(game_data, api_key)
                 if gemini_result:
                     return {
-                        "source": "gemini-1.5-flash",
+                        "source": "gemini",
+                        "model": gemini_client.model_label(),
                         "status": "success",
                         "analysis": gemini_result
                     }
@@ -88,26 +86,7 @@ Hãy trả về kết quả dưới định dạng JSON với các trường sau
 }}
 Chỉ trả về JSON thuần túy, không kèm markdown code block (không cần ```json).
 """
-        url = f"{GEMINI_API_URL}?key={api_key}"
-        payload = {
-            "contents": [{
-                "parts": [{"text": prompt}]
-            }],
-            "generationConfig": {
-                "temperature": 0.4,
-                "response_mime_type": "application/json"
-            }
-        }
-
-        with httpx.Client(timeout=20) as client:
-            resp = client.post(url, json=payload)
-            if resp.status_code == 200:
-                data = resp.json()
-                text = data["candidates"][0]["content"]["parts"][0]["text"]
-                return json.loads(text)
-            else:
-                logger.error(f"Gemini API returned code {resp.status_code}: {resp.text}")
-                return None
+        return gemini_client.generate_json(prompt, api_key, timeout=20, temperature=0.4)
 
     def _generate_heuristic_deconstruction(self, game_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generates domain-expert teardown based on genre, platform and economics."""

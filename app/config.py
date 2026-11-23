@@ -9,6 +9,36 @@ DATA_DIR.mkdir(exist_ok=True)
 
 DB_PATH = DATA_DIR / "game_trends.db"
 
+
+def _load_dotenv(path: Path) -> None:
+    """Minimal .env loader (KEY=VALUE per line). Real environment variables win."""
+    if not path.exists():
+        return
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+_load_dotenv(BASE_DIR / ".env")
+
+# Secrets / AI settings (set in .env — see .env.example)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite").strip()
+STEAM_API_KEY = os.getenv("STEAM_API_KEY", "").strip()
+
+# Scheduler settings
+DAILY_CRAWL_HOUR = int(os.getenv("DAILY_CRAWL_HOUR", "6"))
+DAILY_CRAWL_MINUTE = int(os.getenv("DAILY_CRAWL_MINUTE", "0"))
+DEFAULT_CRAWL_COUNTRIES = [
+    c.strip() for c in os.getenv("CRAWL_COUNTRIES", "us,vn,kr,jp,global").split(",") if c.strip()
+]
+
 # Server Network Settings
 PORT = int(os.getenv("PORT", "8888"))
 HOST = os.getenv("HOST", "127.0.0.1")

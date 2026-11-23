@@ -21,7 +21,7 @@ Hệ thống phân tích xu hướng thị trường game **Mobile (iOS & Androi
      3. Chân dung người chơi mục tiêu (Target Audience & Persona)
      4. Lợi thế cạnh tranh (Competitive Edge)
      5. Bài học đắt giá cho Game Dev / Studio Việt Nam
-   - Tích hợp **Google Gemini 1.5 Flash** (hoặc tự động dùng Hệ tri thức Heuristic khi chưa có API key).
+   - Tích hợp **Google Gemini** (model cấu hình qua `GEMINI_MODEL` trong `.env`) (hoặc tự động dùng Hệ tri thức Heuristic khi chưa có API key).
 4. **Biểu Đồ Lịch Sử & Modal Phân Tích Game:**
    - Nhấp vào bất kỳ tựa game nào để mở **Game Intelligence Modal**.
    - Biểu đồ đường **Rank Trendline** (trục Y đảo ngược với vị trí #1 ở đỉnh) và đường cong **CCU** theo thời gian.
@@ -51,7 +51,7 @@ Chỉ cần nhấp đúp chuột vào file:
 ```
 start.bat
 ```
-File sẽ tự động kích hoạt môi trường ảo và mở trình duyệt tại: `http://127.0.0.1:8000`.
+File sẽ tự động kích hoạt môi trường ảo và mở trình duyệt tại: `http://127.0.0.1:8888`.
 
 ### Cách 2: Chạy bằng dòng lệnh (Terminal / PowerShell)
 ```powershell
@@ -62,7 +62,48 @@ File sẽ tự động kích hoạt môi trường ảo và mở trình duyệt 
 python run.py
 ```
 
-Sau khi chạy, mở trình duyệt web và truy cập: **`http://127.0.0.1:8000`**
+Sau khi chạy, mở trình duyệt web và truy cập: **`http://127.0.0.1:8888`**
+
+---
+
+## ⚙️ Cấu Hình (.env)
+
+Sao chép `.env.example` thành `.env` rồi điền giá trị. File `.env` và `data/*.json` đã được git-ignore để API key không bị commit nhầm.
+
+| Biến | Ý nghĩa | Mặc định |
+|---|---|---|
+| `GEMINI_API_KEY` | Key Google Gemini cho các tính năng AI (để trống → dùng hệ tri thức nội bộ, có ghi rõ "không dùng LLM") | trống |
+| `GEMINI_MODEL` | Tên model Gemini dùng cho mọi lời gọi AI | `gemini-3.5-flash-lite` |
+| `STEAM_API_KEY` | Steam Web API key (tùy chọn) | trống |
+| `HOST` / `PORT` | Địa chỉ web server | `127.0.0.1` / `8888` |
+| `DAILY_CRAWL_HOUR` / `DAILY_CRAWL_MINUTE` | Giờ crawl hằng ngày (giờ máy) | `6` / `0` |
+| `CRAWL_COUNTRIES` | Quốc gia crawl mặc định | `us,vn,kr,jp,global` |
+
+**Lịch crawl:** crawl chạy theo cron vào giờ cố định mỗi ngày. Nếu máy tắt đúng giờ đó, lần khởi động kế tiếp sẽ tự **crawl bù** khi hôm nay chưa có snapshot. Mọi request mạng của crawler có retry + backoff (429/5xx/lỗi mạng).
+
+---
+
+## 🧭 Về Độ Tin Cậy Của Dữ Liệu
+
+- **Dữ liệu thật:** chỉ có **thứ hạng, CCU, giá, điểm đánh giá** lấy từ các lần crawl.
+- **Ước tính:** doanh thu & lượt tải được tính từ thứ hạng bằng mô hình Power-law. Biểu đồ doanh thu vẽ **nét đứt** cho những ngày không có snapshot (thứ hạng được nội suy tuyến tính hoặc giữ nguyên thứ hạng gần nhất, không có số ngẫu nhiên). Tỷ trọng theo Tier quốc gia là giả định.
+- **Giả lập:** dữ liệu tạo bởi nút "Simulate" trong MMP Stream được gắn nhãn **DEMO** và đếm riêng.
+- **Steam offline:** khi không gọi được Steam API, giao diện hiển thị `N/A` kèm cảnh báo thay vì số liệu mẫu.
+- **App Store "global":** Apple không có bảng xếp hạng toàn cầu nên mục này chỉ crawl Google Play.
+- **Google Play:** thư viện `google-play-scraper` không hỗ trợ bảng xếp hạng chính thức, nên "thứ hạng" Google Play là thứ tự kết quả tìm kiếm theo từ khóa, chỉ mang tính tham khảo.
+
+**Hiệu chỉnh mô hình:** ở tab **Cài Đặt → Hiệu Chỉnh Mô Hình**, nhập các game bạn biết doanh thu thật (kèm thứ hạng lúc đó). Hệ thống lấy trung vị tỷ lệ *thật / ước tính* theo từng (nền tảng, quốc gia) làm hệ số nhân cho mọi ước tính, giới hạn ×0.1–×10. Quốc gia chưa có dữ liệu dùng hệ số chung của nền tảng (khi có ≥2 điểm). Bảng hiển thị sai số trước/sau hiệu chỉnh của từng điểm.
+
+Tab **Thị Trường → Tín Hiệu Thị Trường** hiển thị: sức khỏe từng nguồn crawl (OK / cũ / lỗi), game **bứt phá bền vững** (tăng hạng đều qua nhiều lần crawl) và **xu hướng thể loại** tuần này so với tuần trước.
+
+---
+
+## 🧪 Kiểm Thử
+
+```powershell
+.\.venv\Scripts\pip install -r requirements-dev.txt
+.\.venv\Scripts\python -m pytest -q
+```
 
 ---
 
@@ -70,34 +111,25 @@ Sau khi chạy, mở trình duyệt web và truy cập: **`http://127.0.0.1:8000
 
 ```
 d:\game-trending-analyzer\
-│
-├── run.py                       # File khởi động ứng dụng Web Dashboard & tự mở trình duyệt
-├── start.bat                    # Script 1-click chạy trên Windows
-├── requirements.txt             # Danh sách thư viện Python cần thiết
-├── README.md                    # Tài liệu hướng dẫn sử dụng
-│
-├── data/
-│   └── game_trends.db           # SQLite database lưu trữ snapshot lịch sử theo ngày/tuần
-│
+├── run.py / start.bat           # Khởi động Web Dashboard
+├── requirements.txt             # Thư viện chạy app
+├── requirements-dev.txt         # Thư viện test (pytest)
+├── .env.example                 # Mẫu cấu hình (copy thành .env)
+├── data/game_trends.db          # SQLite snapshot lịch sử (git-ignored)
+├── tests/                       # Pytest: delta rank, mô hình doanh thu, tín hiệu thị trường, smoke test API
 └── app/
-    ├── main.py                  # FastAPI server & Scheduler tự động crawl
-    ├── config.py                # Cấu hình danh sách quốc gia, nền tảng, loại xếp hạng
-    │
-    ├── database/
-    │   ├── db.py                # Khởi tạo SQLite schema và lưu dữ liệu snapshot
-    │
-    ├── crawlers/
-    │   ├── steam_crawler.py     # Thu thập dữ liệu Steam Charts (CCU) & SteamSpy
-    │   ├── app_store_crawler.py # Thu thập Top Grossing & Top Free từ Apple Store RSS
-    │   ├── google_play_crawler.py # Thu thập Google Play Store theo từng quốc gia
-    │   └── orchestrator.py      # Điều phối crawl, tính delta DoD và WoW
-    │
-    ├── analytics/
-    │   ├── trend_analyzer.py    # Phân tích biến động, breakout radar, thị phần thể loại
-    │   └── report_generator.py  # Tạo báo cáo tóm tắt Markdown và xuất file Excel/CSV
-    │
-    └── templates/
-        └── index.html           # Giao diện Web Dashboard hiện đại (TailwindCSS, Chart.js)
+    ├── main.py                  # Tạo FastAPI app, lifespan (lịch crawl), mount static, gắn routers
+    ├── config.py                # Cấu hình + nạp .env
+    ├── routers/                 # API chia theo nhóm: market, crawl, settings, watchlist,
+    │                            #   mobile_growth, mobile_economy, mmp, steam, studio
+    ├── services/
+    │   ├── container.py         # Các service singleton dùng chung
+    │   └── crawl_service.py     # Khóa chống crawl trùng, cron hằng ngày, crawl bù khi khởi động
+    ├── database/db.py           # SQLite schema và truy vấn
+    ├── crawlers/                # Steam, App Store, Google Play, Mobile Radar, retry helper
+    ├── analytics/               # Các module phân tích (market_signals, revenue_*, gemini_client, ...)
+    ├── static/                  # css/app.css + js/*.js chia theo tính năng (core.js nạp đầu, init.js nạp cuối)
+    └── templates/index.html     # Giao diện Web Dashboard (TailwindCSS, Chart.js)
 ```
 
 ---
@@ -113,3 +145,8 @@ d:\game-trending-analyzer\
 - `GET /api/report`: Bản tóm tắt thị trường dạng bài viết.
 - `GET /api/export/excel`: Tải toàn bộ bảng xếp hạng ra file `.xlsx`.
 - `GET /api/export/csv`: Tải bảng xếp hạng ra file `.csv`.
+- `GET /api/signals/data-health`: Trạng thái từng nguồn crawl, số ngày có dữ liệu trong 30 ngày.
+- `GET /api/signals/sustained-breakouts`: Game tăng hạng bền vững (`window_days`, `platform`, `country`, `min_net_gain`).
+- `GET /api/signals/genre-trends`: Tỷ trọng thể loại tuần này vs tuần trước (`platform`, `country`, `top_n_rank`).
+- `GET /api/calibration` · `POST /api/calibration` · `DELETE /api/calibration/{id}`: Quản lý điểm doanh thu thật & hệ số hiệu chỉnh.
+- `GET /api/game/{game_id}/revenue-history`: Doanh thu/lượt tải **ước tính** theo ngày, kèm `data_quality`.

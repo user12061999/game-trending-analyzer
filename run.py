@@ -27,7 +27,7 @@ if __name__ == "__main__":
     print("[*] GAME MARKET TRENDING ANALYZER (PC & MOBILE)")
     print("=" * 65)
     print(f"• Khoi dong may chu Web Dashboard tai: http://127.0.0.1:{PORT}")
-    print("• Co so du lieu SQLite: data/games.db")
+    print("• Co so du lieu SQLite: data/game_trends.db")
     print("• Nhan Ctrl+C de dung may chu")
     print("=" * 65)
 
@@ -35,4 +35,4 @@ if __name__ == "__main__":
     threading.Thread(target=open_browser, daemon=True).start()
 
     # Start FastAPI server
-    uvicorn.run("app.main:app", host="0.0.0.0", port=PORT, reload=False, log_level="info")
+    uvicorn.run("app.main:app", host=HOST, port=PORT, reload=False, log_level="info")

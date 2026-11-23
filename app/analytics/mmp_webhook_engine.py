@@ -18,7 +18,7 @@ class MMPWebhookEngine:
     def __init__(self):
         pass
 
-    def ingest_postback(self, payload: Dict[str, Any], provider_hint: str = "auto") -> Dict[str, Any]:
+    def ingest_postback(self, payload: Dict[str, Any], provider_hint: str = "auto", is_simulated: bool = False) -> Dict[str, Any]:
         """Normalizes and processes a single incoming MMP postback event."""
         # 1. Normalize fields across AppsFlyer, Adjust, Singular, Generic
         normalized = self._normalize_payload(payload, provider_hint)
@@ -39,6 +39,7 @@ class MMPWebhookEngine:
         normalized["fraud_score"] = fraud_score
         normalized["is_rejected"] = 1 if is_rejected else 0
         normalized["received_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        normalized["is_simulated"] = 1 if is_simulated else 0
 
         # 4. Save to Database
         record_id = self._save_to_db(normalized)
@@ -83,7 +84,7 @@ class MMPWebhookEngine:
             p.get("gps_adid") or
             p.get("idfa") or
             p.get("adid") or
-            f"anon_{random.randint(100000, 999999)}"
+            "unknown"
         )
 
         # IP Address
@@ -121,10 +122,14 @@ class MMPWebhookEngine:
             "device_model": device_model
         }
 
-    def _calculate_ctit(self, click_time_str: str, install_time_str: str) -> float:
-        """Parses click and install timestamps and computes difference in seconds."""
-        if not click_time_str or not install_time_str:
-            return random.uniform(35.0, 180.0)
+    def _calculate_ctit(self, click_time_str: str, install_time_str: str) -> Optional[float]:
+        """Parses click and install timestamps and computes difference in seconds.
+
+        Returns None when the timestamps are missing or unparseable — never a made-up value,
+        because CTIT drives the fraud verdict.
+        """
+        if not click_time_str or not install_time_str or click_time_str == "None" or install_time_str == "None":
+            return None
 
         # Try numeric epoch timestamp
         try:
@@ -155,28 +160,33 @@ class MMPWebhookEngine:
             diff = (i_dt - c_dt).total_seconds()
             return max(1.0, round(diff, 1))
 
-        return round(random.uniform(25.0, 120.0), 1)
+        return None
 
     def _evaluate_fraud(
         self,
-        ctit_seconds: float,
+        ctit_seconds: Optional[float],
         ip_address: str,
         device_model: str,
         network_name: str
     ) -> tuple[str, float, bool]:
         """Calculates deterministic fraud status: (verdict, score, is_rejected)."""
-        # Rule 1: Click Injection (< 10 seconds)
-        if ctit_seconds < 10.0:
-            return ("CLICK_INJECTION", 92.5, True)
+        if ctit_seconds is not None:
+            # Rule 1: Click Injection (< 10 seconds)
+            if ctit_seconds < 10.0:
+                return ("CLICK_INJECTION", 92.5, True)
 
-        # Rule 2: Click Flooding (> 24 hours = 86400 seconds)
-        if ctit_seconds > 86400.0:
-            return ("CLICK_FLOODING", 78.0, True)
+            # Rule 2: Click Flooding (> 24 hours = 86400 seconds)
+            if ctit_seconds > 86400.0:
+                return ("CLICK_FLOODING", 78.0, True)
 
         # Rule 3: Datacenter or Emulator Bot keywords
-        lower_dev = device_model.lower()
+        lower_dev = (device_model or "").lower()
         if "emulator" in lower_dev or "bluestacks" in lower_dev or "nox" in lower_dev or "genymotion" in lower_dev:
             return ("BOT_EMULATOR", 88.0, True)
+
+        if ctit_seconds is None:
+            # Cannot verify timing rules without click/install timestamps
+            return ("CTIT_UNKNOWN", 30.0, False)
 
         # Normal Healthy Traffic
         return ("CLEAN", 4.0, False)
@@ -190,8 +200,8 @@ class MMPWebhookEngine:
                 received_at, mmp_provider, network_name, campaign_name,
                 advertising_id, ip_address, click_time, install_time,
                 ctit_seconds, country, device_model, fraud_verdict,
-                fraud_score, is_rejected
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                fraud_score, is_rejected, is_simulated
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             data["received_at"],
             data["mmp_provider"],
@@ -206,7 +216,8 @@ class MMPWebhookEngine:
             data["device_model"],
             data["fraud_verdict"],
             data["fraud_score"],
-            data["is_rejected"]
+            data["is_rejected"],
+            data.get("is_simulated", 0)
         ))
         conn.commit()
         record_id = cursor.lastrowid
@@ -242,11 +253,13 @@ class MMPWebhookEngine:
                 "rejected_count": 0,
                 "fraud_rate_pct": 0.0,
                 "avg_ctit_seconds": 0.0,
+                "simulated_count": 0,
                 "networks_breakdown": [],
                 "fraud_type_breakdown": {
                     "CLICK_INJECTION": 0,
                     "CLICK_FLOODING": 0,
                     "BOT_EMULATOR": 0,
+                    "CTIT_UNKNOWN": 0,
                     "CLEAN": 0
                 }
             }
@@ -258,7 +271,10 @@ class MMPWebhookEngine:
 
         cursor.execute("SELECT AVG(ctit_seconds) as avg_ctit FROM mmp_postbacks WHERE ctit_seconds < 86400")
         avg_ctit_row = cursor.fetchone()["avg_ctit"]
-        avg_ctit = round(avg_ctit_row, 1) if avg_ctit_row else 45.0
+        avg_ctit = round(avg_ctit_row, 1) if avg_ctit_row else 0.0
+
+        cursor.execute("SELECT COUNT(*) as sim FROM mmp_postbacks WHERE is_simulated = 1")
+        simulated = cursor.fetchone()["sim"]
 
         # Breakdown by network
         cursor.execute("""
@@ -291,7 +307,7 @@ class MMPWebhookEngine:
             FROM mmp_postbacks
             GROUP BY fraud_verdict
         """)
-        type_counts = {"CLICK_INJECTION": 0, "CLICK_FLOODING": 0, "BOT_EMULATOR": 0, "CLEAN": 0}
+        type_counts = {"CLICK_INJECTION": 0, "CLICK_FLOODING": 0, "BOT_EMULATOR": 0, "CTIT_UNKNOWN": 0, "CLEAN": 0}
         for row in cursor.fetchall():
             verdict = row["fraud_verdict"]
             if verdict in type_counts:
@@ -305,6 +321,7 @@ class MMPWebhookEngine:
             "rejected_count": rejected,
             "fraud_rate_pct": fraud_rate,
             "avg_ctit_seconds": avg_ctit,
+            "simulated_count": simulated,
             "networks_breakdown": networks,
             "fraud_type_breakdown": type_counts
         }
@@ -360,7 +377,7 @@ class MMPWebhookEngine:
                 "device_model": dev
             }
 
-            processed = self.ingest_postback(payload, provider_hint=net["mmp"])
+            processed = self.ingest_postback(payload, provider_hint=net["mmp"], is_simulated=True)
             results.append(processed)
 
         return results

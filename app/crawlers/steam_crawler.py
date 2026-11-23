@@ -4,6 +4,7 @@ import logging
 from typing import List, Dict, Any
 from datetime import datetime, date
 import httpx
+from app.crawlers.http_utils import get_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ class SteamCrawler:
         lookup = dict(KNOWN_STEAM_GAMES)
         try:
             with httpx.Client(timeout=self.timeout, headers=self.headers) as client:
-                resp = client.get(STEAM_SPY_TOP_2WEEKS)
+                resp = get_with_retry(client, STEAM_SPY_TOP_2WEEKS)
                 if resp.status_code == 200:
                     data = resp.json()
                     for appid, item in data.items():
@@ -78,7 +79,7 @@ class SteamCrawler:
 
         try:
             with httpx.Client(timeout=self.timeout, headers=self.headers) as client:
-                resp = client.get(STEAM_CHARTS_URL)
+                resp = get_with_retry(client, STEAM_CHARTS_URL)
                 if resp.status_code == 200:
                     data = resp.json().get("response", {})
                     ranks = data.get("ranks", [])[:limit]
@@ -137,7 +138,7 @@ class SteamCrawler:
 
         try:
             with httpx.Client(timeout=self.timeout, headers=self.headers) as client:
-                resp = client.get(STEAM_SPY_TOP_2WEEKS)
+                resp = get_with_retry(client, STEAM_SPY_TOP_2WEEKS)
                 if resp.status_code == 200:
                     data = resp.json()
                     items = list(data.values())[:limit]

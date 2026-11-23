@@ -4,6 +4,7 @@ import logging
 from typing import List, Dict, Any
 from datetime import datetime, date
 import httpx
+from app.crawlers.http_utils import get_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class AppStoreCrawler:
 
         try:
             with httpx.Client(timeout=self.timeout, headers=self.headers) as client:
-                resp = client.get(url)
+                resp = get_with_retry(client, url)
                 if resp.status_code == 200:
                     data = resp.json()
                     entries = data.get("feed", {}).get("entry", [])

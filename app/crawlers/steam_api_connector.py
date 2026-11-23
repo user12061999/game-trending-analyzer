@@ -23,11 +23,16 @@ class SteamAPIConnector:
         {"app_id": 252490, "title": "Rust", "genre": "Open World Survival Craft", "developer": "Facepunch Studios"}
     ]
 
-    def __init__(self, config_path: str = "data/steam_config.json"):
-        self.config_path = config_path
+    def __init__(self, config_path: Optional[str] = None):
+        from app.config import DATA_DIR
+        # Absolute path so the key file location doesn't depend on the working directory
+        self.config_path = str(config_path or (DATA_DIR / "steam_config.json"))
         self.api_key = self._load_api_key()
 
     def _load_api_key(self) -> str:
+        from app.config import STEAM_API_KEY
+        if STEAM_API_KEY:
+            return STEAM_API_KEY
         if os.path.exists(self.config_path):
             try:
                 with open(self.config_path, "r", encoding="utf-8") as f:
@@ -62,11 +67,12 @@ class SteamAPIConnector:
                     "status": "LIVE_SUCCESS"
                 }
         except Exception as e:
-            # Fallback realistic baseline if network blocked
+            # Network blocked / throttled: report unavailability instead of inventing a number
             return {
                 "app_id": app_id,
-                "live_player_count": 45000,
-                "status": f"OFFLINE_FALLBACK ({str(e)})"
+                "live_player_count": None,
+                "status": "OFFLINE",
+                "error": str(e)
             }
 
     def fetch_app_details(self, app_id: int) -> Dict[str, Any]:
@@ -103,20 +109,21 @@ class SteamAPIConnector:
         except Exception as e:
             pass
 
-        # Fallback preset info if Steam connection throttled
-        preset = next((p for p in self.POPULAR_PRESETS if p["app_id"] == app_id), self.POPULAR_PRESETS[0])
+        # Steam unreachable: only use static preset metadata (title/genre/dev) if known,
+        # never invent price or release info.
+        preset = next((p for p in self.POPULAR_PRESETS if p["app_id"] == app_id), None)
         return {
             "app_id": app_id,
-            "title": preset["title"],
-            "is_free": False,
-            "price": "$29.99",
+            "title": preset["title"] if preset else f"Steam App {app_id}",
+            "is_free": None,
+            "price": "N/A",
             "header_image": f"https://cdn.cloudflare.steamstatic.com/steam/apps/{app_id}/header.jpg",
-            "developers": [preset["developer"]],
-            "publishers": [preset["developer"]],
-            "genres": [preset["genre"]],
-            "release_date": "Live on Steam",
-            "short_description": f"Dữ liệu trực tiếp tựa game {preset['title']} trên nền tảng Steam Store.",
-            "status": "FALLBACK"
+            "developers": [preset["developer"]] if preset else [],
+            "publishers": [],
+            "genres": [preset["genre"]] if preset else [],
+            "release_date": "N/A",
+            "short_description": "Không kết nối được Steam Store — chưa có dữ liệu trực tiếp.",
+            "status": "OFFLINE"
         }
 
     def fetch_reviews_summary(self, app_id: int) -> Dict[str, Any]:
@@ -127,13 +134,13 @@ class SteamAPIConnector:
             with urllib.request.urlopen(req, timeout=5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 query_summary = data.get("query_summary", {})
-                total_pos = query_summary.get("total_positive", 8500)
-                total_neg = query_summary.get("total_negative", 1500)
+                total_pos = query_summary.get("total_positive", 0)
+                total_neg = query_summary.get("total_negative", 0)
                 total_reviews = query_summary.get("total_reviews", total_pos + total_neg)
-                pct_pos = round((total_pos / total_reviews) * 100.0, 1) if total_reviews > 0 else 85.0
+                pct_pos = round((total_pos / total_reviews) * 100.0, 1) if total_reviews > 0 else None
                 return {
                     "app_id": app_id,
-                    "review_score_desc": query_summary.get("review_score_desc", "Very Positive"),
+                    "review_score_desc": query_summary.get("review_score_desc", "No reviews"),
                     "total_reviews": total_reviews,
                     "total_positive": total_pos,
                     "total_negative": total_neg,
@@ -143,10 +150,10 @@ class SteamAPIConnector:
         except Exception:
             return {
                 "app_id": app_id,
-                "review_score_desc": "Very Positive",
-                "total_reviews": 45000,
-                "total_positive": 39600,
-                "total_negative": 5400,
-                "positive_percent": 88.0,
-                "status": "FALLBACK"
+                "review_score_desc": "N/A",
+                "total_reviews": None,
+                "total_positive": None,
+                "total_negative": None,
+                "positive_percent": None,
+                "status": "OFFLINE"
             }

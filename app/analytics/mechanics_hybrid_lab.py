@@ -152,14 +152,9 @@ class MechanicsHybridLab:
         art_style: str,
         monetization_model: str
     ) -> Optional[Dict[str, Any]]:
-        """Invokes Gemini 3.5 Flash Lite to perform creative game design fusion."""
-        key = os.getenv("GEMINI_API_KEY", "")
-        if not key:
-            try:
-                from app.config import GEMINI_API_KEY
-                key = GEMINI_API_KEY
-            except Exception:
-                key = ""
+        """Invokes Gemini to perform creative game design fusion."""
+        from app.analytics import gemini_client
+        key = gemini_client.resolve_gemini_key()
 
         if not key:
             return None
@@ -219,18 +214,9 @@ Hãy trả về DUY NHẤT một chuỗi JSON hợp lệ (không kèm markdown `
 }}
 """
         try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={key}"
-            payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode("utf-8")
-            req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=25) as resp:
-                res_json = json.loads(resp.read().decode("utf-8"))
-                text = res_json["candidates"][0]["content"]["parts"][0]["text"]
-                cleaned = text.strip()
-                if cleaned.startswith("```"):
-                    cleaned = re.sub(r"^```[a-z]*\n", "", cleaned)
-                    cleaned = re.sub(r"\n```$", "", cleaned)
-                data = json.loads(cleaned)
-                data["source"] = "Gemini 3.5 Flash Lite"
+            data = gemini_client.generate_json(prompt, key, timeout=25, temperature=0.8)
+            if data:
+                data["source"] = f"Google {gemini_client.model_label()}"
                 data["game_a"] = game_a
                 data["game_b"] = game_b
                 data["fusion_ratio"] = fusion_ratio
@@ -238,7 +224,7 @@ Hãy trả về DUY NHẤT một chuỗi JSON hợp lệ (không kèm markdown `
                 data["monetization_model"] = monetization_model
                 return data
         except Exception as e:
-            logger.warning(f"Gemini mechanic fusion call failed: {e}")
+            logger.warning(f"Gemini mechanic fusion call failed: {type(e).__name__}")
             return None
 
     def _procedural_hybrid_synthesis(

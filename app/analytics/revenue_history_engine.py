@@ -1,51 +1,79 @@
-"""Revenue & Download Historical Intelligence Engine (Sensor Tower / AppMagic Style).
+"""Revenue & Download Historical Estimation Engine (rank-based power-law model).
 
-Calculates multi-day historical revenue, download curves, country tier revenue attribution,
+Calculates multi-day estimated revenue/download curves, country tier attribution,
 blended ARPU, and lifecycle phase diagnostics for any tracked PC or Mobile game.
+
+IMPORTANT: every revenue / download number here is a MODEL ESTIMATE derived from
+chart rank. Only the rank itself comes from real crawl snapshots, and each timeline
+point says whether its rank was observed ("snapshot") or filled in.
 """
 
-import math
-import random
-from datetime import date, datetime, timedelta
-from typing import Dict, Any, List, Optional
+from datetime import date, timedelta
+from typing import Dict, Any, List, Tuple
 
 from app.database.db import get_db_connection
 from app.analytics.revenue_estimator import RevenueEstimator
 
 
+# Assumed (not measured) split of revenue/downloads across country tiers.
+TIER_SPLITS = {
+    "tier_1": {
+        "name": "Tier 1 (US, JP, KR, UK, DE)",
+        "rev_share": 0.645,
+        "dl_share": 0.28,
+        "countries": ["Mỹ 🇺🇸", "Nhật Bản 🇯🇵", "Hàn Quốc 🇰🇷", "Đức 🇩🇪", "Anh 🇬🇧"],
+    },
+    "tier_2": {
+        "name": "Tier 2 (FR, CA, TW, AU, IT)",
+        "rev_share": 0.215,
+        "dl_share": 0.22,
+        "countries": ["Đài Loan 🇹🇼", "Pháp 🇫🇷", "Canada 🇨🇦", "Úc 🇦🇺"],
+    },
+    "tier_3": {
+        "name": "Tier 3 (VN, BR, ID, IN, PH, TH)",
+        "rev_share": 0.14,
+        "dl_share": 0.50,
+        "countries": ["Việt Nam 🇻🇳", "Brazil 🇧🇷", "Indonesia 🇮🇩", "Thái Lan 🇹🇭", "Philippines 🇵🇭"],
+    },
+}
+
+
 class RevenueHistoryEngine:
-    """Calculates 30-day revenue/download trends, ARPU, and lifecycle diagnostics."""
+    """Calculates N-day estimated revenue/download trends, ARPU, and lifecycle diagnostics."""
+
+    @staticmethod
+    def _load_rows(game_id: str) -> List[Dict[str, Any]]:
+        conn = get_db_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT snapshot_date, rank, player_count, price, platform, country, ranking_type,
+                       title, developer, genre, icon_url
+                FROM snapshots
+                WHERE game_id = ?
+                ORDER BY snapshot_date ASC
+            """, (game_id,))
+            rows = [dict(r) for r in cursor.fetchall()]
+
+            # If no direct match by game_id, try finding by title substring
+            if not rows:
+                cursor.execute("""
+                    SELECT snapshot_date, rank, player_count, price, platform, country, ranking_type,
+                           title, developer, genre, icon_url, game_id
+                    FROM snapshots
+                    WHERE title LIKE ? OR game_id LIKE ?
+                    ORDER BY snapshot_date ASC
+                """, (f"%{game_id}%", f"%{game_id}%"))
+                rows = [dict(r) for r in cursor.fetchall()]
+        finally:
+            conn.close()
+        return rows
 
     @staticmethod
     def get_game_revenue_history(game_id: str, days: int = 30) -> Dict[str, Any]:
-        """Returns 30-day historical revenue, downloads, ARPU and lifecycle intelligence."""
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        """Returns N-day estimated revenue, downloads, ARPU and lifecycle intelligence."""
+        rows = RevenueHistoryEngine._load_rows(game_id)
 
-        # Query recorded snapshots for this game ordered by date ASC
-        cursor.execute("""
-            SELECT snapshot_date, rank, player_count, price, platform, country, ranking_type, title, developer, genre, icon_url
-            FROM snapshots
-            WHERE game_id = ?
-            ORDER BY snapshot_date ASC
-        """, (game_id,))
-        rows = [dict(r) for r in cursor.fetchall()]
-        conn.close()
-
-        # If no direct match by game_id, try finding by title substring
-        if not rows:
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT snapshot_date, rank, player_count, price, platform, country, ranking_type, title, developer, genre, icon_url, game_id
-                FROM snapshots
-                WHERE title LIKE ? OR game_id LIKE ?
-                ORDER BY snapshot_date ASC
-            """, (f"%{game_id}%", f"%{game_id}%"))
-            rows = [dict(r) for r in cursor.fetchall()]
-            conn.close()
-
-        # Baseline info
         if rows:
             latest_record = rows[-1]
             title = latest_record.get("title") or game_id
@@ -56,6 +84,14 @@ class RevenueHistoryEngine:
             player_count = latest_record.get("player_count") or 0
             price_str = latest_record.get("price") or "$0.00"
             icon_url = latest_record.get("icon_url", "")
+            # Only use snapshots from the same chart as the latest record; mixing ranks
+            # from different countries / chart types would produce a meaningless series.
+            rows = [
+                r for r in rows
+                if r.get("platform") == latest_record.get("platform")
+                and r.get("country") == latest_record.get("country")
+                and r.get("ranking_type") == latest_record.get("ranking_type")
+            ]
         else:
             title = game_id.replace("_", " ").title()
             platform = "mobile_appstore"
@@ -68,66 +104,36 @@ class RevenueHistoryEngine:
 
         is_pc = "pc" in platform.lower() or "steam" in platform.lower()
 
-        # Calculate baseline daily revenue & downloads using Pareto Power-law
-        if is_pc:
-            base_est = RevenueEstimator.estimate_steam_revenue(base_rank, player_count, price_str)
-            base_daily_rev = base_est.get("daily_revenue", 45000)
-            base_daily_dl = base_est.get("estimated_units_sold_daily", 1800)
-        else:
-            base_est = RevenueEstimator.estimate_mobile_revenue(base_rank, country=country)
-            base_dl_est = RevenueEstimator.estimate_mobile_downloads(base_rank, country=country)
-            base_daily_rev = base_est.get("daily_revenue", 38000)
-            base_daily_dl = base_dl_est.get("daily_downloads", 14000)
-
-        # Build snapshot date lookup map
-        snapshot_map = {}
+        snapshot_map: Dict[str, Dict[str, Any]] = {}
         for r in rows:
             d_str = r.get("snapshot_date")
             if d_str:
                 snapshot_map[d_str] = r
 
-        # Generate continuous 30-day timeline ending at today
         today = date.today()
+        window_dates = [today - timedelta(days=i) for i in range(days - 1, -1, -1)]
+        rank_by_date = RevenueHistoryEngine._fill_rank_series(window_dates, snapshot_map, base_rank)
+
         timeline: List[Dict[str, Any]] = []
         running_cum_rev = 0
         running_cum_dl = 0
 
-        # Pseudo-random seed deterministic on game title
-        seed_val = sum(ord(c) for c in title)
-        rng = random.Random(seed_val)
-
-        for i in range(days - 1, -1, -1):
-            cur_date = today - timedelta(days=i)
+        for cur_date in window_dates:
             cur_date_str = cur_date.isoformat()
+            day_rank, data_source = rank_by_date[cur_date_str]
+            snap = snapshot_map.get(cur_date_str)
 
-            # If snapshot exists for this exact date, use real rank
-            if cur_date_str in snapshot_map:
-                snap = snapshot_map[cur_date_str]
-                day_rank = snap.get("rank") or base_rank
-                if is_pc:
-                    p_cnt = snap.get("player_count") or player_count
-                    day_est = RevenueEstimator.estimate_steam_revenue(day_rank, p_cnt, price_str)
-                    d_rev = day_est.get("daily_revenue", base_daily_rev)
-                    d_dl = day_est.get("estimated_units_sold_daily", base_daily_dl)
-                else:
-                    d_rev = RevenueEstimator.estimate_mobile_revenue(day_rank, country=country).get("daily_revenue", base_daily_rev)
-                    d_dl = RevenueEstimator.estimate_mobile_downloads(day_rank, country=country).get("daily_downloads", base_daily_dl)
+            if is_pc:
+                p_cnt = (snap.get("player_count") if snap else None) or player_count
+                day_est = RevenueEstimator.estimate_steam_revenue(day_rank, p_cnt, price_str)
+                d_rev = day_est.get("daily_revenue", 0)
+                d_dl = day_est.get("estimated_units_sold_daily", 0)
             else:
-                # Organic market curve with weekend spikes (Saturdays/Sundays +18-25%)
-                weekday = cur_date.weekday()
-                weekend_multiplier = 1.22 if weekday in (5, 6) else 1.0
-
-                # Slight progressive slope or drift based on day index
-                drift = 1.0 + (days - i - 1) * 0.004 + rng.uniform(-0.06, 0.07)
-                d_rev = int(base_daily_rev * drift * weekend_multiplier)
-                d_dl = int(base_daily_dl * drift * (1.15 if weekday in (5, 6) else 0.98))
-                day_rank = max(1, int(base_rank + rng.randint(-3, 3)))
+                d_rev = RevenueEstimator.estimate_mobile_revenue(day_rank, country=country).get("daily_revenue", 0)
+                d_dl = RevenueEstimator.estimate_mobile_downloads(day_rank, country=country).get("daily_downloads", 0)
 
             running_cum_rev += d_rev
             running_cum_dl += d_dl
-
-            # Day ARPU
-            day_arpu = round(d_rev / max(1, d_dl), 2)
 
             timeline.append({
                 "date": cur_date_str,
@@ -137,79 +143,62 @@ class RevenueHistoryEngine:
                 "cumulative_revenue": running_cum_rev,
                 "cumulative_downloads": running_cum_dl,
                 "rank": day_rank,
-                "arpu": day_arpu,
-                "is_weekend": cur_date.weekday() in (5, 6)
+                "arpu": round(d_rev / max(1, d_dl), 2),
+                "is_weekend": cur_date.weekday() in (5, 6),
+                # "snapshot"     = rank observed by a crawl that day
+                # "interpolated" = gap between two crawls (linear)
+                # "carried"      = before first / after last crawl (nearest known rank)
+                # "assumed"      = no crawl data at all for this game
+                "data_source": data_source,
+                "is_estimated": data_source != "snapshot",
             })
 
-        # Calculate aggregate summary metrics
-        total_30d_rev = sum(d["daily_revenue"] for d in timeline)
-        total_30d_dl = sum(d["daily_downloads"] for d in timeline)
-        avg_daily_rev = int(total_30d_rev / days)
-        avg_daily_dl = int(total_30d_dl / days)
-        blended_arpu = round(total_30d_rev / max(1, total_30d_dl), 2)
+        actual_days = sum(1 for d in timeline if d["data_source"] == "snapshot")
+        coverage_pct = round(actual_days / max(1, days) * 100, 1)
 
-        # WoW Velocity (Compare last 7 days vs previous 7 days)
-        last_7d_rev = sum(d["daily_revenue"] for d in timeline[-7:])
-        prev_7d_rev = sum(d["daily_revenue"] for d in timeline[-14:-7]) if len(timeline) >= 14 else last_7d_rev
+        # Aggregate summary metrics
+        total_rev = sum(d["daily_revenue"] for d in timeline)
+        total_dl = sum(d["daily_downloads"] for d in timeline)
+        avg_daily_rev = int(total_rev / days)
+        avg_daily_dl = int(total_dl / days)
+        blended_arpu = round(total_rev / max(1, total_dl), 2)
+
+        # WoW velocity (last 7 days vs previous 7 days)
+        last_7 = timeline[-7:]
+        prev_7 = timeline[-14:-7] if len(timeline) >= 14 else last_7
+        last_7d_rev = sum(d["daily_revenue"] for d in last_7)
+        prev_7d_rev = sum(d["daily_revenue"] for d in prev_7)
         wow_growth_pct = round(((last_7d_rev - prev_7d_rev) / max(1, prev_7d_rev)) * 100, 1)
 
-        # Lifecycle Phase Determination
-        if wow_growth_pct >= 12.0:
-            lifecycle_phase = "🚀 Tăng Trưởng Nóng (Hyper Growth)"
-            lifecycle_desc = f"Doanh thu tuần qua tăng trưởng vượt bậc +{wow_growth_pct}%. Lượng người chơi mới gia tăng nhanh chóng, cơ hội tối ưu chuyển đổi nạp lần đầu (FTUE IAP)."
-            badge_color = "emerald"
-        elif wow_growth_pct >= -4.0:
-            lifecycle_phase = "⚖️ Bão Hòa / Trưởng Thành (Maturity)"
-            lifecycle_desc = f"Doanh thu duy trì ổn định (biến động {wow_growth_pct}% WoW). Game đã xây dựng được tập người chơi nạp ổn định (Whales & Dolphins), cần đẩy mạnh chuỗi sự kiện LiveOps định kỳ."
-            badge_color = "indigo"
-        elif wow_growth_pct >= -15.0:
-            lifecycle_phase = "📉 Hạ Nhiệt Nhẹ (Early Fatigue)"
-            lifecycle_desc = f"Hiệu suất doanh thu giảm {wow_growth_pct}% WoW. Cần cập nhật nội dung mới, tung Battle Pass Season mới để tái kích hoạt người chơi cũ (Re-engagement)."
-            badge_color = "amber"
-        else:
-            lifecycle_phase = "⚠️ Thoái Trào Cần Can Thiệp (Decline)"
-            lifecycle_desc = f"Doanh thu sụt giảm mạnh {wow_growth_pct}% so với tuần trước. Cần điều chỉnh lại phễu D7-D30 retention và xem xét chính sách giá hoặc chế độ chơi đột phá."
-            badge_color = "rose"
+        has_real_wow = (
+            len(timeline) >= 14
+            and sum(1 for d in last_7 if d["data_source"] == "snapshot") >= 2
+            and sum(1 for d in prev_7 if d["data_source"] == "snapshot") >= 2
+        )
+        lifecycle_phase, lifecycle_desc, badge_color = RevenueHistoryEngine._lifecycle(
+            wow_growth_pct, has_real_wow, actual_days, days
+        )
 
         # Monetization Efficiency Score (1 - 100)
-        # Based on ARPU benchmark ($1.50 = 70pts, $3.00+ = 90pts) and growth
         base_score = min(85, int(blended_arpu * 26))
-        growth_bonus = max(-15, min(15, int(wow_growth_pct * 0.6)))
+        growth_bonus = max(-15, min(15, int(wow_growth_pct * 0.6))) if has_real_wow else 0
         monetization_score = max(20, min(98, base_score + growth_bonus + 10))
 
-        # Country Tier Breakdown (Tier 1 US/JP/KR vs Tier 2 vs Tier 3 SEA)
-        tier_breakdown = {
-            "tier_1": {
-                "name": "Tier 1 (US, JP, KR, UK, DE)",
-                "share_pct": 64.5,
-                "revenue": int(total_30d_rev * 0.645),
-                "revenue_formatted": RevenueHistoryEngine._format_currency(int(total_30d_rev * 0.645)),
-                "downloads": int(total_30d_dl * 0.28),
-                "downloads_formatted": RevenueHistoryEngine._format_number(int(total_30d_dl * 0.28)),
-                "arpu": round((total_30d_rev * 0.645) / max(1, total_30d_dl * 0.28), 2),
-                "countries": ["Mỹ 🇺🇸", "Nhật Bản 🇯🇵", "Hàn Quốc 🇰🇷", "Đức 🇩🇪", "Anh 🇬🇧"]
-            },
-            "tier_2": {
-                "name": "Tier 2 (FR, CA, TW, AU, IT)",
-                "share_pct": 21.5,
-                "revenue": int(total_30d_rev * 0.215),
-                "revenue_formatted": RevenueHistoryEngine._format_currency(int(total_30d_rev * 0.215)),
-                "downloads": int(total_30d_dl * 0.22),
-                "downloads_formatted": RevenueHistoryEngine._format_number(int(total_30d_dl * 0.22)),
-                "arpu": round((total_30d_rev * 0.215) / max(1, total_30d_dl * 0.22), 2),
-                "countries": ["Đài Loan 🇹🇼", "Pháp 🇫🇷", "Canada 🇨🇦", "Úc 🇦🇺"]
-            },
-            "tier_3": {
-                "name": "Tier 3 (VN, BR, ID, IN, PH, TH)",
-                "share_pct": 14.0,
-                "revenue": int(total_30d_rev * 0.14),
-                "revenue_formatted": RevenueHistoryEngine._format_currency(int(total_30d_rev * 0.14)),
-                "downloads": int(total_30d_dl * 0.50),
-                "downloads_formatted": RevenueHistoryEngine._format_number(int(total_30d_dl * 0.50)),
-                "arpu": round((total_30d_rev * 0.14) / max(1, total_30d_dl * 0.50), 2),
-                "countries": ["Việt Nam 🇻🇳", "Brazil 🇧🇷", "Indonesia 🇮🇩", "Thái Lan 🇹🇭", "Philippines 🇵🇭"]
+        tier_breakdown = {}
+        for key, t in TIER_SPLITS.items():
+            rev = int(total_rev * t["rev_share"])
+            dl = int(total_dl * t["dl_share"])
+            tier_breakdown[key] = {
+                "name": t["name"],
+                "share_pct": round(t["rev_share"] * 100, 1),
+                "revenue": rev,
+                "revenue_formatted": RevenueHistoryEngine._format_currency(rev),
+                "downloads": dl,
+                "downloads_formatted": RevenueHistoryEngine._format_number(dl),
+                "arpu": round(rev / max(1, dl), 2),
+                "countries": t["countries"],
+                "is_assumed_split": True,
             }
-        }
 
         return {
             "game_id": game_id,
@@ -221,10 +210,10 @@ class RevenueHistoryEngine:
             "days_requested": days,
             "timeline": timeline,
             "metrics_summary": {
-                "total_revenue": total_30d_rev,
-                "total_revenue_formatted": RevenueHistoryEngine._format_currency(total_30d_rev),
-                "total_downloads": total_30d_dl,
-                "total_downloads_formatted": RevenueHistoryEngine._format_number(total_30d_dl),
+                "total_revenue": total_rev,
+                "total_revenue_formatted": RevenueHistoryEngine._format_currency(total_rev),
+                "total_downloads": total_dl,
+                "total_downloads_formatted": RevenueHistoryEngine._format_number(total_dl),
                 "average_daily_revenue": avg_daily_rev,
                 "average_daily_revenue_formatted": RevenueHistoryEngine._format_currency(avg_daily_rev),
                 "average_daily_downloads": avg_daily_dl,
@@ -232,16 +221,94 @@ class RevenueHistoryEngine:
                 "blended_arpu": blended_arpu,
                 "blended_arpu_formatted": f"${blended_arpu:.2f}",
                 "monetization_score": monetization_score,
-                "wow_growth_pct": wow_growth_pct
+                "wow_growth_pct": wow_growth_pct,
+            },
+            "data_quality": {
+                "actual_snapshot_days": actual_days,
+                "days_requested": days,
+                "coverage_pct": coverage_pct,
+                "has_reliable_wow": has_real_wow,
+                "is_model_estimate": True,
+                "note": (
+                    "Doanh thu & lượt tải là ƯỚC TÍNH từ mô hình Power-law theo thứ hạng, không phải số liệu thật. "
+                    f"{actual_days}/{days} ngày có thứ hạng crawl thật; các ngày còn lại được nội suy tuyến tính "
+                    "hoặc giữ nguyên thứ hạng gần nhất. Tỷ trọng theo Tier quốc gia là giả định."
+                ),
             },
             "lifecycle": {
                 "phase": lifecycle_phase,
                 "description": lifecycle_desc,
                 "wow_growth_pct": wow_growth_pct,
-                "badge_color": badge_color
+                "badge_color": badge_color,
             },
-            "tier_breakdown": tier_breakdown
+            "tier_breakdown": tier_breakdown,
         }
+
+    @staticmethod
+    def _lifecycle(wow: float, reliable: bool, actual_days: int, days: int) -> Tuple[str, str, str]:
+        if not reliable:
+            return (
+                "❔ Chưa Đủ Dữ Liệu (Insufficient Data)",
+                f"Chỉ có {actual_days}/{days} ngày có snapshot thật. Cần ít nhất 2 ngày crawl trong mỗi tuần "
+                "của 14 ngày gần nhất để đánh giá xu hướng tuần đáng tin cậy.",
+                "slate",
+            )
+        if wow >= 12.0:
+            return (
+                "🚀 Tăng Trưởng Nóng (Hyper Growth)",
+                f"Doanh thu ước tính tuần qua tăng +{wow}%. Lượng người chơi mới gia tăng nhanh, cơ hội tối ưu chuyển đổi nạp lần đầu (FTUE IAP).",
+                "emerald",
+            )
+        if wow >= -4.0:
+            return (
+                "⚖️ Bão Hòa / Trưởng Thành (Maturity)",
+                f"Doanh thu ước tính ổn định (biến động {wow}% WoW). Cần đẩy mạnh chuỗi sự kiện LiveOps định kỳ.",
+                "indigo",
+            )
+        if wow >= -15.0:
+            return (
+                "📉 Hạ Nhiệt Nhẹ (Early Fatigue)",
+                f"Doanh thu ước tính giảm {wow}% WoW. Cần cập nhật nội dung mới, Battle Pass Season mới để tái kích hoạt người chơi cũ.",
+                "amber",
+            )
+        return (
+            "⚠️ Thoái Trào Cần Can Thiệp (Decline)",
+            f"Doanh thu ước tính sụt mạnh {wow}% so với tuần trước. Cần xem lại phễu D7-D30 retention và chính sách giá.",
+            "rose",
+        )
+
+    @staticmethod
+    def _fill_rank_series(window_dates, snapshot_map, base_rank) -> Dict[str, Tuple[int, str]]:
+        """Returns {date_str: (rank, data_source)} for every date in the window.
+
+        Real snapshot ranks are kept as-is. Gaps between two snapshots are linearly
+        interpolated; dates outside the observed range carry the nearest known rank.
+        No random noise is ever introduced.
+        """
+        known = sorted(
+            (date.fromisoformat(d), int(r.get("rank") or base_rank))
+            for d, r in snapshot_map.items()
+        )
+        result: Dict[str, Tuple[int, str]] = {}
+        for cur in window_dates:
+            key = cur.isoformat()
+            if not known:
+                result[key] = (int(base_rank), "assumed")
+                continue
+            if key in snapshot_map:
+                result[key] = (int(snapshot_map[key].get("rank") or base_rank), "snapshot")
+                continue
+            before = [(d, r) for d, r in known if d < cur]
+            after = [(d, r) for d, r in known if d > cur]
+            if before and after:
+                (d0, r0), (d1, r1) = before[-1], after[0]
+                frac = (cur - d0).days / max(1, (d1 - d0).days)
+                result[key] = (max(1, round(r0 + (r1 - r0) * frac)), "interpolated")
+            elif before:
+                result[key] = (before[-1][1], "carried")
+            else:
+                result[key] = (after[0][1], "carried")
+        return result
 
     @staticmethod
     def _format_currency(val: int) -> str:

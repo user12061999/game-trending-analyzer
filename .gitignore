@@ -12,3 +12,8 @@ Thumbs.db
 data/*.db
 data/alerts_config.json
 
+
+# Local secrets & runtime config (API keys, webhook URLs)
+.env
+data/*.json
+data/*.db-journal

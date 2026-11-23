@@ -12,6 +12,9 @@ from app.config import SUPPORTED_COUNTRIES
 
 logger = logging.getLogger(__name__)
 
+# iTunes RSS has no worldwide chart: requesting it always returns 0 entries.
+APP_STORE_UNSUPPORTED_COUNTRIES = {"global"}
+
 class CrawlerOrchestrator:
     def __init__(self):
         self.steam_crawler = SteamCrawler()
@@ -24,86 +27,87 @@ class CrawlerOrchestrator:
         Calculates DoD (Day-over-Day) and WoW (Week-over-Week) rank changes.
         Positive value (+X): climbed X ranks.
         Negative value (-X): dropped X ranks.
+
+        Runs a fixed number of queries per chart (platform/country/ranking_type)
+        instead of 2-3 queries per game.
         """
         if not records:
             return records
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        today = date.today()
-        yesterday_str = (today - timedelta(days=1)).isoformat()
-        last_week_str = (today - timedelta(days=7)).isoformat()
-
-        # Find most recent previous snapshot date to accurately compute deltas
-        cursor.execute("SELECT DISTINCT snapshot_date FROM snapshots WHERE snapshot_date < ? ORDER BY snapshot_date DESC LIMIT 1", (today.isoformat(),))
-        prev_row = cursor.fetchone()
-        prev_date_str = prev_row["snapshot_date"] if prev_row else yesterday_str
-
+        charts: Dict[tuple, List[Dict[str, Any]]] = {}
         for rec in records:
-            platform = rec["platform"]
-            country = rec["country"]
-            ranking_type = rec["ranking_type"]
-            game_id = rec["game_id"]
-            current_rank = rec["rank"]
+            key = (rec["platform"], rec["country"], rec["ranking_type"], rec.get("snapshot_date") or date.today().isoformat())
+            charts.setdefault(key, []).append(rec)
 
-            # 1. Day-over-Day delta (against previous snapshot date)
-            cursor.execute("""
-            SELECT rank FROM snapshots
-            WHERE snapshot_date = ? AND platform = ? AND country = ? AND ranking_type = ? AND game_id = ?
-            LIMIT 1
-            """, (prev_date_str, platform, country, ranking_type, game_id))
-            row_yesterday = cursor.fetchone()
+        conn = get_db_connection()
+        try:
+            cursor = conn.cursor()
+            for (platform, country, ranking_type, snap_date), chart_recs in charts.items():
+                today = date.fromisoformat(snap_date)
+                last_week_str = (today - timedelta(days=7)).isoformat()
+                chart_args = (platform, country, ranking_type)
 
-            if row_yesterday:
-                old_rank = row_yesterday["rank"]
-                rec["rank_change_day"] = old_rank - current_rank
-                rec["is_new_entry"] = 0
-            else:
-                # Check if it ever existed before
+                # Most recent earlier snapshot date *for this chart*
                 cursor.execute("""
-                SELECT 1 FROM snapshots
-                WHERE platform = ? AND country = ? AND ranking_type = ? AND game_id = ?
-                LIMIT 1
-                """, (platform, country, ranking_type, game_id))
-                ever_existed = cursor.fetchone()
-                rec["rank_change_day"] = 0
-                rec["is_new_entry"] = 0 if ever_existed else 1
+                    SELECT MAX(snapshot_date) AS d FROM snapshots
+                    WHERE platform = ? AND country = ? AND ranking_type = ? AND snapshot_date < ?
+                """, (*chart_args, snap_date))
+                row = cursor.fetchone()
+                prev_date_str = row["d"] if row and row["d"] else None
 
-            # 2. Week-over-Week delta
-            cursor.execute("""
-            SELECT rank FROM snapshots
-            WHERE snapshot_date = ? AND platform = ? AND country = ? AND ranking_type = ? AND game_id = ?
-            LIMIT 1
-            """, (last_week_str, platform, country, ranking_type, game_id))
-            row_last_week = cursor.fetchone()
+                def ranks_on(day: Optional[str]) -> Dict[str, int]:
+                    if not day:
+                        return {}
+                    cursor.execute("""
+                        SELECT game_id, MIN(rank) AS rank FROM snapshots
+                        WHERE platform = ? AND country = ? AND ranking_type = ? AND snapshot_date = ?
+                        GROUP BY game_id
+                    """, (*chart_args, day))
+                    return {r["game_id"]: r["rank"] for r in cursor.fetchall()}
 
-            if row_last_week:
-                old_rank_week = row_last_week["rank"]
-                rec["rank_change_week"] = old_rank_week - current_rank
-            else:
-                rec["rank_change_week"] = 0
+                prev_ranks = ranks_on(prev_date_str)
+                week_ranks = ranks_on(last_week_str)
 
-        conn.close()
+                game_ids = [r["game_id"] for r in chart_recs]
+                placeholders = ",".join("?" * len(game_ids))
+                cursor.execute(f"""
+                    SELECT DISTINCT game_id FROM snapshots
+                    WHERE platform = ? AND country = ? AND ranking_type = ? AND snapshot_date < ?
+                      AND game_id IN ({placeholders})
+                """, (*chart_args, snap_date, *game_ids))
+                seen_before = {r["game_id"] for r in cursor.fetchall()}
+
+                for rec in chart_recs:
+                    gid = rec["game_id"]
+                    cur = rec["rank"]
+                    if gid in prev_ranks:
+                        rec["rank_change_day"] = prev_ranks[gid] - cur
+                        rec["is_new_entry"] = 0
+                    else:
+                        rec["rank_change_day"] = 0
+                        rec["is_new_entry"] = 0 if gid in seen_before else 1
+                    rec["rank_change_week"] = week_ranks[gid] - cur if gid in week_ranks else 0
+        finally:
+            conn.close()
         return records
+
+    def _save_batch(self, records: List[Dict[str, Any]], platform: str, country: str, ranking_type: str) -> int:
+        """Computes deltas, saves and logs one chart. Empty results are logged as failures
+        (crawlers swallow their own errors) so they surface in the data-health view."""
+        if not records:
+            log_crawl(platform, country, ranking_type, 0, "failed", "Crawler returned 0 records")
+            return 0
+        processed = self.calculate_deltas(records)
+        save_snapshot_batch(processed)
+        log_crawl(platform, country, ranking_type, len(processed), "success")
+        return len(processed)
 
     def crawl_steam(self) -> int:
         """Crawls Steam PC most played and top sellers."""
         total = 0
         try:
-            most_played = self.steam_crawler.fetch_most_played(limit=50)
-            if most_played:
-                processed = self.calculate_deltas(most_played)
-                save_snapshot_batch(processed)
-                log_crawl("pc_steam", "global", "most_played", len(processed), "success")
-                total += len(processed)
-
-            top_sellers = self.steam_crawler.fetch_top_sellers(limit=50)
-            if top_sellers:
-                processed = self.calculate_deltas(top_sellers)
-                save_snapshot_batch(processed)
-                log_crawl("pc_steam", "global", "top_sellers", len(processed), "success")
-                total += len(processed)
+            total += self._save_batch(self.steam_crawler.fetch_most_played(limit=50), "pc_steam", "global", "most_played")
+            total += self._save_batch(self.steam_crawler.fetch_top_sellers(limit=50), "pc_steam", "global", "top_sellers")
         except Exception as e:
             logger.error(f"Error in Steam crawl: {e}")
             log_crawl("pc_steam", "global", "all", 0, "failed", str(e))
@@ -116,15 +120,12 @@ class CrawlerOrchestrator:
 
         total = 0
         for country in countries:
-            # 1. App Store
-            for r_type in ["top_grossing", "top_free"]:
+            # 1. App Store (Apple publishes per-country charts only; there is no "global" feed)
+            app_store_types = [] if country.lower() in APP_STORE_UNSUPPORTED_COUNTRIES else ["top_grossing", "top_free"]
+            for r_type in app_store_types:
                 try:
                     records = self.app_store_crawler.fetch_rankings(country=country, ranking_type=r_type, limit=50)
-                    if records:
-                        processed = self.calculate_deltas(records)
-                        save_snapshot_batch(processed)
-                        log_crawl("mobile_appstore", country, r_type, len(processed), "success")
-                        total += len(processed)
+                    total += self._save_batch(records, "mobile_appstore", country, r_type)
                 except Exception as e:
                     logger.error(f"Error crawling App Store for {country} {r_type}: {e}")
                     log_crawl("mobile_appstore", country, r_type, 0, "failed", str(e))
@@ -133,11 +134,7 @@ class CrawlerOrchestrator:
             for r_type in ["top_free", "top_grossing"]:
                 try:
                     records = self.google_play_crawler.fetch_rankings(country=country, ranking_type=r_type, limit=30)
-                    if records:
-                        processed = self.calculate_deltas(records)
-                        save_snapshot_batch(processed)
-                        log_crawl("mobile_googleplay", country, r_type, len(processed), "success")
-                        total += len(processed)
+                    total += self._save_batch(records, "mobile_googleplay", country, r_type)
                 except Exception as e:
                     logger.error(f"Error crawling Google Play for {country} {r_type}: {e}")
                     log_crawl("mobile_googleplay", country, r_type, 0, "failed", str(e))

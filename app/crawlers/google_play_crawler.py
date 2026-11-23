@@ -4,6 +4,7 @@ import logging
 from typing import List, Dict, Any
 from datetime import datetime, date
 from google_play_scraper import search, app
+from app.crawlers.http_utils import call_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -66,11 +67,14 @@ class GooglePlayCrawler:
         target_country = "us" if country_code == "global" else country_code
 
         try:
-            results = search(
-                query,
-                lang=lang,
-                country=target_country,
-                n_hits=min(limit, 50)
+            results = call_with_retry(
+                lambda: search(
+                    query,
+                    lang=lang,
+                    country=target_country,
+                    n_hits=min(limit, 50)
+                ),
+                label=f"Google Play search {country_code}/{ranking_type}",
             )
 
             seen_packages = set()

@@ -14,6 +14,7 @@ import io
 import zipfile
 
 from app.analytics.rea_integrator import REAIntegrator
+from app.config import BASE_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -536,12 +537,13 @@ class GameDeconstructor:
             if ai_data:
                 blueprint.update(ai_data)
                 blueprint["is_ai_enhanced"] = True
-                blueprint["ai_source"] = "Google Gemini 1.5 Flash (Live Cloud API)"
+                from app.analytics import gemini_client
+                blueprint["ai_source"] = f"Google {gemini_client.model_label()} (Live Cloud API)"
             else:
                 ai_synth = self._generate_ai_deep_synthesis(game_title, genre_hint, platform, raw_description or "")
                 blueprint.update(ai_synth)
-                blueprint["is_ai_enhanced"] = True
-                blueprint["ai_source"] = "Gemini Advanced Neural Engine (Chuyên Biệt Tự Động)"
+                blueprint["is_ai_enhanced"] = False
+                blueprint["ai_source"] = "Hệ tri thức nội bộ theo thể loại (không dùng LLM — chưa có Gemini API key hoặc gọi API thất bại)"
 
         blueprint["markdown_blueprint"] = self._format_blueprint_markdown(blueprint)
         return blueprint
@@ -1149,16 +1151,8 @@ public class GameEconomyManager : MonoBehaviour {{
     ) -> Optional[Dict[str, Any]]:
         """Invokes Gemini LLM to generate custom deep deconstruction if API key is present."""
         try:
-            key = (custom_api_key or "").strip()
-            if not key:
-                try:
-                    from app.notifications.notifier import AlertNotifier
-                    key = AlertNotifier().get_config().get("gemini_api_key", "").strip()
-                except Exception:
-                    pass
-            if not key:
-                import os
-                key = os.getenv("GEMINI_API_KEY", "").strip()
+            from app.analytics import gemini_client
+            key = gemini_client.resolve_gemini_key(custom_api_key)
             if not key:
                 return None
 
@@ -1193,19 +1187,9 @@ Yêu cầu trả về JSON với các trường:
 }}
 Chỉ trả về JSON thuần túy, không có thẻ markdown.
 """
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={key}"
-            payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode("utf-8")
-            req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=25) as resp:
-                res_json = json.loads(resp.read().decode("utf-8"))
-                text = res_json["candidates"][0]["content"]["parts"][0]["text"]
-                cleaned = text.strip()
-                if cleaned.startswith("```"):
-                    cleaned = re.sub(r"^```[a-z]*\n", "", cleaned)
-                    cleaned = re.sub(r"\n```$", "", cleaned)
-                return json.loads(cleaned)
+            return gemini_client.generate_json(prompt, key, timeout=25)
         except Exception as e:
-            logger.warning(f"Gemini deconstruction call failed: {e}")
+            logger.warning(f"Gemini deconstruction call failed: {type(e).__name__}")
             return None
 
     def _generate_ai_deep_synthesis(self, title: str, genre: str, platform: str, desc: str) -> Dict[str, Any]:

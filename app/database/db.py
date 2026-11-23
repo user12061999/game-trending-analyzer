@@ -3,10 +3,11 @@
 import sqlite3
 from typing import List, Dict, Any, Optional
 from datetime import datetime, date
-from app.config import DB_PATH
+from app import config
 
 def get_db_connection() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
+    # Read config.DB_PATH at call time so tests can point it at a temp database
+    conn = sqlite3.connect(config.DB_PATH, timeout=15)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -148,6 +149,28 @@ def init_db():
         is_rejected INTEGER DEFAULT 0
     );
     """)
+
+    # Real revenue figures used to calibrate the rank -> revenue model
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS revenue_calibration (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        game_title TEXT NOT NULL,
+        platform TEXT NOT NULL,
+        country TEXT NOT NULL,
+        ranking_type TEXT,
+        rank INTEGER NOT NULL,
+        player_count INTEGER DEFAULT 0,
+        price TEXT,
+        actual_monthly_revenue REAL NOT NULL,
+        source TEXT,
+        created_at TEXT NOT NULL
+    );
+    """)
+
+    # Migration: flag simulated (demo) postbacks so they never mix silently with real traffic
+    mmp_cols = {r[1] for r in cursor.execute("PRAGMA table_info(mmp_postbacks)").fetchall()}
+    if "is_simulated" not in mmp_cols:
+        cursor.execute("ALTER TABLE mmp_postbacks ADD COLUMN is_simulated INTEGER DEFAULT 0")
 
     cursor.execute("""
     CREATE INDEX IF NOT EXISTS idx_mmp_postbacks_time
