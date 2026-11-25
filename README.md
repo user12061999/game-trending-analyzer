@@ -2,6 +2,8 @@
 
 Hệ thống phân tích xu hướng thị trường game **Mobile (iOS & Android)** và **PC (Steam)** theo chu kỳ **Hàng Ngày (Daily)** và **Hàng Tuần (Weekly)** với Web Dashboard tương tác trực quan.
 
+📍 Lộ trình phát triển, việc tiếp theo và hạn chế đã biết: xem [ROADMAP.md](ROADMAP.md).
+
 ---
 
 ## 🌟 Tính Năng Nổi Bật
